@@ -1,0 +1,82 @@
+/* ===== Halaman Keranjang (mobile first) ===== */
+
+.keranjang {
+  min-height: 100dvh;
+  background-color: #ffffff;
+  /* ruang untuk navigasi bawah yang menempel di dasar layar */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.keranjang__header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: #ffffff;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.keranjang__judul {
+  margin: 0;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-size: clamp(1.125rem, 1rem + 0.7vw, 1.5rem);
+  font-weight: 700;
+  color: var(--warna-merah-utama);
+}
+
+.keranjang__isi {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 16px;
+}
+
+.keranjang__daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --- keranjang kosong --- */
+.keranjang__kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 16px;
+  color: #8c8c8c;
+  text-align: center;
+}
+
+.keranjang__kosong p {
+  margin: 0;
+}
+
+.keranjang__tombol-belanja {
+  display: inline-grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background-color: var(--warna-merah-utama);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.keranjang__tombol-belanja:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .keranjang__isi {
+    padding: 24px 32px;
+  }
+
+  .keranjang__daftar {
+    gap: 32px;
+  }
+}

@@ -1,0 +1,12 @@
+.list-produk-dijual {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.beranda__status {
+  padding: 24px 16px;
+  text-align: center;
+  color: #8c8c8c;
+}

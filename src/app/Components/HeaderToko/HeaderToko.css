@@ -1,0 +1,93 @@
+.header-toko {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: #ffffff;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.header-toko__isi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 56px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-toko__judul {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(1.25rem, 1.05rem + 1vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--warna-merah-utama);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-toko__aksi {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.header-toko__tombol {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.header-toko__tombol svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.header-toko__tombol--cari {
+  color: var(--warna-merah-utama);
+}
+
+.header-toko__tombol--toko {
+  color: #000000;
+}
+
+.header-toko__tombol:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.header-toko__tombol:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.header-toko__tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .header-toko__isi {
+    height: 64px;
+    padding: 0 32px;
+  }
+
+  .header-toko__aksi {
+    gap: 8px;
+  }
+}
