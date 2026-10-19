@@ -19,14 +19,14 @@ const IKON = {
     </>
   ),
   keranjang: <FiShoppingCart size={23} />,
-  toko: <MdStorefront size={23} />,
+  masuktoko: <MdStorefront size={23} />,
 };
 
 const MENU_BAWAAN = [
   { id: "beranda", label: "Beranda", href: "/" },
   { id: "pesanan", label: "Pesanan", href: "/pesanan" },
   { id: "keranjang", label: "Keranjang", href: "/keranjang" },
-  { id: "toko", label: "Toko", href: "/toko" },
+  { id: "masuktoko", label: "MasukToko", href: "/masuktoko" },
 ];
 
 export default function NavigasiBawah({
