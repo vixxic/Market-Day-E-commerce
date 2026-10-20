@@ -4,7 +4,7 @@ import "./masuktoko.css";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/Context/AuthContext";
 
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 

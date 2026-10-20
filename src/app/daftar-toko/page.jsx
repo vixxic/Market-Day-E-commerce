@@ -4,7 +4,7 @@
 // import { useState } from "react";
 // import Link from "next/link";
 // import { useRouter } from "next/navigation";
-// import { useAuthContext } from "@/context/AuthContext";
+// import { useAuthContext } from "@/Context/AuthContext";
 
 // export default function DaftarTokoPage() {
 //   const { daftar } = useAuthContext();
@@ -77,7 +77,7 @@ import "./daftar-toko.css";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/Context/AuthContext";
 // Sesuaikan path import ini dengan yang dipakai di halaman masuk toko
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 

@@ -9,7 +9,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/Context/AuthContext";
 import {
   buatPesanan as kirimPesanan,
 } from "@/lib/api/pesananApi";

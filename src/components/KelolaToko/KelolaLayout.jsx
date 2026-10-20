@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/Context/AuthContext";
 
 export default function KelolaLayout({ children }) {
   const { toko, memuatSesi, keluar } = useAuthContext();

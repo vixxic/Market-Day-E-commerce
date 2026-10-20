@@ -3,9 +3,9 @@
 import "./Beranda.css";
 
 //context
-import { useGlobalContext } from "@/context/GlobalContext";
-import { useProdukContext } from "@/context/ProdukContext";
-import { useAuthContext } from "@/context/AuthContext";
+import { useGlobalContext } from "@/Context/GlobalContext";
+import { useProdukContext } from "@/Context/ProdukContext";
+import { useAuthContext } from "@/Context/AuthContext";
 
 // components
 import HeaderToko from "@/components/HeaderToko/HeaderToko";

@@ -3,7 +3,7 @@
 import "./FilterBar.css";
 
 // context
-import { useGlobalContext } from "@/context/GlobalContext";
+import { useGlobalContext } from "@/Context/GlobalContext";
 
 const KATEGORI_BAWAAN = [
   "Semua",

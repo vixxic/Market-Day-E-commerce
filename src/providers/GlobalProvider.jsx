@@ -1,10 +1,10 @@
 "use client";
 
-import { KeranjangProvider } from "@/context/KeranjangContext";
-import { PesananProvider } from "@/context/PesananContext";
-import { ProdukProvider } from "@/context/ProdukContext";
-import { GlobalProvider as GlobalUiProvider } from "@/context/GlobalContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { KeranjangProvider } from "@/Context/KeranjangContext";
+import { PesananProvider } from "@/Context/PesananContext";
+import { ProdukProvider } from "@/Context/ProdukContext";
+import { GlobalProvider as GlobalUiProvider } from "@/Context/GlobalContext";
+import { AuthProvider } from "@/Context/AuthContext";
 
 export default function GlobalProvider({ children }) {
   return (

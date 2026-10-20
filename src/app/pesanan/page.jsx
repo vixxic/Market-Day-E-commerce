@@ -3,8 +3,8 @@
 import "./pesanan.css";
 import { useId, useState } from "react";
 import Link from "next/link";
-import { usePesananContext } from "@/context/PesananContext";
-import { useAuthContext } from "@/context/AuthContext";
+import { usePesananContext } from "@/Context/PesananContext";
+import { useAuthContext } from "@/Context/AuthContext";
 
 // components
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";

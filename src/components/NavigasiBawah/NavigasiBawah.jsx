@@ -4,7 +4,7 @@ import Link from "next/link";
 import "../NavigasiBawah/NavigasiBawah.css";
 
 // context
-import { useGlobalContext } from "@/context/GlobalContext";
+import { useGlobalContext } from "@/Context/GlobalContext";
 
 // icons
 import { FiHome, FiShoppingCart } from "react-icons/fi";

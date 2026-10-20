@@ -10,9 +10,9 @@ import PanelBeli from "@/components/Panelbeli/Panelbeli";
 
 // utils
 import { formatHarga } from "@/lib/formatHarga";
-import { useKeranjangContext } from "@/context/KeranjangContext";
-import { usePesananContext } from "@/context/PesananContext";
-import { useProdukContext } from "@/context/ProdukContext";
+import { useKeranjangContext } from "@/Context/KeranjangContext";
+import { usePesananContext } from "@/Context/PesananContext";
+import { useProdukContext } from "@/Context/ProdukContext";
 
 function IsiDetailProduk() {
   const { id } = useParams();

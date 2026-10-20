@@ -3,7 +3,7 @@
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 // context
-import { useGlobalContext } from "@/context/GlobalContext";
+import { useGlobalContext } from "@/Context/GlobalContext";
 
 // pages
 import Beranda from "./beranda/page";
