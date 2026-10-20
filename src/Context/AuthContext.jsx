@@ -28,9 +28,14 @@ export function AuthProvider({ children }) {
     ])
       .then(async ([daftar, responsSesi]) => {
         setDaftarToko(daftar.filter((item) => item.aktif !== false));
+
         if (responsSesi.ok) {
           const dataSesi = await responsSesi.json();
           setToko(dataSesi.toko ?? null);
+        } else if (responsSesi.status === 401) {
+          setToko(null);
+        } else {
+          throw new Error("Gagal memeriksa sesi toko.");
         }
       })
       .catch((galat) => {
@@ -54,10 +59,13 @@ export function AuthProvider({ children }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ namaToko, password }),
     });
+
     const data = await respons.json();
+
     if (!respons.ok) {
       throw new Error(data.error ?? "Gagal masuk ke toko.");
     }
+
     setToko(data.toko);
     return data.toko;
   }, []);
