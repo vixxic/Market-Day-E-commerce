@@ -1,0 +1,196 @@
+/* ===== Kartu Keranjang (mobile first) ===== */
+
+.kartu-keranjang {
+  --keranjang-merah-sedang: #bc3f3d;
+
+  display: flex;
+  align-items: stretch; /* kolom info setinggi gambar, harga & tombol di dasar */
+  gap: clamp(12px, 4vw, 20px);
+  width: 100%;
+}
+
+.kartu-keranjang__gambar {
+  flex: 0 0 clamp(96px, 28vw, 150px);
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #d9d9d9;
+}
+
+.kartu-keranjang__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kartu-keranjang__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kartu-keranjang__atas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kartu-keranjang__nama {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: #000000;
+  overflow-wrap: anywhere;
+}
+
+/* Area sentuh 44x44, sedikit ditarik supaya ikon sejajar dengan tepi kanan */
+.kartu-keranjang__hapus {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--warna-merah-utama);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.kartu-keranjang__hapus svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kartu-keranjang__hapus:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.kartu-keranjang__hapus:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 1px;
+}
+
+.kartu-keranjang__jumlah {
+  margin: 0;
+  font-size: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+  color: #7d7d7d;
+}
+
+/* --- label varian --- */
+.kartu-keranjang__label-daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kartu-keranjang__varian {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kartu-keranjang__label {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: var(--keranjang-merah-sedang);
+  color: #ffffff;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.kartu-keranjang__pengatur-jumlah {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #000000;
+  font-variant-numeric: tabular-nums;
+}
+
+.kartu-keranjang__pengatur-jumlah button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--keranjang-merah-sedang);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--keranjang-merah-sedang);
+  font: inherit;
+  cursor: pointer;
+}
+
+.kartu-keranjang__pengatur-jumlah button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kartu-keranjang__pengatur-jumlah button:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+/* --- harga & tombol pesan --- */
+.kartu-keranjang__bawah {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kartu-keranjang__harga {
+  margin: 0;
+  font-size: clamp(0.875rem, 0.8rem + 0.35vw, 1.0625rem);
+  color: var(--warna-merah-utama);
+  font-variant-numeric: tabular-nums;
+}
+
+.kartu-keranjang__pesan {
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    filter 0.15s ease,
+    transform 0.12s ease;
+}
+
+.kartu-keranjang__pesan:hover {
+  filter: brightness(1.15);
+}
+
+.kartu-keranjang__pesan:active {
+  transform: scale(0.95);
+}
+
+.kartu-keranjang__pesan:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}

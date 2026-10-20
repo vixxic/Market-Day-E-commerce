@@ -1,9 +1,9 @@
 "use client";
 
-import NavigasiBawah from "./Components/NavigasiBawah/NavigasiBawah";
+import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 // context
-import { useGlobalContext } from "@/Context/GlobalContext";
+import { useGlobalContext } from "@/context/GlobalContext";
 
 // pages
 import Beranda from "./beranda/page";

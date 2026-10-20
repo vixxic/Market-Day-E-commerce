@@ -66,6 +66,16 @@
   color: #c62828;
 }
 
+.masuk-toko__info {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: #fff4d6;
+  color: #684b00;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
 .masuk-toko__daftar {
   margin: 0;
   font-size: 0.9375rem;

@@ -3,14 +3,18 @@
 import "./masuktoko.css";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/context/AuthContext";
 
-import NavigasiBawah from "../Components/NavigasiBawah/NavigasiBawah";
+import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 export default function MasukToko() {
   const [namaToko, setNamaToko] = useState("");
   const [password, setPassword] = useState("");
   const [galat, setGalat] = useState({});
   const [sedangMasuk, setSedangMasuk] = useState(false);
+  const router = useRouter();
+  const { masuk: autentikasiMasuk } = useAuthContext();
 
   async function masuk(e) {
     e.preventDefault();
@@ -23,9 +27,14 @@ export default function MasukToko() {
 
     setSedangMasuk(true);
     try {
-      // TODO: proses login toko di sini (cek nama toko & password ke API milikmu),
-      // lalu arahkan ke halaman toko, contoh: router.push("/toko")
-      console.log("Masuk sebagai toko:", namaToko.trim());
+      await autentikasiMasuk(namaToko.trim(), password);
+      router.push("/kelolatoko");
+    } catch (error) {
+      setPassword("");
+      setGalat((sebelumnya) => ({
+        ...sebelumnya,
+        umum: error.message,
+      }));
     } finally {
       setSedangMasuk(false);
     }
@@ -35,6 +44,11 @@ export default function MasukToko() {
     <div className="masuk-toko">
       <form className="masuk-toko__isi" onSubmit={masuk} noValidate>
         <h1 className="masuk-toko__judul">Masuk ke Toko</h1>
+        {galat.umum && (
+          <p className="masuk-toko__galat" role="alert">
+            {galat.umum}
+          </p>
+        )}
 
         <div className="masuk-toko__bidang">
           <label className="masuk-toko__label" htmlFor="nama-toko">
@@ -80,7 +94,6 @@ export default function MasukToko() {
 
         <p className="masuk-toko__daftar">
           Belum mendaftarkan toko?{" "}
-          {/* TODO: sesuaikan alamat halaman pendaftaran toko */}
           <Link href="/daftar-toko" className="masuk-toko__tautan">
             Daftar di sini
           </Link>

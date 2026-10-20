@@ -31,6 +31,16 @@
   padding-top: 16px;
 }
 
+.keranjang__galat {
+  margin: 0 16px 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: #fff0f0;
+  color: #a32222;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
 .keranjang__daftar {
   display: flex;
   flex-direction: column;

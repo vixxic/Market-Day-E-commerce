@@ -1,46 +1,49 @@
 "use client";
 
 import "./Keranjang.css";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useKeranjangContext } from "@/context/KeranjangContext";
+import { usePesananContext } from "@/context/PesananContext";
+import { useProdukContext } from "@/context/ProdukContext";
 
 // components
-import KartuKeranjang from "@/app/Components/KartuKeranjang/KartuKeranjang";
-import NavigasiBawah from "@/app/Components/NavigasiBawah/NavigasiBawah";
-
-// utils
-import { ambilKeranjang, hapusDariKeranjang } from "../keranjang";
-import { siapkanPembayaran } from "../pembayaran";
+import KartuKeranjang from "@/components/KartuKeranjang/KartuKeranjang";
+import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 export default function Keranjang() {
   const router = useRouter();
-  const [keranjang, setKeranjang] = useState([]);
-  const [siap, setSiap] = useState(false); // false sampai localStorage terbaca
-
-  useEffect(() => {
-    setKeranjang(ambilKeranjang());
-    setSiap(true);
-  }, []);
+  const {
+    keranjang,
+    siap,
+    error,
+    hapusDariKeranjang,
+    ubahJumlah,
+  } = useKeranjangContext();
+  const { daftarProduk } = useProdukContext();
+  const { siapkanPemesanan } = usePesananContext();
 
   function hapus(idProduk) {
-    setKeranjang(hapusDariKeranjang(idProduk));
+    hapusDariKeranjang(idProduk);
   }
 
-  // Bayar satu produk (semua variannya) lalu pindah ke halaman pembayaran
-  function bayar(item) {
+  // Pesan satu produk (semua variannya) lalu pindah ke halaman pemesanan.
+  function pesan(item) {
+    const produk = daftarProduk.find(
+      (baris) => String(baris.id) === String(item.idProduk),
+    );
     const baris = item.varian.map((v) => ({
       idProduk: item.idProduk,
+      id_toko: item.id_toko ?? produk?.id_penjual,
       nama: item.nama,
       harga: item.harga,
       gambar: item.gambar,
-      qris: item.qris,
       jenis: v.jenis,
       ukuran: v.ukuran,
       jumlah: v.jumlah,
     }));
-    siapkanPembayaran(baris, { dariKeranjang: true });
-    router.push("/pembayaran");
+    siapkanPemesanan(baris, { dariKeranjang: true });
+    router.push("/pemesanan");
   }
 
   return (
@@ -50,6 +53,11 @@ export default function Keranjang() {
       </header>
 
       <main className="keranjang__isi">
+        {error && (
+          <p className="keranjang__galat" role="alert">
+            Gagal memperbarui keranjang: {error}
+          </p>
+        )}
         {siap && keranjang.length === 0 && (
           <div className="keranjang__kosong">
             <p>Keranjang masih kosong.</p>
@@ -66,7 +74,10 @@ export default function Keranjang() {
                 <KartuKeranjang
                   item={item}
                   onHapus={() => hapus(item.idProduk)}
-                  onBayar={() => bayar(item)}
+                  onUbahJumlah={(varian, jumlah) =>
+                    ubahJumlah(item.idProduk, varian, jumlah)
+                  }
+                  onPesan={() => pesan(item)}
                 />
               </li>
             ))}

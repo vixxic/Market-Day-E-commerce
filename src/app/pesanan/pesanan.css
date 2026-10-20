@@ -1,0 +1,285 @@
+/* ===== Halaman Profil Pesanan (mobile first) ===== */
+
+.pesanan {
+  min-height: 100dvh;
+  background-color: #ffffff;
+  /* ruang untuk navigasi bawah */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.pesanan__header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: #ffffff;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pesanan__judul {
+  margin: 0;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-size: clamp(1.125rem, 1rem + 0.7vw, 1.5rem);
+  font-weight: 700;
+  color: var(--warna-merah-utama);
+}
+
+.pesanan__isi {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 16px;
+}
+
+.pesanan__peringatan,
+.pesanan__galat,
+.pesanan__status {
+  margin: 0 16px 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.pesanan__peringatan {
+  background-color: #fff4d6;
+  color: #684b00;
+}
+
+.pesanan__galat {
+  background-color: #fff0f0;
+  color: #a32222;
+}
+
+.pesanan__status {
+  color: #7d7d7d;
+}
+
+.pesanan__daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* --- belum ada pesanan --- */
+.pesanan__kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 16px;
+  color: #8c8c8c;
+  text-align: center;
+}
+
+.pesanan__kosong p {
+  margin: 0;
+}
+
+.pesanan__tombol-belanja {
+  display: inline-grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background-color: var(--warna-merah-utama);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* ===== Kartu Pesanan ===== */
+
+.kartu-pesanan {
+  --pesanan-merah-sedang: #bc3f3d;
+  --pesanan-latar-muda: #fff6f6;
+  --pesanan-gambar: clamp(96px, 28vw, 150px);
+
+  width: 100%;
+}
+
+.kartu-pesanan__ringkasan {
+  display: flex;
+  align-items: stretch; /* kolom info setinggi gambar, tombol di dasar */
+  gap: clamp(12px, 4vw, 20px);
+}
+
+.kartu-pesanan__gambar {
+  flex: 0 0 var(--pesanan-gambar);
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #d9d9d9;
+}
+
+.kartu-pesanan__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kartu-pesanan__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.kartu-pesanan__nama {
+  margin: 0;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: #000000;
+  overflow-wrap: anywhere;
+}
+
+.kartu-pesanan__label-status {
+  margin: 0;
+  font-size: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+  color: #7d7d7d;
+}
+
+/* --- label status --- */
+.kartu-pesanan__status {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.kartu-pesanan__status--menunggu {
+  background-color: var(--pesanan-latar-muda);
+  border-color: var(--warna-merah-utama);
+  color: var(--warna-merah-utama);
+}
+
+.kartu-pesanan__status--terverifikasi {
+  background-color: #dcf7e3;
+  border-color: #3aa55d;
+  color: #1d7a3a;
+}
+
+.kartu-pesanan__status--ditolak {
+  background-color: #fff0f0;
+  border-color: #c62828;
+  color: #a32222;
+}
+
+/* --- tombol detail pesanan --- */
+.kartu-pesanan__tombol {
+  margin-top: auto;
+  min-height: 36px;
+  padding: 0 24px;
+  border: 1px solid var(--pesanan-merah-sedang);
+  border-radius: 999px;
+  background-color: var(--pesanan-merah-sedang);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.12s ease;
+}
+
+/* saat rincian terbuka: tombol berubah jadi garis tepi */
+.kartu-pesanan__tombol--terbuka {
+  background-color: #ffffff;
+  border-color: var(--warna-merah-utama);
+  color: var(--warna-merah-utama);
+}
+
+.kartu-pesanan__tombol:active {
+  transform: scale(0.97);
+}
+
+.kartu-pesanan__tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+/* --- rincian (animasi tinggi 0 -> otomatis) --- */
+.kartu-pesanan__rincian {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+.kartu-pesanan__rincian--terbuka {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.kartu-pesanan__rincian-isi {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.kartu-pesanan__varian-daftar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px 12px;
+  padding-top: 20px;
+}
+
+.kartu-pesanan__varian p,
+.kartu-pesanan__kotak p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: #000000;
+  overflow-wrap: anywhere;
+}
+
+
+.kartu-pesanan__varian p + p {
+  margin-top: 10px;
+}
+
+.kartu-pesanan__kotak {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background-color: var(--pesanan-latar-muda);
+}
+
+.kartu-pesanan__kode {
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 768px) {
+  .pesanan__isi {
+    padding: 24px 32px;
+  }
+
+  .pesanan__daftar {
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kartu-pesanan__rincian,
+  .kartu-pesanan__tombol {
+    transition: none;
+  }
+}

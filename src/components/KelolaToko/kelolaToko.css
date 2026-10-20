@@ -1,0 +1,301 @@
+.kelola-toko {
+  --kelola-merah: #8d2b2b;
+  --kelola-gelap: #521014;
+  --kelola-muda: #fff6f6;
+  min-height: 100dvh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 16px 100px;
+  color: #111111;
+}
+
+.kelola-toko__memuat {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.kelola-toko__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kelola-toko__brand {
+  color: var(--kelola-gelap);
+  font-size: 1.75rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.kelola-toko__keluar,
+.kelola-toko__kembali {
+  border: 0;
+  background: transparent;
+  color: var(--kelola-gelap);
+  font: inherit;
+  cursor: pointer;
+}
+
+.kelola-toko__kembali {
+  display: inline-block;
+  margin: 0 0 20px;
+  text-decoration: none;
+}
+
+.kelola-toko__judul {
+  margin: 0 0 20px;
+  color: var(--kelola-gelap);
+  font-size: 1.65rem;
+}
+
+.kelola-toko__subjudul {
+  margin: 0 0 18px;
+  color: var(--kelola-gelap);
+  font-size: 1.2rem;
+}
+
+.kelola-toko__statistik {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 28px 0 42px;
+}
+
+.kelola-toko__stat {
+  min-height: 130px;
+  padding: 18px;
+  border: 2px solid var(--kelola-gelap);
+  border-radius: 12px;
+  background: var(--kelola-muda);
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.kelola-toko__stat strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--kelola-gelap);
+  font-size: 2.5rem;
+}
+
+.kelola-toko__produk-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.kelola-toko__tag {
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: var(--kelola-merah);
+  color: #ffffff;
+}
+
+.kelola-toko__produk-list,
+.kelola-toko__order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.kelola-toko__produk {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kelola-toko__foto {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: #dedede;
+  object-fit: cover;
+}
+
+.kelola-toko__produk-nama {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+}
+
+.kelola-toko__harga {
+  margin: 0;
+  color: var(--kelola-gelap);
+}
+
+.kelola-toko__jumlah {
+  color: var(--kelola-gelap);
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.kelola-toko__tombol,
+.kelola-toko__tombol-sekunder,
+.kelola-toko__terima {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #c43f3f;
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.kelola-toko__tombol-sekunder {
+  background: #ffffff;
+  border: 1px solid var(--kelola-merah);
+  color: var(--kelola-gelap);
+}
+
+.kelola-toko__produk-aksi {
+  grid-column: 2 / 4;
+  justify-self: start;
+}
+
+.kelola-toko__tambah {
+  position: fixed;
+  right: max(calc((100vw - 760px) / 2 + 20px), 20px);
+  bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #78121a;
+  color: #ffffff;
+  font-size: 3rem;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 4px 14px #0002;
+}
+
+.kelola-toko__order {
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px #00000012;
+}
+
+.kelola-toko__order-header {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.kelola-toko__order-img {
+  width: 96px;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: #dedede;
+  object-fit: cover;
+}
+
+.kelola-toko__order-info h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.kelola-toko__order-info p {
+  margin: 0 0 12px;
+  color: var(--kelola-gelap);
+}
+
+.kelola-toko__detail {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--kelola-muda);
+}
+
+.kelola-toko__detail-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eadada;
+}
+
+.kelola-toko__detail-item:last-child {
+  border-bottom: 0;
+}
+
+.kelola-toko__detail p {
+  margin: 4px 0;
+}
+
+.kelola-toko__galat,
+.kelola-toko__kosong {
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--kelola-muda);
+}
+
+.kelola-toko__galat {
+  color: #9d1d1d;
+}
+
+.kelola-toko__form {
+  display: grid;
+  gap: 16px;
+}
+
+.kelola-toko__bidang {
+  display: grid;
+  gap: 7px;
+}
+
+.kelola-toko__bidang input,
+.kelola-toko__bidang textarea,
+.kelola-toko__bidang select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #c9baba;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.kelola-toko__bidang textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.kelola-toko__bantuan {
+  margin: 0;
+  color: #666666;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 520px) {
+  .kelola-toko__produk {
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+  }
+
+  .kelola-toko__foto {
+    width: 96px;
+  }
+
+  .kelola-toko__order-header {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .kelola-toko__order-img {
+    width: 76px;
+  }
+
+  .kelola-toko__terima {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

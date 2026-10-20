@@ -1,0 +1,224 @@
+/* .daftar-toko {
+  min-height: 100dvh;
+  display: grid;
+  box-sizing: border-box;
+}
+
+.daftar-toko__form {
+  width: 100%;
+  max-width: 460px;
+  display: grid;
+  gap: 14px;
+}
+
+.daftar-toko__form h1,
+.daftar-toko__form p {
+  margin: 0;
+}
+
+.daftar-toko__form h1 {
+  color: var(--warna-merah-utama);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+} */
+
+/* deskripsi di bawah judul: tidak ada di halaman masuk, dibuat kecil dan tenang */
+/* .daftar-toko__form > p:not(.daftar-toko__error) {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #444444;
+}
+
+.daftar-toko__form label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.daftar-toko__form input {
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #efefef;
+  font: inherit;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.daftar-toko__form input:focus {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 1px;
+}
+
+.daftar-toko__form button {
+  min-height: 50px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.daftar-toko__form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.daftar-toko__form a {
+  color: var(--warna-merah-utama);
+  font-size: 13px;
+  text-align: left;
+}
+
+.daftar-toko__error {
+  color: #b42318;
+  font-size: 13px;
+} */
+
+/* ===== Halaman Daftarkan Toko (mobile first) ===== */
+
+.daftar-toko {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: border-box;
+}
+
+.daftar-toko__isi {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.daftar-toko__judul {
+  text-align: center;
+  font-size: clamp(1.375rem, 1.15rem + 1vw, 1.75rem);
+  font-weight: 700;
+  color: var(--warna-merah-utama);
+  padding: 16px 0;
+}
+
+.daftar-toko__bidang {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.daftar-toko__label {
+  font-size: 1.0625rem;
+  color: #000000;
+}
+
+.daftar-toko__input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  color: #000000;
+  font: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.daftar-toko__input:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 1px;
+}
+
+.daftar-toko__galat {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #c62828;
+}
+
+.daftar-toko__masuk {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #000000;
+}
+
+.daftar-toko__tautan {
+  color: var(--warna-merah-utama);
+  text-decoration: none;
+}
+
+.daftar-toko__tautan:hover {
+  text-decoration: underline;
+}
+
+.daftar-toko__tautan:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.daftar-toko__aksi {
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  padding: 50px 0 max(24px, env(safe-area-inset-bottom, 0px));
+}
+
+.daftar-toko__tombol {
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: 10px;
+  background-color: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    filter 0.15s ease,
+    transform 0.12s ease;
+}
+
+.daftar-toko__tombol:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.daftar-toko__tombol:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.daftar-toko__tombol:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.daftar-toko__tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 3px;
+}
+
+/* Tablet & laptop: form di tengah, tombol mengikuti isi */
+@media (min-width: 768px) {
+  .daftar-toko__isi {
+    flex: 0 1 auto;
+    margin-top: 8vh;
+    padding-top: 24px;
+    gap: 28px;
+  }
+
+  .daftar-toko__aksi {
+    position: static;
+    margin-top: 16px;
+    padding-bottom: 0;
+  }
+}

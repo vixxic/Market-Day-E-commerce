@@ -5,52 +5,56 @@ import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 // components
-import GaleriProduk from "@/app/Components/GaleriProduk/GaleriProduk";
-import PanelBeli from "@/app/Components/Panelbeli/Panelbeli";
+import GaleriProduk from "@/components/GaleriProduk/GaleriProduk";
+import PanelBeli from "@/components/Panelbeli/Panelbeli";
 
 // utils
-import { formatHarga } from "@/app/formatHarga";
-import { tambahKeKeranjang } from "@/app/keranjang";
-import { siapkanPembayaran } from "@/app/pembayaran";
-
-const URL_PRODUK = "https://6ab5239024ee9d3caa1c3b25.mockapi.io/marketday";
+import { formatHarga } from "@/lib/formatHarga";
+import { useKeranjangContext } from "@/context/KeranjangContext";
+import { usePesananContext } from "@/context/PesananContext";
+import { useProdukContext } from "@/context/ProdukContext";
 
 function IsiDetailProduk() {
   const { id } = useParams();
   const router = useRouter();
-
-  const [produk, setProduk] = useState(null);
-  const [status, setStatus] = useState("memuat"); // "memuat" | "sukses" | "tidakAda" | "gagal"
+  const { daftarProduk, ambilProdukById } = useProdukContext();
+  const { tambahKeKeranjang, error: errorKeranjang } = useKeranjangContext();
+  const { siapkanPemesanan } = usePesananContext();
+  const [hasilDetail, setHasilDetail] = useState(null);
   const [panelTerbuka, setPanelTerbuka] = useState(false);
 
   useEffect(() => {
     const pengendali = new AbortController();
-    setStatus("memuat");
+    const sudahAda = daftarProduk.some(
+      (item) => String(item.id) === String(id),
+    );
+    if (sudahAda) return () => pengendali.abort();
 
-    async function ambilProduk() {
-      try {
-        const respons = await fetch(`${URL_PRODUK}/${id}`, {
-          signal: pengendali.signal,
-        });
-        if (respons.status === 404) {
-          setStatus("tidakAda");
-          return;
-        }
-        if (!respons.ok)
-          throw new Error(`Gagal memuat produk (${respons.status})`);
+    ambilProdukById(id, { signal: pengendali.signal })
+      .then((produk) =>
+        setHasilDetail({
+          id: String(id),
+          produk,
+          status: produk ? "sukses" : "tidakAda",
+        }),
+      )
+      .catch((galat) => {
+        if (galat.name === "AbortError") return;
+        console.error(galat);
+        setHasilDetail({ id: String(id), produk: null, status: "gagal" });
+      });
 
-        setProduk(await respons.json());
-        setStatus("sukses");
-      } catch (error) {
-        if (error.name === "AbortError") return;
-        console.error(error);
-        setStatus("gagal");
-      }
-    }
-
-    ambilProduk();
     return () => pengendali.abort();
-  }, [id]);
+  }, [id, daftarProduk, ambilProdukById]);
+
+  const produk =
+    daftarProduk.find((item) => String(item.id) === String(id)) ??
+    (hasilDetail?.id === String(id) ? hasilDetail.produk : null);
+  const status = produk
+    ? "sukses"
+    : hasilDetail?.id === String(id)
+      ? hasilDetail.status
+      : "memuat";
 
   function kembali() {
     // Kalau halaman dibuka langsung lewat link (tanpa riwayat), arahkan ke beranda
@@ -58,11 +62,11 @@ function IsiDetailProduk() {
     else router.push("/");
   }
 
-  // Beli langsung (tanpa lewat keranjang)
-  function tanganiBayar(pesanan) {
-    siapkanPembayaran(pesanan, { dariKeranjang: false });
+  // Pesan langsung (tanpa lewat keranjang)
+  function tanganiPesan(pesanan) {
+    siapkanPemesanan(pesanan, { dariKeranjang: false });
     setPanelTerbuka(false);
-    router.push("/pembayaran");
+    router.push("/pemesanan");
   }
 
   function tanganiMasukKeranjang(pesanan) {
@@ -90,6 +94,12 @@ function IsiDetailProduk() {
 
       {status === "memuat" && (
         <p className="detail-produk__status">Memuat produk...</p>
+      )}
+
+      {errorKeranjang && (
+        <p className="detail-produk__status" role="alert">
+          Keranjang gagal diperbarui: {errorKeranjang}
+        </p>
       )}
 
       {(status === "tidakAda" || status === "gagal") && (
@@ -144,7 +154,7 @@ function IsiDetailProduk() {
             terbuka={panelTerbuka}
             onTutup={() => setPanelTerbuka(false)}
             produk={produk}
-            onBayar={tanganiBayar}
+            onPesan={tanganiPesan}
             onMasukKeranjang={tanganiMasukKeranjang}
           />
         </>

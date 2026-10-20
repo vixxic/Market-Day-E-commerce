@@ -1,52 +1,28 @@
 "use client";
 
 import "./Beranda.css";
-import { useEffect, useState } from "react";
 
 //context
-import { useGlobalContext } from "@/Context/GlobalContext";
+import { useGlobalContext } from "@/context/GlobalContext";
+import { useProdukContext } from "@/context/ProdukContext";
+import { useAuthContext } from "@/context/AuthContext";
 
 // components
-import HeaderToko from "@/app/Components/HeaderToko/HeaderToko";
-import FilterBar from "@/app/Components/FilterBar/FilterBar";
-import KartuProduk from "@/app/Components/KartuProduk/KartuProduk";
-
-const URL_PRODUK = "https://6ab5239024ee9d3caa1c3b25.mockapi.io/marketday";
+import HeaderToko from "@/components/HeaderToko/HeaderToko";
+import FilterBar from "@/components/FilterBar/FilterBar";
+import KartuProduk from "@/components/KartuProduk/KartuProduk";
 
 function Beranda() {
   const { filterBeranda } = useGlobalContext();
-
-  const [daftarProduk, setDaftarProduk] = useState([]);
-  const [status, setStatus] = useState("memuat"); // "memuat" | "sukses" | "gagal"
-
-  useEffect(() => {
-    const pengendali = new AbortController();
-
-    async function ambilProduk() {
-      try {
-        const respons = await fetch(URL_PRODUK, { signal: pengendali.signal });
-        if (!respons.ok)
-          throw new Error(`Gagal memuat produk (${respons.status})`);
-
-        setDaftarProduk(await respons.json());
-        setStatus("sukses");
-      } catch (error) {
-        if (error.name === "AbortError") return; // komponen ditutup, abaikan
-        console.error(error);
-        setStatus("gagal");
-      }
-    }
-
-    ambilProduk();
-    return () => pengendali.abort();
-  }, []);
+  const { daftarProduk, loading, error } = useProdukContext();
+  const { daftarToko, errorToko } = useAuthContext();
 
   // "Semua" = tampilkan semua, selain itu cocokkan dengan array kategori produk
   const produkTampil =
     filterBeranda === "Semua"
       ? daftarProduk
       : daftarProduk.filter((produk) =>
-          produk.kategori.includes(filterBeranda),
+          (produk.kategori ?? []).includes(filterBeranda),
         );
 
   return (
@@ -54,17 +30,20 @@ function Beranda() {
       <HeaderToko />
       <FilterBar />
 
-      {status === "memuat" && (
-        <p className="beranda__status">Memuat produk...</p>
+      {loading && <p className="beranda__status">Memuat produk...</p>}
+      {error && (
+        <p className="beranda__status">Produk gagal dimuat: {error}</p>
       )}
-      {status === "gagal" && (
-        <p className="beranda__status">Produk gagal dimuat. Coba lagi nanti.</p>
+      {errorToko && (
+        <p className="beranda__status" role="alert">
+          Informasi toko gagal dimuat: {errorToko}
+        </p>
       )}
-      {status === "sukses" && produkTampil.length === 0 && (
+      {!loading && !error && produkTampil.length === 0 && (
         <p className="beranda__status">Belum ada produk di kategori ini.</p>
       )}
 
-      {status === "sukses" && produkTampil.length > 0 && (
+      {!loading && !error && produkTampil.length > 0 && (
         <div className="list-produk-dijual">
           {produkTampil.map((produk) => (
             <KartuProduk
@@ -73,6 +52,11 @@ function Beranda() {
               nama={produk.nama}
               harga={produk.harga}
               gambar={produk.image?.[0]}
+              namaToko={
+                daftarToko.find(
+                  (toko) => String(toko.id) === String(produk.id_penjual),
+                )?.namaToko
+              }
             />
           ))}
         </div>

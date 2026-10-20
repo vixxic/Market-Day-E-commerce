@@ -2,8 +2,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  margin-top: 16px;
-  margin-bottom: 78px;
+
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
 .beranda__status {

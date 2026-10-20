@@ -1,5 +1,23 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Struktur data aplikasi
+
+- `src/context/AuthContext.jsx` menyediakan daftar toko publik dan state sesi toko. Login belum aktif karena belum ada endpoint autentikasi.
+- `src/context/ProdukContext.jsx` mengelola produk dari MockAPI.
+- `src/context/KeranjangContext.jsx` mengelola keranjang di `localStorage`.
+- `src/context/PesananContext.jsx` mengelola pemesanan sementara lokal dan pesanan dari API.
+- `src/providers/GlobalProvider.jsx` menggabungkan provider aplikasi; `GlobalContext` tetap menyimpan state antarmuka.
+- `src/lib/api/produkApi.js`, `src/lib/api/tokoApi.js`, dan `src/lib/api/pesananApi.js` berisi komunikasi API.
+- `src/lib/keranjang.js` menangani data keranjang, sedangkan `src/lib/pesanan.js` menangani salinan riwayat lokal pembeli.
+
+API toko: `https://6ad62c7ef71f154ac48697fd.mockapi.io/Tokomarketday`. API pesanan: `https://6ad62c7ef71f154ac48697fd.mockapi.io/pesananmarketday`. Produk tetap menggunakan endpoint `/produk` yang telah dikonfigurasi terpisah.
+
+Pesanan baru dikirim ke API pesanan dengan `idCheckout`, `idPesanan`, `id_toko`, identitas pemesan, total, status, `item` berisi rincian produk dan varian, serta `createdAt`. Setiap transaksi mengirim satu pesanan untuk satu toko.
+
+Halaman pengelolaan toko tersedia di `/kelolatoko`. Route Handler di `/api/toko/*` memproses registrasi, login, logout, sesi toko, produk, dan pesanan. Password baru disimpan sebagai hash scrypt; toko lama dengan password teks biasa akan di-hash ulang saat login berhasil. Atur `TOKO_SESSION_SECRET` pada deployment production. MockAPI tetap merupakan API publik untuk keperluan prototipe sekolah; pembatasan kepemilikan diterapkan pada Route Handler aplikasi dan tidak dapat mencegah seseorang memanggil MockAPI langsung.
+
+**Batasan prototipe:** Route Handler menghindari pengiriman password/hash ke antarmuka dan membatasi operasi toko melalui sesi aplikasi. MockAPI tetap publik dan tidak memberikan otorisasi server-side, jadi pengguna masih dapat memanggil endpoint MockAPI langsung. Cocokkan penggunaan dengan kebutuhan prototipe Market Day sekolah dan jangan simpan data sensitif di sana.
+
 ## Getting Started
 
 First, run the development server:
