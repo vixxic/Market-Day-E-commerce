@@ -1,12 +1,15 @@
 .kelola-toko {
-  --kelola-merah: #8d2b2b;
+  --kelola-merah: #832828;
   --kelola-gelap: #521014;
-  --kelola-muda: #fff6f6;
+  --kelola-muda: #fff6f5;
+  --kelola-tombol: #c04040;
+  --kelola-fab: #78121a;
   min-height: 100dvh;
   max-width: 760px;
   margin: 0 auto;
-  padding: 20px 16px 100px;
-  color: #111111;
+  padding: 28px 28px 120px;
+  color: #000000;
+  box-sizing: border-box;
 }
 
 .kelola-toko__memuat {
@@ -14,18 +17,20 @@
   text-align: center;
 }
 
+/* ---------- Header (nama toko) ---------- */
 .kelola-toko__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 4px;
 }
 
 .kelola-toko__brand {
   color: var(--kelola-gelap);
-  font-size: 1.75rem;
-  font-weight: 750;
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.2;
   text-decoration: none;
 }
 
@@ -44,10 +49,13 @@
   text-decoration: none;
 }
 
+/* ---------- Judul / subjudul ---------- */
 .kelola-toko__judul {
-  margin: 0 0 20px;
-  color: var(--kelola-gelap);
-  font-size: 1.65rem;
+  margin: 0 0 36px;
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 .kelola-toko__subjudul {
@@ -56,46 +64,70 @@
   font-size: 1.2rem;
 }
 
+/* ---------- Kartu statistik ---------- */
 .kelola-toko__statistik {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 28px 0 42px;
+  gap: 28px;
+  margin: 0 0 44px;
+}
+
+.toko-stat-enter {
+  display: flex;
+  justify-content: space-between;
+}
+
+.toko-stat-enter svg {
+  color: #521014;
 }
 
 .kelola-toko__stat {
-  min-height: 130px;
-  padding: 18px;
-  border: 2px solid var(--kelola-gelap);
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  min-height: 104px;
+  padding: 12px 22px;
+  border: 1.5px solid var(--kelola-gelap);
+  border-radius: 8px;
   background: var(--kelola-muda);
-  color: inherit;
+  color: #000000;
+  font-size: 0.95rem;
+  line-height: 1.3;
   text-align: left;
   text-decoration: none;
+  box-sizing: border-box;
 }
 
 .kelola-toko__stat strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: var(--kelola-gelap);
-  font-size: 2.5rem;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.1;
 }
 
+/* ---------- Heading "Produkmu" ---------- */
 .kelola-toko__produk-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 28px;
 }
 
 .kelola-toko__tag {
   display: inline-block;
-  padding: 8px 20px;
+  margin: 0;
+  padding: 5px 14px;
   border-radius: 999px;
   background: var(--kelola-merah);
   color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.3;
 }
 
+/* ---------- Daftar produk ---------- */
 .kelola-toko__produk-list,
 .kelola-toko__order-list {
   display: flex;
@@ -105,45 +137,69 @@
 
 .kelola-toko__produk {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 14px;
+  grid-template-columns: 114px minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 18px;
   color: inherit;
   text-decoration: none;
 }
 
+.kelola-toko__foto-link {
+  display: block;
+  width: 114px;
+  height: 114px;
+}
+
 .kelola-toko__foto {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  background: #dedede;
+  display: block;
+  width: 114px;
+  height: 114px;
+  border-radius: 6px;
+  background: #d9d9d9;
   object-fit: cover;
 }
 
+.kelola-toko__produk-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
 .kelola-toko__produk-nama {
-  margin: 0 0 8px;
-  font-size: 1.125rem;
+  margin: 0 0 6px;
+  color: #000000;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.3;
 }
 
 .kelola-toko__harga {
   margin: 0;
   color: var(--kelola-gelap);
+  font-size: 0.85rem;
 }
 
 .kelola-toko__jumlah {
+  align-self: start;
   color: var(--kelola-gelap);
-  font-size: 2.25rem;
-  font-weight: 700;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
+/* ---------- Tombol ---------- */
 .kelola-toko__tombol,
 .kelola-toko__tombol-sekunder,
 .kelola-toko__terima {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 40px;
   padding: 0 18px;
   border: 0;
   border-radius: 999px;
-  background: #c43f3f;
+  background: var(--kelola-tombol);
   color: #ffffff;
   font: inherit;
   cursor: pointer;
@@ -157,27 +213,36 @@
 }
 
 .kelola-toko__produk-aksi {
-  grid-column: 2 / 4;
-  justify-self: start;
+  min-height: 0;
+  margin-top: auto;
+  padding: 6px 18px;
+  font-size: 0.8rem;
+  line-height: 1.3;
 }
 
+/* ---------- Tombol tambah (FAB) ---------- */
 .kelola-toko__tambah {
   position: fixed;
-  right: max(calc((100vw - 760px) / 2 + 20px), 20px);
-  bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  left: max(calc((100vw - 760px) / 2 + 28px), 28px);
+  bottom: max(85px, env(safe-area-inset-bottom, 0px));
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: #78121a;
+  background: var(--kelola-fab);
   color: #ffffff;
-  font-size: 3rem;
+  font-size: 2.1rem;
   line-height: 1;
   text-decoration: none;
-  box-shadow: 0 4px 14px #0002;
 }
 
+.kelola-toko__tambah svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* ---------- Halaman pesanan (tidak berubah) ---------- */
 .kelola-toko__order {
   padding: 16px;
   border-radius: 12px;
@@ -277,13 +342,78 @@
   font-size: 0.85rem;
 }
 
+.kelola-toko__daftar-foto {
+  margin: 0;
+  padding-left: 20px;
+  color: #521014;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.kelola-toko__kategori {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.kelola-toko__kategori legend {
+  margin-bottom: 7px;
+}
+
+.kelola-toko__pilihan-kategori {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kelola-toko__kategori-tag {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #e7b8c9;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #521014;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.kelola-toko__kategori-tag--aktif {
+  border-color: #f4c5d6;
+  background: #fce4ec;
+  color: #521014;
+}
+
+.kelola-toko__kategori-tag:focus-visible {
+  outline: 2px solid var(--kelola-gelap);
+  outline-offset: 2px;
+}
+
+.kelola-toko__kategori-tag:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
 @media (max-width: 520px) {
-  .kelola-toko__produk {
-    grid-template-columns: 96px minmax(0, 1fr) auto;
+  .kelola-toko {
+    padding: 24px 0;
   }
 
-  .kelola-toko__foto {
-    width: 96px;
+  .kelola-toko__statistik {
+    gap: 18px;
+  }
+
+  .kelola-toko__stat {
+    padding: 12px 16px;
+  }
+
+  .kelola-toko__tambah {
+    left: 22px;
   }
 
   .kelola-toko__order-header {
@@ -297,5 +427,175 @@
   .kelola-toko__terima {
     grid-column: 2;
     justify-self: start;
+  }
+}
+
+/* =====================================================
+   Halaman Pesanan diterima / Permintaan pesanan
+   Tempel di AKHIR file CSS kelola-toko supaya menimpa
+   gaya lama (.kelola-toko__order, __order-header, dst).
+   ===================================================== */
+
+/* ---------- Bar atas: panah kembali + judul ---------- */
+.kelola-toko__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin: 0 0 36px;
+}
+
+.kelola-toko__bar-kembali {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kelola-gelap);
+  font-size: 1.6rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.kelola-toko__bar-judul {
+  margin: 0;
+  color: var(--kelola-gelap);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ---------- Daftar & kartu pesanan ---------- */
+.kelola-toko__order-list {
+  gap: 24px;
+}
+
+.kelola-toko__order {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.kelola-toko__order-header {
+  grid-template-columns: 114px minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 18px;
+}
+
+.kelola-toko__order-img {
+  width: 114px;
+  height: 114px;
+  border-radius: 6px;
+  background: #d9d9d9;
+}
+
+.kelola-toko__order-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.kelola-toko__order-info h2 {
+  margin: 0 0 6px;
+  color: #000000;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.kelola-toko__order-info p {
+  margin: 0;
+  color: var(--kelola-gelap);
+  font-size: 0.85rem;
+}
+
+/* tombol "Detail pesanan" menempel di dasar foto */
+.kelola-toko__order-info .kelola-toko__tombol,
+.kelola-toko__order-info .kelola-toko__tombol-sekunder {
+  min-height: 0;
+  margin-top: auto;
+  padding: 6px 18px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+/* tombol "Terima" di kanan atas */
+.kelola-toko__terima {
+  align-self: start;
+  min-height: 0;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.kelola-toko__terima:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.kelola-toko__selesaikan {
+  background: #2f6b45;
+}
+
+/* ---------- Detail pesanan (saat dibuka) ---------- */
+.kelola-toko__varian {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  margin: 24px 0 18px;
+  font-size: 0.8rem;
+}
+
+.kelola-toko__varian p,
+.kelola-toko__varian-item p {
+  margin: 0 0 8px;
+}
+
+.kelola-toko__detail {
+  margin-top: 0;
+  padding: 14px 22px;
+  border-radius: 6px;
+  background: var(--kelola-muda);
+  font-size: 0.8rem;
+}
+
+.kelola-toko__detail p {
+  margin: 0 0 8px;
+}
+
+.kelola-toko__detail p:last-child {
+  margin-bottom: 0;
+}
+
+.kelola-toko__detail-item {
+  padding: 0;
+  border-bottom: 0;
+}
+
+.kelola-toko__kode {
+  font-size: 1rem;
+}
+
+@media (max-width: 520px) {
+  .kelola-toko__order-header {
+    grid-template-columns: 114px minmax(0, 1fr) auto;
+  }
+
+  .kelola-toko__order-img {
+    width: 114px;
+  }
+
+  .kelola-toko__terima {
+    grid-column: auto;
+    justify-self: end;
   }
 }

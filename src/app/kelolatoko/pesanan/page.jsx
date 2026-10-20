@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 
 export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
+  const router = useRouter();
   const [pesanan, setPesanan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,16 +40,44 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   }
 
   async function terimaPesanan(item) {
+    await ubahStatusPesanan(item, "diproses");
+  }
+
+  async function selesaikanPesanan(item) {
+    setIdMemproses(item.id);
+    try {
+      await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
+        method: "DELETE",
+      });
+      setPesanan((daftar) =>
+        daftar.filter(
+          (pesananTersimpan) =>
+            String(pesananTersimpan.id) !== String(item.id),
+        ),
+      );
+      setError("");
+      return true;
+    } catch (galat) {
+      setError(galat.message);
+      return false;
+    } finally {
+      setIdMemproses(null);
+    }
+  }
+
+  async function ubahStatusPesanan(item, status) {
     setIdMemproses(item.id);
     try {
       await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "diproses" }),
+        body: JSON.stringify({ status }),
       });
       await muatPesanan();
+      return true;
     } catch (galat) {
       setError(galat.message);
+      return false;
     } finally {
       setIdMemproses(null);
     }
@@ -61,10 +92,27 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   return (
     <KelolaLayout>
       <main>
-        <h1 className="kelola-toko__judul">
-          {statusHalaman === "permintaan" ? "Permintaan pesanan" : "Pesanan diterima"}
-        </h1>
-        {error && <p className="kelola-toko__galat" role="alert">{error}</p>}
+        <header className="kelola-toko__bar">
+          <button
+            type="button"
+            className="kelola-toko__bar-kembali"
+            onClick={() => router.back()}
+            aria-label="Kembali"
+          >
+            <FiArrowLeft aria-hidden="true" />
+          </button>
+          <h1 className="kelola-toko__bar-judul">
+            {statusHalaman === "permintaan"
+              ? "Permintaan pesanan"
+              : "Pesanan diterima"}
+          </h1>
+        </header>
+
+        {error && (
+          <p className="kelola-toko__galat" role="alert">
+            {error}
+          </p>
+        )}
         {loading && <p>Memuat pesanan...</p>}
         {!loading && !error && ditampilkan.length === 0 && (
           <p className="kelola-toko__kosong">
@@ -80,6 +128,12 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
               pesanan={item}
               onTerima={
                 statusHalaman === "permintaan" ? terimaPesanan : undefined
+              }
+              onSelesaikan={
+                statusHalaman === "diterima" &&
+                item.status === "diproses"
+                  ? selesaikanPesanan
+                  : undefined
               }
               sedangMenerima={String(idMemproses) === String(item.id)}
             />

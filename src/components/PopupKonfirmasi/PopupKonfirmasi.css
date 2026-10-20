@@ -1,0 +1,118 @@
+.popup-konfirmasi__latar {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  animation: popup-konfirmasi-latar 0.15s ease-out;
+}
+
+.popup-konfirmasi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+  padding: 28px 22px 22px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #000000;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  animation: popup-konfirmasi-masuk 0.18s ease-out;
+}
+
+.popup-konfirmasi__ikon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: var(--kelola-muda, #fff6f5);
+  color: var(--kelola-fab, #78121a);
+  font-size: 1.7rem;
+}
+
+.popup-konfirmasi__judul {
+  margin: 0 0 8px;
+  color: var(--kelola-gelap, #521014);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.popup-konfirmasi__pesan {
+  margin: 0 0 24px;
+  color: #444444;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.popup-konfirmasi__aksi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.popup-konfirmasi__tombol {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.popup-konfirmasi__tombol--batal {
+  border: 1px solid var(--kelola-merah, #832828);
+  background: #ffffff;
+  color: var(--kelola-gelap, #521014);
+}
+
+.popup-konfirmasi__tombol--ya {
+  border: 0;
+  background: var(--kelola-tombol, #c04040);
+  color: #ffffff;
+}
+
+.popup-konfirmasi__tombol:focus-visible {
+  outline: 2px solid var(--kelola-gelap, #521014);
+  outline-offset: 2px;
+}
+
+.popup-konfirmasi__tombol:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+@keyframes popup-konfirmasi-latar {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popup-konfirmasi-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup-konfirmasi__latar,
+  .popup-konfirmasi {
+    animation: none;
+  }
+}

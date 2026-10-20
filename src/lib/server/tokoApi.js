@@ -1,9 +1,10 @@
-export const URL_TOKO =
-  "https://6ad62c7ef71f154ac48697fd.mockapi.io/Tokomarketday";
-export const URL_PRODUK =
-  "https://6ab5239024ee9d3caa1c3b25.mockapi.io/produk";
-export const URL_PESANAN =
-  "https://6ad62c7ef71f154ac48697fd.mockapi.io/pesananmarketday";
+import {
+  URL_TOKO,
+  URL_PRODUK,
+  URL_PESANAN,
+} from "@/lib/api/urlConfig";
+
+export { URL_TOKO, URL_PRODUK, URL_PESANAN };
 
 export async function permintaanApi(url, options) {
   const respons = await fetch(url, { cache: "no-store", ...options });

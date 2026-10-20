@@ -44,12 +44,11 @@ export default function PanelBeli({
   const ukuranAwal = ambilUkuranAwal(daftarUkuran);
   const daftarKunci = daftarJenis ?? [KUNCI_TUNGGAL];
 
-  // pesanan = { [jenis]: { ukuran, jumlah } }
-  // - tanpa rasa        : langsung ada satu pesanan
-  // - hanya 1 rasa      : otomatis terpilih
-  // - lebih dari 1 rasa : pembeli memilih sendiri
+  // pesanan = { [jenis]: { [ukuran]: jumlah } }
+  // - tanpa rasa / satu rasa: jenis dan ukuran tengah aktif secara default
+  // - lebih dari satu rasa: pembeli mengaktifkan jenis dan ukuran sendiri
   const [pesanan, setPesanan] = useState(() => {
-    const awal = { ukuran: ukuranAwal, jumlah: 1 };
+    const awal = { [ukuranAwal]: 1 };
     if (!daftarJenis) return { [KUNCI_TUNGGAL]: awal };
     if (daftarJenis.length === 1) return { [daftarJenis[0]]: awal };
     return {};
@@ -73,44 +72,65 @@ export default function PanelBeli({
   }, [terbuka, onTutup]);
 
   function pilihJenis(jenis) {
-    if (daftarJenis.length === 1) return; // satu-satunya jenis, tidak bisa dilepas
     setPesanan((lama) => {
       if (jenis in lama) {
         const { [jenis]: _dihapus, ...sisa } = lama;
         return sisa;
       }
-      return { ...lama, [jenis]: { ukuran: ukuranAwal, jumlah: 1 } };
+      return { ...lama, [jenis]: {} };
     });
   }
 
   function pilihUkuran(kunci, ukuran) {
-    setPesanan((lama) => ({ ...lama, [kunci]: { ...lama[kunci], ukuran } }));
+    setPesanan((lama) => {
+      const ukuranTerpilih = lama[kunci] ?? {};
+      if (ukuran in ukuranTerpilih) {
+        const { [ukuran]: _dihapus, ...sisaUkuran } = ukuranTerpilih;
+        return { ...lama, [kunci]: sisaUkuran };
+      }
+      return {
+        ...lama,
+        [kunci]: { ...ukuranTerpilih, [ukuran]: 1 },
+      };
+    });
   }
 
-  function ubahJumlah(kunci, selisih) {
+  function ubahJumlah(kunci, ukuran, selisih) {
     setPesanan((lama) => {
+      if (selisih < 0 && lama[kunci][ukuran] <= 1) {
+        const { [ukuran]: _dihapus, ...sisaUkuran } = lama[kunci];
+        return { ...lama, [kunci]: sisaUkuran };
+      }
+
       const baru = Math.min(
         JUMLAH_MAKS,
-        Math.max(1, lama[kunci].jumlah + selisih),
+        Math.max(1, lama[kunci][ukuran] + selisih),
       );
-      return { ...lama, [kunci]: { ...lama[kunci], jumlah: baru } };
+      return {
+        ...lama,
+        [kunci]: { ...lama[kunci], [ukuran]: baru },
+      };
     });
   }
 
   const kunciTerpilih = daftarKunci.filter((k) => pesanan[k]);
-  const adaPesanan = kunciTerpilih.length > 0;
+  const adaPesanan = kunciTerpilih.some(
+    (kunci) => Object.keys(pesanan[kunci]).length > 0,
+  );
 
   function susunPesanan() {
-    return kunciTerpilih.map((k) => ({
-      idProduk: produk.id,
-      id_toko: produk.id_penjual,
-      nama: produk.nama,
-      harga: produk.harga,
-      gambar: produk.image?.[0] ?? null,
-      jenis: daftarJenis ? k : null,
-      ukuran: pesanan[k].ukuran,
-      jumlah: pesanan[k].jumlah,
-    }));
+    return kunciTerpilih.flatMap((kunci) =>
+      Object.entries(pesanan[kunci]).map(([ukuran, jumlah]) => ({
+        idProduk: produk.id,
+        id_toko: produk.id_penjual,
+        nama: produk.nama,
+        harga: produk.harga,
+        gambar: produk.image?.[0] ?? null,
+        jenis: daftarJenis ? kunci : null,
+        ukuran,
+        jumlah,
+      })),
+    );
   }
 
   return (
@@ -170,8 +190,8 @@ export default function PanelBeli({
           )}
 
           {kunciTerpilih.map((kunci) => {
-            const { ukuran, jumlah } = pesanan[kunci];
             const label = daftarJenis ? kunci : produk.nama;
+            const ukuranTerpilih = pesanan[kunci];
 
             return (
               <section className="panel-beli__kartu" key={kunci}>
@@ -183,18 +203,19 @@ export default function PanelBeli({
                   <span className="panel-beli__label">Pilih ukuran:</span>
                   <div
                     className="panel-beli__ukuran"
-                    role="radiogroup"
+                    role="group"
                     aria-label={`Ukuran ${label}`}
                   >
                     {daftarUkuran.map((u) => (
                       <button
                         key={u}
                         type="button"
-                        role="radio"
-                        aria-checked={u === ukuran}
+                        aria-pressed={u in ukuranTerpilih}
                         className={
                           "panel-beli__ukuran-pil" +
-                          (u === ukuran ? " panel-beli__ukuran-pil--aktif" : "")
+                          (u in ukuranTerpilih
+                            ? " panel-beli__ukuran-pil--aktif"
+                            : "")
                         }
                         onClick={() => pilihUkuran(kunci, u)}
                       >
@@ -204,32 +225,41 @@ export default function PanelBeli({
                   </div>
                 </div>
 
-                <div className="panel-beli__baris">
-                  <span className="panel-beli__label">Jumlah:</span>
-                  <div className="panel-beli__jumlah">
-                    <button
-                      type="button"
-                      className="panel-beli__tombol-jumlah"
-                      aria-label={`Tambah jumlah ${label}`}
-                      disabled={jumlah >= JUMLAH_MAKS}
-                      onClick={() => ubahJumlah(kunci, 1)}
-                    >
-                      +
-                    </button>
-                    <output className="panel-beli__angka" aria-live="polite">
-                      {jumlah}
-                    </output>
-                    <button
-                      type="button"
-                      className="panel-beli__tombol-jumlah"
-                      aria-label={`Kurangi jumlah ${label}`}
-                      disabled={jumlah <= 1}
-                      onClick={() => ubahJumlah(kunci, -1)}
-                    >
-                      −
-                    </button>
+                {Object.entries(ukuranTerpilih).map(([ukuran, jumlah]) => (
+                  <div className="panel-beli__baris" key={ukuran}>
+                    <span className="panel-beli__label">
+                      Jumlah ukuran {ukuran}:
+                    </span>
+                    <div className="panel-beli__jumlah">
+                      <button
+                        type="button"
+                        className="panel-beli__tombol-jumlah"
+                        aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
+                        disabled={jumlah >= JUMLAH_MAKS}
+                        onClick={() => ubahJumlah(kunci, ukuran, 1)}
+                      >
+                        +
+                      </button>
+                      <output className="panel-beli__angka" aria-live="polite">
+                        {jumlah}
+                      </output>
+                      <button
+                        type="button"
+                        className="panel-beli__tombol-jumlah"
+                        aria-label={`Kurangi jumlah ${label} ukuran ${ukuran}`}
+                        onClick={() => ubahJumlah(kunci, ukuran, -1)}
+                      >
+                        −
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ))}
+
+                {Object.keys(ukuranTerpilih).length === 0 && (
+                  <p className="panel-beli__petunjuk">
+                    Pilih satu atau beberapa ukuran untuk jenis ini.
+                  </p>
+                )}
               </section>
             );
           })}

@@ -31,11 +31,19 @@ export async function POST(request) {
 
     const data = await dataJson(request);
     const nama = typeof data.nama === "string" ? data.nama.trim() : "";
-    const kategori =
-      typeof data.kategori === "string" ? data.kategori.trim() : "";
+    const kategori = Array.isArray(data.kategori)
+      ? [...new Set(
+          data.kategori
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        )]
+      : typeof data.kategori === "string" && data.kategori.trim()
+        ? [data.kategori.trim()]
+        : [];
     const harga = Number(data.harga);
     const image = data.image;
-    if (!nama || !kategori || !Number.isFinite(harga) || harga <= 0) {
+    if (!nama || kategori.length === 0 || !Number.isFinite(harga) || harga <= 0) {
       return Response.json(
         { error: "Nama, harga yang valid, dan kategori wajib diisi." },
         { status: 400 },

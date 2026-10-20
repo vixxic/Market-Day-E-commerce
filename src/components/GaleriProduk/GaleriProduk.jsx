@@ -1,7 +1,7 @@
 "use client";
 
 import "./GaleriProduk.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Foto produk yang bisa digeser. Titik pagination hanya muncul
@@ -13,18 +13,24 @@ import { useRef, useState } from "react";
  */
 export default function GaleriProduk({ gambar = [], nama }) {
   const jalurRef = useRef(null);
+  const indeksAktifRef = useRef(0);
   const [indeksAktif, setIndeksAktif] = useState(0);
+  const [dijeda, setDijeda] = useState(false);
   const banyakFoto = gambar.length > 1;
 
   function saatDigeser() {
     const jalur = jalurRef.current;
     if (!jalur || !jalur.clientWidth) return;
-    setIndeksAktif(Math.round(jalur.scrollLeft / jalur.clientWidth));
+    const indeks = Math.round(jalur.scrollLeft / jalur.clientWidth);
+    indeksAktifRef.current = indeks;
+    setIndeksAktif(indeks);
   }
 
   function keFoto(indeks) {
     const jalur = jalurRef.current;
     if (!jalur) return;
+    indeksAktifRef.current = indeks;
+    setIndeksAktif(indeks);
     const kurangiGerak = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -33,6 +39,28 @@ export default function GaleriProduk({ gambar = [], nama }) {
       behavior: kurangiGerak ? "auto" : "smooth",
     });
   }
+
+  useEffect(() => {
+    if (!banyakFoto || dijeda) return undefined;
+
+    const timer = window.setInterval(() => {
+      const indeksBerikutnya = (indeksAktifRef.current + 1) % gambar.length;
+      const jalur = jalurRef.current;
+      if (!jalur) return;
+
+      indeksAktifRef.current = indeksBerikutnya;
+      setIndeksAktif(indeksBerikutnya);
+      const kurangiGerak = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      jalur.scrollTo({
+        left: indeksBerikutnya * jalur.clientWidth,
+        behavior: kurangiGerak ? "auto" : "smooth",
+      });
+    }, 2000);
+
+    return () => window.clearInterval(timer);
+  }, [banyakFoto, dijeda, gambar.length]);
 
   function saatTombolDitekan(e) {
     if (!banyakFoto) return;
@@ -53,6 +81,14 @@ export default function GaleriProduk({ gambar = [], nama }) {
         className="galeri-produk__jalur"
         onScroll={saatDigeser}
         onKeyDown={saatTombolDitekan}
+        onMouseEnter={() => setDijeda(true)}
+        onMouseLeave={() => setDijeda(false)}
+        onFocus={() => setDijeda(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            setDijeda(false);
+          }
+        }}
         tabIndex={banyakFoto ? 0 : undefined}
         role={banyakFoto ? "group" : undefined}
         aria-roledescription={banyakFoto ? "carousel" : undefined}

@@ -6,15 +6,23 @@ import {
   gambarProduk,
 } from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
+import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
 
 export default function KartuPesananToko({
   pesanan,
   itemTampil = pesanan.item ?? [],
   onTerima,
+  onSelesaikan,
   sedangMenerima,
 }) {
   const [terbuka, setTerbuka] = useState(false);
+  const [popupSelesaiBuka, setPopupSelesaiBuka] = useState(false);
   const itemUtama = itemTampil[0] ?? {};
+
+  async function selesaikanSetelahKonfirmasi() {
+    const berhasil = await onSelesaikan(pesanan);
+    if (berhasil) setPopupSelesaiBuka(false);
+  }
 
   return (
     <article className="kelola-toko__order">
@@ -46,6 +54,16 @@ export default function KartuPesananToko({
             {sedangMenerima ? "Menyimpan..." : "Terima"}
           </button>
         )}
+        {onSelesaikan && (
+          <button
+            type="button"
+            className="kelola-toko__terima kelola-toko__selesaikan"
+            disabled={sedangMenerima}
+            onClick={() => setPopupSelesaiBuka(true)}
+          >
+            {sedangMenerima ? "Menyimpan..." : "Selesai"}
+          </button>
+        )}
       </div>
 
       {terbuka && (
@@ -65,6 +83,15 @@ export default function KartuPesananToko({
           <p>Status: {formatStatusPesanan(pesanan.status)}</p>
         </div>
       )}
+      <PopupKonfirmasi
+        buka={popupSelesaiBuka}
+        judul="Hapus pesanan ini?"
+        pesan="Pesanan akan dihapus permanen dari data toko. Pastikan pesanan sudah diserahkan kepada pembeli."
+        teksKonfirmasi="Ya, hapus"
+        memproses={sedangMenerima}
+        onKonfirmasi={selesaikanSetelahKonfirmasi}
+        onBatal={() => setPopupSelesaiBuka(false)}
+      />
     </article>
   );
 }

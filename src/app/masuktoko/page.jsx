@@ -3,9 +3,8 @@
 import "./masuktoko.css";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/Context/AuthContext";
-
+import DashboardToko from "@/components/KelolaToko/DashboardToko";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 export default function MasukToko() {
@@ -13,8 +12,7 @@ export default function MasukToko() {
   const [password, setPassword] = useState("");
   const [galat, setGalat] = useState({});
   const [sedangMasuk, setSedangMasuk] = useState(false);
-  const router = useRouter();
-  const { masuk: autentikasiMasuk } = useAuthContext();
+  const { masuk: autentikasiMasuk, toko, memuatSesi } = useAuthContext();
 
   async function masuk(e) {
     e.preventDefault();
@@ -28,7 +26,6 @@ export default function MasukToko() {
     setSedangMasuk(true);
     try {
       await autentikasiMasuk(namaToko.trim(), password);
-      router.push("/kelolatoko");
     } catch (error) {
       setPassword("");
       setGalat((sebelumnya) => ({
@@ -38,6 +35,14 @@ export default function MasukToko() {
     } finally {
       setSedangMasuk(false);
     }
+  }
+
+  if (memuatSesi) {
+    return <main className="kelola-toko__memuat">Memeriksa sesi toko...</main>;
+  }
+
+  if (toko) {
+    return <DashboardToko />;
   }
 
   return (

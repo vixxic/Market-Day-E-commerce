@@ -10,7 +10,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - `src/lib/api/produkApi.js`, `src/lib/api/tokoApi.js`, dan `src/lib/api/pesananApi.js` berisi komunikasi API.
 - `src/lib/keranjang.js` menangani data keranjang, sedangkan `src/lib/pesanan.js` menangani salinan riwayat lokal pembeli.
 
-API toko: `https://6ad62c7ef71f154ac48697fd.mockapi.io/Tokomarketday`. API pesanan: `https://6ad62c7ef71f154ac48697fd.mockapi.io/pesananmarketday`. Produk tetap menggunakan endpoint `/produk` yang telah dikonfigurasi terpisah.
+URL API toko, produk, dan pesanan dikonfigurasi melalui `NEXT_PUBLIC_API_TOKO_URL`, `NEXT_PUBLIC_API_PRODUK_URL`, dan `NEXT_PUBLIC_API_PESANAN_URL` di `.env.local`. Atur ketiga variabel tersebut sebelum menjalankan aplikasi; karena digunakan oleh client browser, nilainya bukan tempat untuk menyimpan rahasia atau token.
+
+Upload foto produk menggunakan bucket Supabase Storage bernama `produk` (dapat diubah lewat `SUPABASE_STORAGE_BUCKET`). Buat bucket tersebut sebagai **public** agar URL foto bisa ditampilkan, lalu isi `SUPABASE_SERVICE_ROLE_KEY` di `.env.local` dengan service-role key dari Supabase. Key ini hanya digunakan di Route Handler server dan tidak boleh diberi prefix `NEXT_PUBLIC_`, dibagikan, atau dimasukkan ke Git.
 
 Pesanan baru dikirim ke API pesanan dengan `idCheckout`, `idPesanan`, `id_toko`, identitas pemesan, total, status, `item` berisi rincian produk dan varian, serta `createdAt`. Setiap transaksi mengirim satu pesanan untuk satu toko.
 

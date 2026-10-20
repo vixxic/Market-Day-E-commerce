@@ -1,5 +1,4 @@
-const URL_PESANAN =
-  "https://6ad62c7ef71f154ac48697fd.mockapi.io/pesananmarketday";
+import { URL_PESANAN } from "@/lib/api/urlConfig";
 
 async function permintaanPesanan(url, options) {
   const respons = await fetch(url, options);
@@ -32,6 +31,25 @@ export function buatPesanan(data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
+}
+
+export async function ambilStatusPesanan(idPesanan) {
+  const response = await fetch(
+    `/api/pesanan/${encodeURIComponent(idPesanan)}`,
+    { cache: "no-store" },
+  );
+  const data = response.status === 204 ? null : await response.json();
+
+  if (!response.ok) {
+    throw new Error(data?.error ?? "Gagal memeriksa status pesanan.");
+  }
+  if (
+    data?.idPesanan !== idPesanan ||
+    typeof data.status !== "string"
+  ) {
+    throw new Error("Format status pesanan dari API tidak valid.");
+  }
+  return data;
 }
 
 export function ubahStatusPesanan(id, status) {

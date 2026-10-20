@@ -12,10 +12,12 @@ import {
 import { useAuthContext } from "@/Context/AuthContext";
 import {
   buatPesanan as kirimPesanan,
+  ambilStatusPesanan as ambilStatusPesananApi,
 } from "@/lib/api/pesananApi";
 import {
   buatPesanan as simpanPesananLokal,
   hapusPesanan as hapusPesananLokal,
+  ubahStatusPesanan as ubahStatusPesananLokal,
   parseDaftarPesananSnapshot,
   subscribePesanan,
 } from "@/lib/pesanan";
@@ -99,6 +101,7 @@ function susunDataPesanan(data, namaPenerima, nomorPemesan) {
   return {
     idCheckout: buatIdCheckout(),
     idPesanan: data.idPesanan,
+    kodeKlaim: data.kodeKlaim,
     id_toko: idToko,
     namaPenerima,
     nomorPemesan,
@@ -167,6 +170,54 @@ export function PesananProvider({ children }) {
     () => parseDaftarPesananSnapshot(snapshotLokal),
     [snapshotLokal],
   );
+
+  useEffect(() => {
+    if (idTokoAktif || daftarLokal.length === 0) return undefined;
+
+    let aktif = true;
+    let timer;
+
+    async function sinkronkanStatus() {
+      const menunggu = daftarLokal.filter(
+        (pesanan) => pesanan.status === "menunggu_konfirmasi",
+      );
+
+      if (menunggu.length > 0) {
+        await Promise.all(
+          menunggu.map(async (pesanan) => {
+            try {
+              const statusServer = await ambilStatusPesananApi(
+                pesanan.idPesanan,
+              );
+              if (
+                aktif &&
+                statusServer.status === "diproses" &&
+                statusServer.idPesanan === pesanan.idPesanan
+              ) {
+                ubahStatusPesananLokal(pesanan.idPesanan, "diproses");
+              }
+            } catch (galat) {
+              if (aktif) {
+                console.error(
+                  `Gagal menyinkronkan status pesanan ${pesanan.idPesanan}.`,
+                  galat,
+                );
+              }
+            }
+          }),
+        );
+      }
+
+      if (aktif) timer = window.setTimeout(sinkronkanStatus, 5000);
+    }
+
+    sinkronkanStatus();
+    return () => {
+      aktif = false;
+      window.clearTimeout(timer);
+    };
+  }, [idTokoAktif, daftarLokal]);
+
   const pesananAktif = useMemo(
     () => parsePemesanan(snapshotPemesanan),
     [snapshotPemesanan],

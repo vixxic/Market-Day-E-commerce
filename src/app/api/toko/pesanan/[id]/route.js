@@ -25,10 +25,9 @@ export async function PATCH(request, { params }) {
     }
 
     const { status } = await dataJson(request);
-    if (
-      status !== "diproses" ||
-      pesanan.status !== "menunggu_konfirmasi"
-    ) {
+    const transisiValid =
+      status === "diproses" && pesanan.status === "menunggu_konfirmasi";
+    if (!transisiValid) {
       return Response.json(
         { error: "Status pesanan tidak dapat diubah ke status tersebut." },
         { status: 400 },
@@ -44,6 +43,39 @@ export async function PATCH(request, { params }) {
       },
     );
     return Response.json(diperbarui);
+  } catch (error) {
+    return responsGagal(error);
+  }
+}
+
+export async function DELETE(request, { params }) {
+  try {
+    const toko = bacaSesiToko(request);
+    if (!toko) {
+      return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const daftarToko = await permintaanApi(
+      `${URL_PESANAN}?id_toko=${encodeURIComponent(toko.id)}`,
+    );
+    const pesanan = Array.isArray(daftarToko)
+      ? daftarToko.find((item) => String(item.id) === String(id))
+      : null;
+    if (!pesanan || String(pesanan.id_toko) !== toko.id) {
+      return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
+    }
+    if (pesanan.status !== "diproses") {
+      return Response.json(
+        { error: "Hanya pesanan yang sedang diproses dapat dihapus." },
+        { status: 400 },
+      );
+    }
+
+    await permintaanApi(`${URL_PESANAN}/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    return new Response(null, { status: 204 });
   } catch (error) {
     return responsGagal(error);
   }

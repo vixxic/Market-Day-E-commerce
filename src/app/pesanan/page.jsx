@@ -12,7 +12,7 @@ import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 // status pesanan -> teks & warna label
 const STATUS = {
   menunggu_konfirmasi: { label: "Menunggu Konfirmasi", varian: "menunggu" },
-  diproses: { label: "Diproses", varian: "menunggu" },
+  diproses: { label: "Sudah diterima", varian: "terverifikasi" },
   selesai: { label: "Selesai", varian: "terverifikasi" },
   terverifikasi: { label: "Terverifikasi", varian: "terverifikasi" },
   ditolak: { label: "Ditolak", varian: "ditolak" },

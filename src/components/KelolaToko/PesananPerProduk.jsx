@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
@@ -46,16 +48,44 @@ export default function PesananPerProduk({ id }) {
   }
 
   async function terimaPesanan(item) {
+    await ubahStatusPesanan(item, "diproses");
+  }
+
+  async function selesaikanPesanan(item) {
+    setIdMemproses(item.id);
+    try {
+      await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
+        method: "DELETE",
+      });
+      setPesanan((daftar) =>
+        daftar.filter(
+          (pesananTersimpan) =>
+            String(pesananTersimpan.id) !== String(item.id),
+        ),
+      );
+      setError("");
+      return true;
+    } catch (galat) {
+      setError(galat.message);
+      return false;
+    } finally {
+      setIdMemproses(null);
+    }
+  }
+
+  async function ubahStatusPesanan(item, status) {
     setIdMemproses(item.id);
     try {
       await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "diproses" }),
+        body: JSON.stringify({ status }),
       });
       await muat();
+      return true;
     } catch (galat) {
       setError(galat.message);
+      return false;
     } finally {
       setIdMemproses(null);
     }
@@ -71,9 +101,18 @@ export default function PesananPerProduk({ id }) {
   return (
     <KelolaLayout>
       <main>
-        <h1 className="kelola-toko__judul">
-          Pesanan produk{produk ? `: ${produk.nama}` : ""}
-        </h1>
+        <header className="kelola-toko__bar">
+          <Link
+            className="kelola-toko__bar-kembali"
+            href="/kelolatoko"
+            aria-label="Kembali ke kelola toko"
+          >
+            <FiArrowLeft aria-hidden="true" />
+          </Link>
+          <h1 className="kelola-toko__bar-judul">
+            Pesanan produk{produk ? `: ${produk.nama}` : ""}
+          </h1>
+        </header>
         {error && (
           <p className="kelola-toko__galat" role="alert">
             {error}
@@ -92,7 +131,12 @@ export default function PesananPerProduk({ id }) {
               pesanan={order}
               itemTampil={itemTampil}
               onTerima={
-                order.status === "menunggu_konfirmasi" ? terimaPesanan : undefined
+                order.status === "menunggu_konfirmasi"
+                  ? terimaPesanan
+                  : undefined
+              }
+              onSelesaikan={
+                order.status === "diproses" ? selesaikanPesanan : undefined
               }
               sedangMenerima={String(idMemproses) === String(order.id)}
             />

@@ -1,4 +1,4 @@
-const URL_PRODUK = "https://6ab5239024ee9d3caa1c3b25.mockapi.io/produk";
+import { URL_PRODUK } from "@/lib/api/urlConfig";
 
 async function permintaanProduk(url, options) {
   const respons = await fetch(url, options);

@@ -5,11 +5,10 @@ import {
   scryptSync,
   timingSafeEqual,
 } from "node:crypto";
+import { URL_TOKO } from "@/lib/api/urlConfig";
 
 const COOKIE_NAME = "marketday-toko";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
-const URL_TOKO =
-  "https://6ad62c7ef71f154ac48697fd.mockapi.io/Tokomarketday";
 
 function ambilSessionSecret() {
   if (!process.env.TOKO_SESSION_SECRET && process.env.NODE_ENV === "production") {

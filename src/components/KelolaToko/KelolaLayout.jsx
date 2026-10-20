@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useAuthContext } from "@/Context/AuthContext";
+import { MdLogout } from "react-icons/md";
 
 export default function KelolaLayout({ children }) {
   const { toko, memuatSesi, keluar } = useAuthContext();
@@ -18,6 +19,7 @@ export default function KelolaLayout({ children }) {
   }, [memuatSesi, toko, router]);
 
   async function logout() {
+    setErrorKeluar("");
     try {
       await keluar();
       router.replace("/masuktoko");
@@ -32,27 +34,27 @@ export default function KelolaLayout({ children }) {
 
   return (
     <div className="kelola-toko">
-      <header className="kelola-toko__header">
-        <Link className="kelola-toko__brand" href="/kelolatoko">
-          {toko.namaToko}
-        </Link>
-        <button
-          type="button"
-          className="kelola-toko__keluar"
-          onClick={logout}
-        >
-          Keluar
-        </button>
-      </header>
-      {pathname !== "/kelolatoko" && (
-        <Link className="kelola-toko__kembali" href="/kelolatoko">
-          ← Kembali ke kelola toko
-        </Link>
-      )}
-      {errorKeluar && (
-        <p className="kelola-toko__galat" role="alert">
-          {errorKeluar}
-        </p>
+      {(pathname === "/kelolatoko" || pathname === "/masuktoko") && (
+        <>
+          <header className="kelola-toko__header">
+            <Link className="kelola-toko__brand" href="/kelolatoko">
+              {toko.namaToko}
+            </Link>
+            <button
+              type="button"
+              className="kelola-toko__keluar"
+              onClick={logout}
+              aria-label="Keluar dari toko"
+            >
+              <MdLogout size={23} />
+            </button>
+          </header>
+          {errorKeluar && (
+            <p className="kelola-toko__galat" role="alert">
+              {errorKeluar}
+            </p>
+          )}
+        </>
       )}
       {children}
     </div>
