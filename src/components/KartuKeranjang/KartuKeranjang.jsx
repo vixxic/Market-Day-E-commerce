@@ -60,7 +60,7 @@ export default function KartuKeranjang({
               key={`${v.jenis ?? ""}-${v.ukuran}`}
             >
               <span className="kartu-keranjang__label">
-                {[v.jenis, v.ukuran]
+                {[v.jenis, v.ukuran, v.jumlah]
                   .filter((bagian) => bagian !== null && bagian !== undefined)
                   .join(", ")}
               </span>

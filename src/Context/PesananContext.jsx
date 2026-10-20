@@ -88,6 +88,7 @@ function susunDataPesanan(data, namaPenerima, nomorPemesan) {
     id_produk: item.idProduk,
     nama: item.nama,
     harga: item.harga,
+    gambar: item.gambar ?? null,
     jumlah: item.jumlah,
     subtotal: item.harga * item.jumlah,
     varian: {
@@ -192,7 +193,7 @@ export function PesananProvider({ children }) {
               if (
                 aktif &&
                 statusServer.status === "diproses" &&
-                statusServer.idPesanan === pesanan.idPesanan
+                String(statusServer.idPesanan) === String(pesanan.idPesanan)
               ) {
                 ubahStatusPesananLokal(pesanan.idPesanan, "diproses");
               }

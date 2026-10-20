@@ -60,7 +60,7 @@
   flex-direction: column;
   gap: 24px;
   margin: 0;
-  padding: 0;
+  padding: 0 16px;
   list-style: none;
 }
 
@@ -94,7 +94,8 @@
 
 .kartu-pesanan {
   --pesanan-merah-sedang: #bc3f3d;
-  --pesanan-latar-muda: #fff6f6;
+  --pesanan-merah-gelap: #521014;
+  --pesanan-latar-muda: #fff6f5;
   --pesanan-gambar: clamp(96px, 28vw, 150px);
 
   width: 100%;
@@ -210,7 +211,8 @@
   outline-offset: 2px;
 }
 
-/* --- rincian (animasi tinggi 0 -> otomatis) --- */
+/* ===== Rincian (animasi tinggi 0 -> otomatis) ===== */
+
 .kartu-pesanan__rincian {
   display: grid;
   grid-template-rows: 0fr;
@@ -226,40 +228,104 @@
   transition-delay: 0s;
 }
 
+/* pembungkus animasi: tanpa padding / margin supaya bisa menutup penuh */
 .kartu-pesanan__rincian-isi {
   min-height: 0;
   overflow: hidden;
 }
 
-.kartu-pesanan__varian-daftar {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 16px 12px;
-  padding-top: 20px;
+/* kotak pink */
+.kartu-pesanan__rincian-kotak {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  background-color: var(--pesanan-latar-muda);
+  color: #333333;
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 
-.kartu-pesanan__varian p,
-.kartu-pesanan__kotak p {
-  margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.4;
-  color: #000000;
+/* label bagian: "Produk dipesan" & "Data pesanan" */
+.kartu-pesanan__label {
+  margin: 0 0 14px;
+  color: var(--warna-merah-utama);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --- daftar produk --- */
+.kartu-pesanan__varian-daftar {
+  display: flex;
+  flex-direction: column;
+}
+
+.kartu-pesanan__varian {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ecd6d6;
+}
+
+.kartu-pesanan__varian:first-child {
+  padding-top: 0;
+}
+
+/* produk terakhir: tanpa garis (pemisah ada di .kartu-pesanan__kotak) */
+.kartu-pesanan__varian:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+/* nama produk = level paling atas */
+.kartu-pesanan__varian-nama {
+  flex: 0 0 100%;
+  margin-bottom: 2px;
+  color: var(--pesanan-merah-gelap);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
-
-.kartu-pesanan__varian p + p {
-  margin-top: 10px;
+/* jenis, ukuran, jumlah = satu baris ringkas */
+.kartu-pesanan__varian p {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #555555;
+  overflow-wrap: anywhere;
 }
 
+/* subtotal = baris sendiri, lebih tegas */
+.kartu-pesanan__varian p:last-child {
+  flex: 0 0 100%;
+  margin-top: 4px;
+  color: #333333;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* --- data pesanan --- */
 .kartu-pesanan__kotak {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-  padding: 16px 20px;
-  border-radius: 10px;
-  background-color: var(--pesanan-latar-muda);
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e6cccc;
+}
+
+.kartu-pesanan__kotak .kartu-pesanan__label {
+  margin-bottom: 6px;
+}
+
+.kartu-pesanan__kotak p {
+  margin: 0;
+  color: #444444;
+  overflow-wrap: anywhere;
 }
 
 .kartu-pesanan__kode {
@@ -274,6 +340,7 @@
 
   .pesanan__daftar {
     gap: 32px;
+    padding: 0;
   }
 }
 

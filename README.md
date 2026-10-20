@@ -12,7 +12,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 URL API toko, produk, dan pesanan dikonfigurasi melalui `NEXT_PUBLIC_API_TOKO_URL`, `NEXT_PUBLIC_API_PRODUK_URL`, dan `NEXT_PUBLIC_API_PESANAN_URL` di `.env.local`. Atur ketiga variabel tersebut sebelum menjalankan aplikasi; karena digunakan oleh client browser, nilainya bukan tempat untuk menyimpan rahasia atau token.
 
-Upload foto produk menggunakan bucket Supabase Storage bernama `produk` (dapat diubah lewat `SUPABASE_STORAGE_BUCKET`). Buat bucket tersebut sebagai **public** agar URL foto bisa ditampilkan, lalu isi `SUPABASE_SERVICE_ROLE_KEY` di `.env.local` dengan service-role key dari Supabase. Key ini hanya digunakan di Route Handler server dan tidak boleh diberi prefix `NEXT_PUBLIC_`, dibagikan, atau dimasukkan ke Git.
+Upload foto produk memerlukan tiga variabel Supabase Storage berikut di `.env.local`:
+
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_STORAGE_BUCKET=produk
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key-dari-supabase>
+```
+
+Ambil URL project dan service-role key dari dashboard project Supabase (Project Settings → API / API Keys). Buat bucket dengan nama yang sama seperti `SUPABASE_STORAGE_BUCKET` dan atur sebagai **public** agar URL foto dapat ditampilkan. Ganti nilai contoh dengan konfigurasi project Anda, jangan membagikan service-role key, dan jangan pernah memberi key tersebut prefix `NEXT_PUBLIC_` karena hanya boleh digunakan Route Handler server. Setelah mengubah `.env.local`, mulai ulang server Next.js. Endpoint unggah akan menyebutkan nama variabel yang belum diatur jika konfigurasinya masih kurang.
 
 Pesanan baru dikirim ke API pesanan dengan `idCheckout`, `idPesanan`, `id_toko`, identitas pemesan, total, status, `item` berisi rincian produk dan varian, serta `createdAt`. Setiap transaksi mengirim satu pesanan untuk satu toko.
 

@@ -11,6 +11,7 @@ import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
 export default function KartuPesananToko({
   pesanan,
   itemTampil = pesanan.item ?? [],
+  gambarFallback,
   onTerima,
   onSelesaikan,
   sedangMenerima,
@@ -29,7 +30,10 @@ export default function KartuPesananToko({
       <div className="kelola-toko__order-header">
         <img
           className="kelola-toko__order-img"
-          src={gambarProduk(itemUtama)}
+          src={gambarProduk({
+            ...itemUtama,
+            gambar: itemUtama.gambar ?? gambarFallback,
+          })}
           alt={itemUtama.nama ?? "Produk pesanan"}
         />
         <div className="kelola-toko__order-info">

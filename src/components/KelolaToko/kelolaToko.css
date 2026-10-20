@@ -4,12 +4,13 @@
   --kelola-muda: #fff6f5;
   --kelola-tombol: #c04040;
   --kelola-fab: #78121a;
-  min-height: 100dvh;
+
+  box-sizing: border-box;
   max-width: 760px;
+  min-height: 100dvh;
   margin: 0 auto;
   padding: 28px 28px 120px;
   color: #000000;
-  box-sizing: border-box;
 }
 
 .kelola-toko__memuat {
@@ -17,7 +18,6 @@
   text-align: center;
 }
 
-/* ---------- Header (nama toko) ---------- */
 .kelola-toko__header {
   display: flex;
   align-items: center;
@@ -34,8 +34,7 @@
   text-decoration: none;
 }
 
-.kelola-toko__keluar,
-.kelola-toko__kembali {
+.kelola-toko__keluar {
   border: 0;
   background: transparent;
   color: var(--kelola-gelap);
@@ -43,13 +42,6 @@
   cursor: pointer;
 }
 
-.kelola-toko__kembali {
-  display: inline-block;
-  margin: 0 0 20px;
-  text-decoration: none;
-}
-
-/* ---------- Judul / subjudul ---------- */
 .kelola-toko__judul {
   margin: 0 0 36px;
   color: #000000;
@@ -58,13 +50,6 @@
   line-height: 1.4;
 }
 
-.kelola-toko__subjudul {
-  margin: 0 0 18px;
-  color: var(--kelola-gelap);
-  font-size: 1.2rem;
-}
-
-/* ---------- Kartu statistik ---------- */
 .kelola-toko__statistik {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -78,10 +63,11 @@
 }
 
 .toko-stat-enter svg {
-  color: #521014;
+  color: var(--kelola-gelap);
 }
 
 .kelola-toko__stat {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -95,7 +81,6 @@
   line-height: 1.3;
   text-align: left;
   text-decoration: none;
-  box-sizing: border-box;
 }
 
 .kelola-toko__stat strong {
@@ -107,7 +92,6 @@
   line-height: 1.1;
 }
 
-/* ---------- Heading "Produkmu" ---------- */
 .kelola-toko__produk-heading {
   display: flex;
   align-items: center;
@@ -127,7 +111,6 @@
   line-height: 1.3;
 }
 
-/* ---------- Daftar produk ---------- */
 .kelola-toko__produk-list,
 .kelola-toko__order-list {
   display: flex;
@@ -188,9 +171,7 @@
   line-height: 1;
 }
 
-/* ---------- Tombol ---------- */
 .kelola-toko__tombol,
-.kelola-toko__tombol-sekunder,
 .kelola-toko__terima {
   display: inline-flex;
   align-items: center;
@@ -206,13 +187,8 @@
   text-decoration: none;
 }
 
-.kelola-toko__tombol-sekunder {
-  background: #ffffff;
-  border: 1px solid var(--kelola-merah);
-  color: var(--kelola-gelap);
-}
-
-.kelola-toko__produk-aksi {
+.kelola-toko__produk-aksi,
+.kelola-toko__order-info .kelola-toko__tombol {
   min-height: 0;
   margin-top: auto;
   padding: 6px 18px;
@@ -220,11 +196,10 @@
   line-height: 1.3;
 }
 
-/* ---------- Tombol tambah (FAB) ---------- */
 .kelola-toko__tambah {
   position: fixed;
-  left: max(calc((100vw - 760px) / 2 + 28px), 28px);
   bottom: max(85px, env(safe-area-inset-bottom, 0px));
+  left: max(calc((100vw - 760px) / 2 + 28px), 28px);
   display: grid;
   place-items: center;
   width: 52px;
@@ -242,58 +217,196 @@
   height: 1em;
 }
 
-/* ---------- Halaman pesanan (tidak berubah) ---------- */
+.kelola-toko__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin: 0 0 36px;
+}
+
+.kelola-toko__bar-kembali {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kelola-gelap);
+  font-size: 1.6rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.kelola-toko__bar-kembali:focus-visible {
+  outline: 2px solid var(--kelola-gelap);
+  outline-offset: 2px;
+}
+
+.kelola-toko__bar-judul {
+  margin: 0;
+  color: var(--kelola-gelap);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.kelola-toko__order-list {
+  gap: 24px;
+}
+
 .kelola-toko__order {
-  padding: 16px;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 2px 12px #00000012;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .kelola-toko__order-header {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 14px;
+  grid-template-columns: 114px minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 18px;
 }
 
 .kelola-toko__order-img {
-  width: 96px;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  background: #dedede;
+  width: 114px;
+  height: 114px;
+  border-radius: 6px;
+  background: #d9d9d9;
   object-fit: cover;
+}
+
+.kelola-toko__order-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .kelola-toko__order-info h2 {
   margin: 0 0 6px;
-  font-size: 1.1rem;
-  font-weight: 500;
+  color: #000000;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.3;
 }
 
 .kelola-toko__order-info p {
-  margin: 0 0 12px;
+  margin: 0;
   color: var(--kelola-gelap);
+  font-size: 0.85rem;
+}
+
+.kelola-toko__terima {
+  align-self: start;
+  min-height: 0;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.kelola-toko__terima:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.kelola-toko__selesaikan {
+  background: #2f6b45;
 }
 
 .kelola-toko__detail {
   margin-top: 12px;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 14px 22px;
+  border-radius: 6px;
   background: var(--kelola-muda);
+  color: #333333;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.kelola-toko__detail-item:first-child::before,
+.kelola-toko__detail-item + p::before {
+  display: block;
+  flex: 0 0 100%;
+  margin-bottom: 10px;
+  color: var(--kelola-merah);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kelola-toko__detail-item:first-child::before {
+  margin-bottom: 14px;
+  content: "Produk dipesan";
+}
+
+.kelola-toko__detail-item + p::before {
+  content: "Data pesanan";
 }
 
 .kelola-toko__detail-item {
-  padding: 8px 0;
-  border-bottom: 1px solid #eadada;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ecd6d6;
 }
 
-.kelola-toko__detail-item:last-child {
+.kelola-toko__detail-item:first-child {
+  padding-top: 0;
+}
+
+.kelola-toko__detail-item strong {
+  flex: 0 0 100%;
+  margin-bottom: 2px;
+  color: var(--kelola-gelap);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.kelola-toko__detail-item p {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #555555;
+}
+
+.kelola-toko__detail-item p:last-child {
+  flex: 0 0 100%;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.kelola-toko__detail-item:has(+ p) {
+  padding-bottom: 0;
   border-bottom: 0;
 }
 
-.kelola-toko__detail p {
-  margin: 4px 0;
+.kelola-toko__detail-item + p {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #dfbcbc;
+}
+
+.kelola-toko__detail > p {
+  margin: 0 0 6px;
+  color: #444444;
+}
+
+.kelola-toko__detail > p:last-child {
+  margin-bottom: 0;
 }
 
 .kelola-toko__galat,
@@ -320,6 +433,7 @@
 .kelola-toko__bidang input,
 .kelola-toko__bidang textarea,
 .kelola-toko__bidang select {
+  box-sizing: border-box;
   width: 100%;
   min-height: 46px;
   padding: 10px 12px;
@@ -328,7 +442,6 @@
   background: #ffffff;
   color: #111111;
   font: inherit;
-  box-sizing: border-box;
 }
 
 .kelola-toko__bidang textarea {
@@ -345,7 +458,7 @@
 .kelola-toko__daftar-foto {
   margin: 0;
   padding-left: 20px;
-  color: #521014;
+  color: var(--kelola-gelap);
   font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
@@ -373,7 +486,7 @@
   border: 1px solid #e7b8c9;
   border-radius: 999px;
   background: #ffffff;
-  color: #521014;
+  color: var(--kelola-gelap);
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
@@ -386,7 +499,7 @@
 .kelola-toko__kategori-tag--aktif {
   border-color: #f4c5d6;
   background: #fce4ec;
-  color: #521014;
+  color: var(--kelola-gelap);
 }
 
 .kelola-toko__kategori-tag:focus-visible {
@@ -416,186 +529,7 @@
     left: 22px;
   }
 
-  .kelola-toko__order-header {
-    grid-template-columns: 76px minmax(0, 1fr);
-  }
-
-  .kelola-toko__order-img {
-    width: 76px;
-  }
-
   .kelola-toko__terima {
-    grid-column: 2;
-    justify-self: start;
-  }
-}
-
-/* =====================================================
-   Halaman Pesanan diterima / Permintaan pesanan
-   Tempel di AKHIR file CSS kelola-toko supaya menimpa
-   gaya lama (.kelola-toko__order, __order-header, dst).
-   ===================================================== */
-
-/* ---------- Bar atas: panah kembali + judul ---------- */
-.kelola-toko__bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  margin: 0 0 36px;
-}
-
-.kelola-toko__bar-kembali {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--kelola-gelap);
-  font-size: 1.6rem;
-  cursor: pointer;
-  transform: translateY(-50%);
-}
-
-.kelola-toko__bar-judul {
-  margin: 0;
-  color: var(--kelola-gelap);
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-/* ---------- Daftar & kartu pesanan ---------- */
-.kelola-toko__order-list {
-  gap: 24px;
-}
-
-.kelola-toko__order {
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.kelola-toko__order-header {
-  grid-template-columns: 114px minmax(0, 1fr) auto;
-  align-items: stretch;
-  gap: 18px;
-}
-
-.kelola-toko__order-img {
-  width: 114px;
-  height: 114px;
-  border-radius: 6px;
-  background: #d9d9d9;
-}
-
-.kelola-toko__order-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-
-.kelola-toko__order-info h2 {
-  margin: 0 0 6px;
-  color: #000000;
-  font-size: 1.05rem;
-  font-weight: 400;
-  line-height: 1.3;
-}
-
-.kelola-toko__order-info p {
-  margin: 0;
-  color: var(--kelola-gelap);
-  font-size: 0.85rem;
-}
-
-/* tombol "Detail pesanan" menempel di dasar foto */
-.kelola-toko__order-info .kelola-toko__tombol,
-.kelola-toko__order-info .kelola-toko__tombol-sekunder {
-  min-height: 0;
-  margin-top: auto;
-  padding: 6px 18px;
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-
-/* tombol "Terima" di kanan atas */
-.kelola-toko__terima {
-  align-self: start;
-  min-height: 0;
-  padding: 5px 14px;
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-
-.kelola-toko__terima:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.kelola-toko__selesaikan {
-  background: #2f6b45;
-}
-
-/* ---------- Detail pesanan (saat dibuka) ---------- */
-.kelola-toko__varian {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 40px;
-  margin: 24px 0 18px;
-  font-size: 0.8rem;
-}
-
-.kelola-toko__varian p,
-.kelola-toko__varian-item p {
-  margin: 0 0 8px;
-}
-
-.kelola-toko__detail {
-  margin-top: 0;
-  padding: 14px 22px;
-  border-radius: 6px;
-  background: var(--kelola-muda);
-  font-size: 0.8rem;
-}
-
-.kelola-toko__detail p {
-  margin: 0 0 8px;
-}
-
-.kelola-toko__detail p:last-child {
-  margin-bottom: 0;
-}
-
-.kelola-toko__detail-item {
-  padding: 0;
-  border-bottom: 0;
-}
-
-.kelola-toko__kode {
-  font-size: 1rem;
-}
-
-@media (max-width: 520px) {
-  .kelola-toko__order-header {
-    grid-template-columns: 114px minmax(0, 1fr) auto;
-  }
-
-  .kelola-toko__order-img {
-    width: 114px;
-  }
-
-  .kelola-toko__terima {
-    grid-column: auto;
     justify-self: end;
   }
 }

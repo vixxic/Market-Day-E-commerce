@@ -5,6 +5,7 @@ import { useId, useState } from "react";
 import Link from "next/link";
 import { usePesananContext } from "@/Context/PesananContext";
 import { useAuthContext } from "@/Context/AuthContext";
+import { formatHarga } from "@/lib/formatHarga";
 
 // components
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
@@ -80,30 +81,38 @@ function KartuPesanan({ pesanan }) {
         }
       >
         <div className="kartu-pesanan__rincian-isi">
-          <div className="kartu-pesanan__varian-daftar">
-            {pesanan.item.map((b, i) => (
-              <div
-                className="kartu-pesanan__varian"
-                key={`${b.jenis}-${b.ukuran}-${i}`}
-              >
-                {namaProduk.length > 1 && <p>Produk: {b.nama}</p>}
-                {b.jenis && <p>Jenis Produk: {b.jenis}</p>}
-                <p>Ukuran: {b.ukuran}</p>
-                <p>Jumlah: {b.jumlah}</p>
-              </div>
-            ))}
-          </div>
+          <div className="kartu-pesanan__rincian-kotak">
+            <h3 className="kartu-pesanan__label">Produk dipesan</h3>
 
-          <div className="kartu-pesanan__kotak">
-            <p>Nama Pemesan: {pesanan.namaPenerima || "-"}</p>
-            <p>Nomor Pemesan: {pesanan.nomorPemesan || "-"}</p>
-            <p>Id Pesanan: {pesanan.idPesanan ?? pesanan.id ?? "-"}</p>
-            <p>
-              Code klaim:{" "}
-              <span className="kartu-pesanan__kode">
-                {pesanan.kodeKlaim ?? "-"}
-              </span>
-            </p>
+            <div className="kartu-pesanan__varian-daftar">
+              {pesanan.item.map((b, i) => (
+                <div
+                  className="kartu-pesanan__varian"
+                  key={`${b.jenis}-${b.ukuran}-${i}`}
+                >
+                  <strong className="kartu-pesanan__varian-nama">
+                    {b.nama}
+                  </strong>
+                  <p>Jenis Produk: {b.jenis || "-"}</p>
+                  <p>Ukuran: {b.ukuran || "-"}</p>
+                  <p>Jumlah: {b.jumlah}</p>
+                  <p>Subtotal: {formatHarga(b.harga * b.jumlah)}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="kartu-pesanan__kotak">
+              <h3 className="kartu-pesanan__label">Data pesanan</h3>
+              <p>Nama Pemesan: {pesanan.namaPenerima || "-"}</p>
+              <p>Nomor Pemesan: {pesanan.nomorPemesan || "-"}</p>
+              <p>Id Pesanan: {pesanan.idPesanan ?? pesanan.id ?? "-"}</p>
+              <p>
+                Code klaim:{" "}
+                <span className="kartu-pesanan__kode">
+                  {pesanan.kodeKlaim ?? "-"}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

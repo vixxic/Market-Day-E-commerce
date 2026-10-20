@@ -44,7 +44,7 @@ export async function ambilStatusPesanan(idPesanan) {
     throw new Error(data?.error ?? "Gagal memeriksa status pesanan.");
   }
   if (
-    data?.idPesanan !== idPesanan ||
+    String(data?.idPesanan) !== String(idPesanan) ||
     typeof data.status !== "string"
   ) {
     throw new Error("Format status pesanan dari API tidak valid.");

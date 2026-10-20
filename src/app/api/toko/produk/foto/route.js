@@ -51,13 +51,19 @@ export async function POST(request) {
     .replace(/\/$/, "");
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const bucket = process.env.SUPABASE_STORAGE_BUCKET;
+  const konfigurasiKurang = [
+    ["NEXT_PUBLIC_SUPABASE_URL", supabaseUrl],
+    ["SUPABASE_SERVICE_ROLE_KEY", serviceRoleKey],
+    ["SUPABASE_STORAGE_BUCKET", bucket],
+  ]
+    .filter(([, nilai]) => !nilai)
+    .map(([nama]) => nama);
 
-  if (!supabaseUrl || !serviceRoleKey || !bucket) {
-    console.error(
-      "Konfigurasi Supabase Storage belum lengkap. Periksa URL, service role key, dan nama bucket.",
-    );
+  if (konfigurasiKurang.length > 0) {
+    const pesan = `Konfigurasi Supabase Storage belum lengkap. Atur ${konfigurasiKurang.join(", ")} di .env.local.`;
+    console.error(pesan);
     return Response.json(
-      { error: "Konfigurasi unggah foto belum lengkap di server." },
+      { error: pesan },
       { status: 500 },
     );
   }

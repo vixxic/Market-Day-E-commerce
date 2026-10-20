@@ -5,7 +5,10 @@ import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
-import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
+import {
+  gambarProduk,
+  permintaanKelolaToko,
+} from "@/lib/kelolaTokoClient";
 
 export default function PesananPerProduk({ id }) {
   const [produk, setProduk] = useState(null);
@@ -130,6 +133,7 @@ export default function PesananPerProduk({ id }) {
               key={order.id}
               pesanan={order}
               itemTampil={itemTampil}
+              gambarFallback={gambarProduk(produk)}
               onTerima={
                 order.status === "menunggu_konfirmasi"
                   ? terimaPesanan

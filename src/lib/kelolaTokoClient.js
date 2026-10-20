@@ -8,7 +8,7 @@ export async function permintaanKelolaToko(url, options) {
 }
 
 export function gambarProduk(produk) {
-  const gambar = produk.image;
+  const gambar = produk.image ?? produk.gambar;
   if (Array.isArray(gambar)) return gambar[0] ?? "";
   return typeof gambar === "string" ? gambar : "";
 }

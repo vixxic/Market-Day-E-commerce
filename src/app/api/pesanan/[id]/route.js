@@ -11,7 +11,9 @@ export async function GET(_request, { params }) {
     url.searchParams.set("idPesanan", id);
     const daftar = await permintaanApi(url.toString());
     const pesanan = Array.isArray(daftar)
-      ? daftar.find((item) => item.idPesanan === id)
+      ? daftar.find(
+          (item) => String(item.idPesanan ?? item.id) === String(id),
+        )
       : null;
 
     if (!pesanan) {
@@ -19,7 +21,7 @@ export async function GET(_request, { params }) {
     }
 
     return Response.json({
-      idPesanan: pesanan.idPesanan,
+      idPesanan: pesanan.idPesanan ?? pesanan.id,
       status: pesanan.status,
     });
   } catch (error) {
