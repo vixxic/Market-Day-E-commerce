@@ -51,10 +51,10 @@ function Beranda() {
               href={`/detailproduk/${produk.id}`}
               nama={produk.nama}
               harga={produk.harga}
-              gambar={produk.image?.[0]}
+              gambar={produk.gambar}
               namaToko={
                 daftarToko.find(
-                  (toko) => String(toko.id) === String(produk.id_penjual),
+                  (toko) => String(toko.id) === String(produk.id_toko),
                 )?.namaToko
               }
             />

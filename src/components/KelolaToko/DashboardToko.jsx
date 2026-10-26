@@ -1,41 +1,58 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 import { permintaanKelolaToko, gambarProduk } from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
+import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
 
 export default function DashboardToko() {
   const [produk, setProduk] = useState([]);
   const [pesanan, setPesanan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hapusId, setHapusId] = useState(null);
+  const [sedangHapus, setSedangHapus] = useState(false);
+
+  async function muatData() {
+    setLoading(true);
+    try {
+      const [daftarProduk, daftarPesanan] = await Promise.all([
+        permintaanKelolaToko("/api/toko/produk"),
+        permintaanKelolaToko("/api/toko/pesanan"),
+      ]);
+      setProduk(daftarProduk);
+      setPesanan(daftarPesanan);
+    } catch (galat) {
+      setError(galat.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    let aktif = true;
-    Promise.all([
-      permintaanKelolaToko("/api/toko/produk"),
-      permintaanKelolaToko("/api/toko/pesanan"),
-    ])
-      .then(([daftarProduk, daftarPesanan]) => {
-        if (!aktif) return;
-        setProduk(daftarProduk);
-        setPesanan(daftarPesanan);
-      })
-      .catch((galat) => {
-        if (aktif) setError(galat.message);
-      })
-      .finally(() => {
-        if (aktif) setLoading(false);
-      });
-    return () => {
-      aktif = false;
-    };
+    muatData();
   }, []);
+
+  async function konfirmasiHapus() {
+    if (!hapusId) return;
+    setSedangHapus(true);
+    try {
+      await permintaanKelolaToko(`/api/toko/produk/${hapusId}`, {
+        method: "DELETE",
+      });
+      setProduk((prev) => prev.filter((p) => p.id !== hapusId));
+    } catch (galat) {
+      alert("Gagal menghapus produk: " + galat.message);
+    } finally {
+      setSedangHapus(false);
+      setHapusId(null);
+    }
+  }
 
   const menunggu = pesanan.filter(
     (item) => item.status === "menunggu_konfirmasi",
@@ -125,12 +142,27 @@ export default function DashboardToko() {
                     <p className="kelola-toko__harga">
                       {formatHarga(item.harga)}
                     </p>
-                    <Link
-                      className="kelola-toko__tombol kelola-toko__produk-aksi"
-                      href={`/kelolatoko/produk/${item.id}`}
-                    >
-                      Lihat pesanan
-                    </Link>
+                    <div className="kelola-toko__aksi-grup" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                      <Link
+                        className="kelola-toko__tombol kelola-toko__produk-aksi"
+                        href={`/kelolatoko/produk/${item.id}`}
+                      >
+                        Lihat pesanan
+                      </Link>
+                      <Link
+                        className="kelola-toko__tombol kelola-toko__produk-edit"
+                        href={`/kelolatoko/produk/edit/${item.id}`}
+                      >
+                        <FiEdit size={16} />
+                      </Link>
+                      <button
+                        className="kelola-toko__tombol kelola-toko__produk-hapus"
+                        onClick={() => setHapusId(item.id)}
+                        type="button"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </div>
                   </div>
 
                   <span className="kelola-toko__jumlah">{jumlahPesanan}</span>
@@ -149,6 +181,17 @@ export default function DashboardToko() {
         <FiPlus aria-hidden="true" strokeWidth={1.6} />
       </Link>
       <NavigasiBawah halamanAktif="masuktoko" />
+      
+      <PopupKonfirmasi
+        buka={hapusId !== null}
+        judul="Hapus Produk?"
+        pesan="Produk akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan."
+        teksKonfirmasi="Ya, hapus"
+        teksBatal="Batal"
+        memproses={sedangHapus}
+        onKonfirmasi={konfirmasiHapus}
+        onBatal={() => setHapusId(null)}
+      />
     </KelolaLayout>
   );
 }

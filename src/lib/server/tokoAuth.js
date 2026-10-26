@@ -1,11 +1,7 @@
 import { cookies } from "next/headers";
-import {
-  createHmac,
-  randomBytes,
-  scryptSync,
-  timingSafeEqual,
-} from "node:crypto";
-import { URL_TOKO } from "@/lib/api/urlConfig";
+import argon2 from "argon2";
+import { createHmac } from "crypto";
+import { supabaseServer } from "@/lib/supabase/server";
 
 const COOKIE_NAME = "marketday-toko";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
@@ -20,24 +16,13 @@ function ambilSessionSecret() {
   );
 }
 
-function hashPassword(password, salt = randomBytes(16).toString("hex")) {
-  const hash = scryptSync(password, salt, 64).toString("hex");
-  return `scrypt$${salt}$${hash}`;
+function hashPassword(password) {
+  return argon2.hash(password);
 }
 
-function passwordCocok(password, stored) {
+async function passwordCocok(password, stored) {
   if (typeof stored !== "string") return false;
-  const [scheme, salt, expected] = stored.split("$");
-  if (scheme !== "scrypt" || !salt || !expected) {
-    return stored === password;
-  }
-
-  const actual = scryptSync(password, salt, 64);
-  const expectedBuffer = Buffer.from(expected, "hex");
-  return (
-    actual.length === expectedBuffer.length &&
-    timingSafeEqual(actual, expectedBuffer)
-  );
+  return argon2.verify(password, stored);
 }
 
 function tandaTangan(payload) {
@@ -64,11 +49,10 @@ function bacaToken(token) {
 
   const expected = Buffer.from(tandaTangan(payload));
   const actual = Buffer.from(signature);
-  if (
-    actual.length !== expected.length ||
-    !timingSafeEqual(actual, expected)
-  ) {
-    return null;
+  if (actual.length !== expected.length) return null;
+  
+  for (let i = 0; i < actual.length; i++) {
+    if (actual[i] !== expected[i]) return null;
   }
 
   try {
@@ -85,31 +69,29 @@ function bacaToken(token) {
 }
 
 async function ambilTokoApi() {
-  const respons = await fetch(URL_TOKO, { cache: "no-store" });
-  if (!respons.ok) {
-    throw new Error(`Gagal mengambil data toko (${respons.status}).`);
-  }
-  const toko = await respons.json();
-  if (!Array.isArray(toko)) {
-    throw new Error("Format data toko dari API tidak valid.");
-  }
-  return toko;
+  const { data, error } = await supabaseServer
+    .from('stores')
+    .select('id, nama_toko, password_hash, aktif');
+    
+  if (error) throw new Error(`Gagal mengambil data toko: ${error.message}`);
+  
+  return data.map(t => ({
+    id: t.id,
+    namaToko: t.nama_toko,
+    passwordHash: t.password_hash,
+    aktif: t.aktif
+  }));
 }
 
 async function perbaruiTokoApi(id, data) {
-  const respons = await fetch(
-    `${URL_TOKO}/${encodeURIComponent(id)}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      cache: "no-store",
-    },
-  );
-  if (!respons.ok) {
-    throw new Error(`Gagal memperbarui data toko (${respons.status}).`);
-  }
-  return respons.json();
+  const { data: result, error } = await supabaseServer
+    .from('stores')
+    .update(data)
+    .eq('id', id)
+    .select();
+
+  if (error) throw new Error(`Gagal memperbarui data toko: ${error.message}`);
+  return result[0];
 }
 
 export async function daftarkanToko(namaToko, password) {
@@ -124,21 +106,19 @@ export async function daftarkanToko(namaToko, password) {
     throw new Error("Nama toko sudah terdaftar.");
   }
 
-  const respons = await fetch(URL_TOKO, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      namaToko,
-      passwordHash: hashPassword(password),
-      aktif: true,
-    }),
-    cache: "no-store",
-  });
-  if (!respons.ok) {
-    throw new Error(`Gagal mendaftarkan toko (${respons.status}).`);
-  }
-  const toko = await respons.json();
-  return { id: String(toko.id), namaToko: toko.namaToko };
+  const passwordHash = await hashPassword(password);
+  const { data, error } = await supabaseServer
+    .from('stores')
+    .insert([{ 
+      nama_toko: namaToko, 
+      password_hash: passwordHash, 
+      aktif: true 
+    }])
+    .select()
+    .single();
+
+  if (error) throw new Error(`Gagal mendaftarkan toko: ${error.message}`);
+  return { id: String(data.id), namaToko: data.nama_toko };
 }
 
 export async function autentikasiToko(namaToko, password) {
@@ -152,15 +132,15 @@ export async function autentikasiToko(namaToko, password) {
   if (!toko) throw new Error("Nama toko atau password tidak sesuai.");
 
   const stored = toko.passwordHash ?? toko.password;
-  if (!passwordCocok(password, stored)) {
+  if (!await passwordCocok(password, stored)) {
     throw new Error("Nama toko atau password tidak sesuai.");
   }
 
-  if (toko.passwordHash !== stored || !String(stored).startsWith("scrypt$")) {
-    const { password: _passwordLama, ...tanpaPassword } = toko;
+  if (toko.passwordHash !== stored || !String(stored).startsWith("argon2$")) {
+    const { passwordHash: _old, ...tanpaPassword } = toko;
+    const passwordHash = await hashPassword(password);
     await perbaruiTokoApi(toko.id, {
-      ...tanpaPassword,
-      passwordHash: hashPassword(password),
+      password_hash: passwordHash,
     });
   }
 

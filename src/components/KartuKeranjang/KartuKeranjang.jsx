@@ -21,13 +21,19 @@ export default function KartuKeranjang({
   const totalJumlah = item.varian.reduce((jumlah, v) => jumlah + v.jumlah, 0);
   const totalHarga = item.harga * totalJumlah;
 
+  const shownImage = Array.isArray(item.gambar)
+    ? item.gambar[0] ?? ""
+    : typeof item.gambar === "string"
+    ? item.gambar
+    : "";
+
   return (
     <article className="kartu-keranjang">
       <div className="kartu-keranjang__gambar">
-        {item.gambar && (
+        {shownImage && (
           <img
             className="kartu-keranjang__foto"
-            src={item.gambar}
+            src={shownImage}
             alt={item.nama}
             loading="lazy"
             decoding="async"

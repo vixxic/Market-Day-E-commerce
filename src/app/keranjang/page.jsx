@@ -34,7 +34,7 @@ export default function Keranjang() {
     );
     const baris = item.varian.map((v) => ({
       idProduk: item.idProduk,
-      id_toko: item.id_toko ?? produk?.id_penjual,
+      id_toko: item.id_toko ?? produk?.id_toko,
       nama: item.nama,
       harga: item.harga,
       gambar: item.gambar,

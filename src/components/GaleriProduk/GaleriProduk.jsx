@@ -12,11 +12,16 @@ import { useEffect, useRef, useState } from "react";
  * - nama   : nama produk (untuk teks alt)
  */
 export default function GaleriProduk({ gambar = [], nama }) {
+  // Ensure gambar is always an array to avoid .map errors
+  const fotoList = Array.isArray(gambar) 
+    ? gambar 
+    : (gambar ? [gambar] : []);
+
   const jalurRef = useRef(null);
   const indeksAktifRef = useRef(0);
   const [indeksAktif, setIndeksAktif] = useState(0);
   const [dijeda, setDijeda] = useState(false);
-  const banyakFoto = gambar.length > 1;
+  const banyakFoto = fotoList.length > 1;
 
   function saatDigeser() {
     const jalur = jalurRef.current;
@@ -44,7 +49,7 @@ export default function GaleriProduk({ gambar = [], nama }) {
     if (!banyakFoto || dijeda) return undefined;
 
     const timer = window.setInterval(() => {
-      const indeksBerikutnya = (indeksAktifRef.current + 1) % gambar.length;
+      const indeksBerikutnya = (indeksAktifRef.current + 1) % fotoList.length;
       const jalur = jalurRef.current;
       if (!jalur) return;
 
@@ -60,11 +65,11 @@ export default function GaleriProduk({ gambar = [], nama }) {
     }, 2000);
 
     return () => window.clearInterval(timer);
-  }, [banyakFoto, dijeda, gambar.length]);
+  }, [banyakFoto, dijeda, fotoList.length]);
 
   function saatTombolDitekan(e) {
     if (!banyakFoto) return;
-    if (e.key === "ArrowRight" && indeksAktif < gambar.length - 1) {
+    if (e.key === "ArrowRight" && indeksAktif < fotoList.length - 1) {
       e.preventDefault();
       keFoto(indeksAktif + 1);
     }
@@ -94,14 +99,14 @@ export default function GaleriProduk({ gambar = [], nama }) {
         aria-roledescription={banyakFoto ? "carousel" : undefined}
         aria-label={banyakFoto ? `Foto ${nama}` : undefined}
       >
-        {gambar.length === 0 && <div className="galeri-produk__slide" />}
+        {fotoList.length === 0 && <div className="galeri-produk__slide" />}
 
-        {gambar.map((src, i) => (
+        {fotoList.map((src, i) => (
           <div className="galeri-produk__slide" key={src + i}>
             <img
               className="galeri-produk__foto"
               src={src}
-              alt={`${nama} (foto ${i + 1} dari ${gambar.length})`}
+              alt={`${nama} (foto ${i + 1} dari ${fotoList.length})`}
               loading={i === 0 ? "eager" : "lazy"}
               decoding="async"
               draggable={false}
@@ -112,7 +117,7 @@ export default function GaleriProduk({ gambar = [], nama }) {
 
       {banyakFoto && (
         <div className="galeri-produk__titik-wadah">
-          {gambar.map((_, i) => (
+          {fotoList.map((_, i) => (
             <button
               key={i}
               type="button"
@@ -120,7 +125,7 @@ export default function GaleriProduk({ gambar = [], nama }) {
                 "galeri-produk__titik" +
                 (i === indeksAktif ? " galeri-produk__titik--aktif" : "")
               }
-              aria-label={`Foto ${i + 1} dari ${gambar.length}`}
+              aria-label={`Foto ${i + 1} dari ${fotoList.length}`}
               aria-current={i === indeksAktif ? "true" : undefined}
               onClick={() => keFoto(i)}
             />

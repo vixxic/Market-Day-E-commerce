@@ -1,22 +1,22 @@
-import {
-  permintaanApi,
-  responsGagal,
-  URL_TOKO,
-} from "@/lib/server/tokoApi";
+import { supabaseServer } from "@/lib/supabase/server";
+import { responsGagal } from "@/lib/server/tokoApi";
 
 export async function GET(request) {
   try {
-    request.headers.get("cookie");
-    const daftar = await permintaanApi(URL_TOKO);
-    if (!Array.isArray(daftar)) {
-      throw new Error("Format daftar toko dari API tidak valid.");
-    }
+    const { data, error } = await supabaseServer
+      .from('stores')
+      .select('id, nama_toko, aktif')
+      .eq('aktif', true);
+
+    if (error) throw error;
+
+    // Return in the same format the frontend expects
     return Response.json(
-      daftar.map(({ id, namaToko, aktif }) => ({
+      data.map(({ id, nama_toko, aktif }) => ({
         id,
-        namaToko,
+        namaToko: nama_toko,
         aktif: aktif !== false,
-      })),
+      }))
     );
   } catch (error) {
     return responsGagal(error);

@@ -1,10 +1,6 @@
+import { supabaseServer } from "@/lib/supabase/server";
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
-import {
-  dataJson,
-  permintaanApi,
-  responsGagal,
-  URL_PESANAN,
-} from "@/lib/server/tokoApi";
+import { dataJson, responsGagal } from "@/lib/server/tokoApi";
 
 export async function PATCH(request, { params }) {
   try {
@@ -14,19 +10,26 @@ export async function PATCH(request, { params }) {
     }
 
     const { id } = await params;
-    const daftarToko = await permintaanApi(
-      `${URL_PESANAN}?id_toko=${encodeURIComponent(toko.id)}`,
-    );
-    const pesanan = Array.isArray(daftarToko)
-      ? daftarToko.find((item) => String(item.id) === String(id))
-      : null;
-    if (!pesanan || String(pesanan.id_toko) !== toko.id) {
+    
+    // Verify ownership and current status
+    const { data: order, error: checkError } = await supabaseServer
+      .from('orders')
+      .select('id, status, id_toko')
+      .eq('id', id)
+      .single();
+
+    if (checkError || !order) {
+      return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
+    }
+
+    if (String(order.id_toko) !== String(toko.id)) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
 
     const { status } = await dataJson(request);
     const transisiValid =
-      status === "diproses" && pesanan.status === "menunggu_konfirmasi";
+      status === "diproses" && order.status === "menunggu_konfirmasi";
+    
     if (!transisiValid) {
       return Response.json(
         { error: "Status pesanan tidak dapat diubah ke status tersebut." },
@@ -34,15 +37,15 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const diperbarui = await permintaanApi(
-      `${URL_PESANAN}/${encodeURIComponent(id)}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      },
-    );
-    return Response.json(diperbarui);
+    const { data: updated, error: updateError } = await supabaseServer
+      .from('orders')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+    return Response.json(updated);
   } catch (error) {
     return responsGagal(error);
   }
@@ -56,25 +59,34 @@ export async function DELETE(request, { params }) {
     }
 
     const { id } = await params;
-    const daftarToko = await permintaanApi(
-      `${URL_PESANAN}?id_toko=${encodeURIComponent(toko.id)}`,
-    );
-    const pesanan = Array.isArray(daftarToko)
-      ? daftarToko.find((item) => String(item.id) === String(id))
-      : null;
-    if (!pesanan || String(pesanan.id_toko) !== toko.id) {
+
+    const { data: order, error: checkError } = await supabaseServer
+      .from('orders')
+      .select('id, status, id_toko')
+      .eq('id', id)
+      .single();
+
+    if (checkError || !order) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
-    if (pesanan.status !== "diproses") {
+
+    if (String(order.id_toko) !== String(toko.id)) {
+      return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
+    }
+
+    if (order.status !== "diproses") {
       return Response.json(
         { error: "Hanya pesanan yang sedang diproses dapat dihapus." },
         { status: 400 },
       );
     }
 
-    await permintaanApi(`${URL_PESANAN}/${encodeURIComponent(id)}`, {
-      method: "DELETE",
-    });
+    const { error: deleteError } = await supabaseServer
+      .from('orders')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
     return new Response(null, { status: 204 });
   } catch (error) {
     return responsGagal(error);

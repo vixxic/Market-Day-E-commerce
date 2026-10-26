@@ -1,14 +1,13 @@
-import { URL_PESANAN } from "@/lib/api/urlConfig";
+import { supabase } from "@/lib/supabase/client";
 
-async function permintaanPesanan(url, options) {
-  const respons = await fetch(url, options);
+async function permintaanPesanan(query) {
+  const { data, error } = await query;
 
-  if (!respons.ok) {
-    throw new Error(`Permintaan data pesanan gagal (${respons.status}).`);
+  if (error) {
+    throw new Error(`Permintaan data pesanan gagal: ${error.message}`);
   }
 
-  if (respons.status === 204) return null;
-  return respons.json();
+  return data;
 }
 
 export async function ambilPesananToko(idToko, { signal } = {}) {
@@ -16,24 +15,31 @@ export async function ambilPesananToko(idToko, { signal } = {}) {
     throw new Error("ID toko diperlukan untuk mengambil pesanan toko.");
   }
 
-  const url = new URL(URL_PESANAN);
-  url.searchParams.set("id_toko", idToko);
-  const daftar = await permintaanPesanan(url, { signal });
+  const query = supabase
+    .from('orders')
+    .select('*')
+    .eq('id_toko', idToko)
+    .order('created_at', { ascending: false });
+
+  const daftar = await permintaanPesanan(query);
   if (!Array.isArray(daftar)) {
-    throw new Error("Format daftar pesanan toko dari API tidak valid.");
+    throw new Error("Format daftar pesanan toko dari Supabase tidak valid.");
   }
   return daftar;
 }
 
 export function buatPesanan(data) {
-  return permintaanPesanan(URL_PESANAN, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const query = supabase
+    .from('orders')
+    .insert([data])
+    .select();
+
+  return permintaanPesanan(query);
 }
 
 export async function ambilStatusPesanan(idPesanan) {
+  // Note: This still calls the local API route because it handles complex logic,
+  // but the local API route itself will be migrated to Supabase next.
   const response = await fetch(
     `/api/pesanan/${encodeURIComponent(idPesanan)}`,
     { cache: "no-store" },
@@ -53,12 +59,11 @@ export async function ambilStatusPesanan(idPesanan) {
 }
 
 export function ubahStatusPesanan(id, status) {
-  return permintaanPesanan(
-    `${URL_PESANAN}/${encodeURIComponent(id)}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    },
-  );
+  const query = supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', id)
+    .select();
+
+  return permintaanPesanan(query);
 }

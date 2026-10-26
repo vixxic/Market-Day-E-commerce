@@ -1,18 +1,28 @@
-async function permintaanToko(options) {
-  const respons = await fetch("/api/toko/daftar", options);
+import { supabase } from "@/lib/supabase/client";
 
-  if (!respons.ok) {
-    throw new Error(`Permintaan data toko gagal (${respons.status}).`);
+async function permintaanToko(query) {
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Permintaan data toko gagal: ${error.message}`);
   }
 
-  const data = await respons.json();
   if (!Array.isArray(data)) {
-    throw new Error("Format daftar toko dari API tidak valid.");
+    throw new Error("Format daftar toko dari Supabase tidak valid.");
   }
 
-  return data.map(({ id, namaToko, aktif }) => ({ id, namaToko, aktif }));
+  return data.map(({ id, nama_toko, aktif }) => ({ 
+    id, 
+    namaToko: nama_toko, 
+    aktif 
+  }));
 }
 
 export async function ambilDaftarToko({ signal } = {}) {
-  return permintaanToko({ signal });
+  const query = supabase
+    .from('stores')
+    .select('id, nama_toko, aktif')
+    .eq('aktif', true);
+
+  return permintaanToko(query);
 }

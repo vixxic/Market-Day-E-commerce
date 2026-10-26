@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
 

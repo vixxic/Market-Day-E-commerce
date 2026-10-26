@@ -1,4 +1,4 @@
-import { permintaanApi, URL_PESANAN } from "@/lib/server/tokoApi";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function GET(_request, { params }) {
   const { id } = await params;
@@ -7,22 +7,19 @@ export async function GET(_request, { params }) {
   }
 
   try {
-    const url = new URL(URL_PESANAN);
-    url.searchParams.set("idPesanan", id);
-    const daftar = await permintaanApi(url.toString());
-    const pesanan = Array.isArray(daftar)
-      ? daftar.find(
-          (item) => String(item.idPesanan ?? item.id) === String(id),
-        )
-      : null;
+    const { data, error } = await supabaseServer
+      .from('orders')
+      .select('id, status')
+      .eq('id', id)
+      .single();
 
-    if (!pesanan) {
+    if (error || !data) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
 
     return Response.json({
-      idPesanan: pesanan.idPesanan ?? pesanan.id,
-      status: pesanan.status,
+      idPesanan: data.id,
+      status: data.status,
     });
   } catch (error) {
     console.error(error);

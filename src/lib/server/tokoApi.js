@@ -1,11 +1,3 @@
-import {
-  URL_TOKO,
-  URL_PRODUK,
-  URL_PESANAN,
-} from "@/lib/api/urlConfig";
-
-export { URL_TOKO, URL_PRODUK, URL_PESANAN };
-
 export async function permintaanApi(url, options) {
   const respons = await fetch(url, { cache: "no-store", ...options });
   if (!respons.ok) {

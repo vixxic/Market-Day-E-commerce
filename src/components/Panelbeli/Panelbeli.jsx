@@ -122,10 +122,12 @@ export default function PanelBeli({
     return kunciTerpilih.flatMap((kunci) =>
       Object.entries(pesanan[kunci]).map(([ukuran, jumlah]) => ({
         idProduk: produk.id,
-        id_toko: produk.id_penjual,
+        id_toko: produk.id_toko,
         nama: produk.nama,
         harga: produk.harga,
-        gambar: produk.image?.[0] ?? null,
+        gambar: Array.isArray(produk.image) 
+          ? produk.image[0] 
+          : (produk.gambar ?? produk.image ?? null),
         jenis: daftarJenis ? kunci : null,
         ukuran,
         jumlah,

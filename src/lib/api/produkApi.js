@@ -1,55 +1,82 @@
-import { URL_PRODUK } from "@/lib/api/urlConfig";
+import { supabase } from "@/lib/supabase/client";
 
-async function permintaanProduk(url, options) {
-  const respons = await fetch(url, options);
+async function permintaanProduk(query, options = {}) {
+  const { data, error } = await query;
 
-  if (!respons.ok) {
-    const error = new Error(`Permintaan produk gagal (${respons.status}).`);
-    error.status = respons.status;
-    throw error;
+  if (error) {
+    const err = new Error(`Permintaan produk gagal: ${error.message}`);
+    err.status = error.code || 500;
+    throw err;
   }
 
-  if (respons.status === 204) return null;
-  return respons.json();
+  return data;
 }
 
 export async function ambilDaftarProduk({ signal } = {}) {
-  const produk = await permintaanProduk(URL_PRODUK, { signal });
+  const query = supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const produk = await permintaanProduk(query);
   if (!Array.isArray(produk)) {
-    throw new Error("Format daftar produk dari API tidak valid.");
+    throw new Error("Format daftar produk dari Supabase tidak valid.");
   }
-  return produk;
+  
+  // Normalize: Ensure 'gambar' is always a string, and provide 'image' alias
+  return produk.map(p => ({
+    ...p,
+    gambar: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar,
+    image: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar
+  }));
 }
 
 export async function ambilProdukById(id, { signal } = {}) {
   try {
-    return await permintaanProduk(`${URL_PRODUK}/${encodeURIComponent(id)}`, {
-      signal,
-    });
+    const query = supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    const p = await permintaanProduk(query);
+    if (!p) return null;
+
+    return {
+      ...p,
+      gambar: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar,
+      image: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar
+    };
   } catch (error) {
-    if (error.status === 404) return null;
+    if (error.status === 404 || error.message.includes('no rows')) return null;
     throw error;
   }
 }
 
 export function tambahProduk(data) {
-  return permintaanProduk(URL_PRODUK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const query = supabase
+    .from('products')
+    .insert([data])
+    .select();
+
+  return permintaanProduk(query);
 }
 
 export function ubahProduk(id, data) {
-  return permintaanProduk(`${URL_PRODUK}/${encodeURIComponent(id)}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  const query = supabase
+    .from('products')
+    .update(data)
+    .eq('id', id)
+    .select();
+
+  return permintaanProduk(query);
 }
 
 export async function hapusProduk(id) {
-  await permintaanProduk(`${URL_PRODUK}/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  const query = supabase
+    .from('products')
+    .delete()
+    .eq('id', id);
+
+  await permintaanProduk(query);
 }
