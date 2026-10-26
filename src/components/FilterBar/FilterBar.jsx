@@ -5,16 +5,18 @@ import "./FilterBar.css";
 import { useGlobalContext } from "@/Context/GlobalContext";
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 
+const KATEGORI_FILTER = ["All", ...KATEGORI_PRODUK];
+
 /**
  * Deretan tombol filter kategori (pil).
  *
  * Props:
- * - kategori : array teks, contoh ["Semua", "Manis", "Asin"]
+ * - kategori : array teks, contoh ["All", "Manis", "Asin"]
  * - aktif    : teks kategori yang sedang dipilih
  * - onPilih  : dipanggil dengan teks kategori saat pil ditekan
  */
 
-export default function FilterBar({ kategori = KATEGORI_PRODUK }) {
+export default function FilterBar({ kategori = KATEGORI_FILTER }) {
   const { filterBeranda, setFilterBeranda } = useGlobalContext();
 
   return (

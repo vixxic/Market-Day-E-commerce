@@ -17,9 +17,9 @@ function Beranda() {
   const { daftarProduk, loading, error } = useProdukContext();
   const { daftarToko, errorToko } = useAuthContext();
 
-  // "Semua" = tampilkan semua, selain itu cocokkan dengan array kategori produk
+  // "All" menampilkan semua produk; pilihan lain mencocokkan kategori.
   const produkTampil =
-    filterBeranda === "Semua"
+    filterBeranda === "All" || filterBeranda === "Semua"
       ? daftarProduk
       : daftarProduk.filter((produk) =>
           (Array.isArray(produk.kategori)

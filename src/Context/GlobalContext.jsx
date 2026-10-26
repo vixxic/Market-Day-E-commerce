@@ -7,7 +7,7 @@ const GlobalContext = createContext(null);
 export function GlobalProvider({ children }) {
   // States
   const [pages, setPages] = useState("beranda");
-  const [filterBeranda, setFilterBeranda] = useState("Semua");
+  const [filterBeranda, setFilterBeranda] = useState("All");
 
   const value = {
     pages,
