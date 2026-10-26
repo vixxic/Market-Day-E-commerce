@@ -86,6 +86,7 @@ export default function DaftarTokoPage() {
   const router = useRouter();
   const [namaToko, setNamaToko] = useState("");
   const [password, setPassword] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [error, setError] = useState("");
   const [sedangMendaftar, setSedangMendaftar] = useState(false);
 
@@ -94,7 +95,7 @@ export default function DaftarTokoPage() {
     setError("");
     setSedangMendaftar(true);
     try {
-      await daftar(namaToko.trim(), password);
+      await daftar(namaToko.trim(), password, whatsappNumber.trim() || null);
       router.replace("/kelolatoko");
     } catch (galat) {
       setError(galat.message);
@@ -145,6 +146,24 @@ export default function DaftarTokoPage() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
+        </div>
+
+        <div className="daftar-toko__bidang">
+          <label className="daftar-toko__label" htmlFor="whatsapp-toko">
+            Nomor WhatsApp Toko (opsional)
+          </label>
+          <input
+            id="whatsapp-toko"
+            className="daftar-toko__input"
+            type="tel"
+            autoComplete="tel"
+            placeholder="08xxxxxxxxxx"
+            value={whatsappNumber}
+            onChange={(event) => setWhatsappNumber(event.target.value)}
+          />
+          <p style={{ fontSize: "0.8rem", color: "#666" }}>
+            Digunakan untuk notifikasi pesanan yang terverifikasi OTP.
+          </p>
         </div>
 
         <p className="daftar-toko__masuk">

@@ -44,7 +44,7 @@ function parsePemesanan(snapshot) {
 }
 
 function normalisasiPesananApi(pesanan) {
-  const item = (pesanan.item ?? []).flatMap((produk) => {
+  const item = (pesanan.items ?? pesanan.item ?? []).flatMap((produk) => {
     const varian = produk.varian ?? {};
 
     return [
@@ -62,8 +62,11 @@ function normalisasiPesananApi(pesanan) {
 
   return {
     ...pesanan,
-    idPesanan: pesanan.idPesanan ?? pesanan.id,
+    idPesanan: pesanan.id_pesanan ?? pesanan.idPesanan ?? pesanan.id,
     item,
+    nomorPemesan: pesanan.nomor_pemesan ?? pesanan.nomorPemesan,
+    namaPenerima: pesanan.nama_penerima ?? pesanan.namaPenerima,
+    createdAt: pesanan.created_at ?? pesanan.createdAt,
   };
 }
 
@@ -100,16 +103,16 @@ function susunDataPesanan(data, namaPenerima, nomorPemesan) {
   const dibuat = new Date().toISOString();
 
   return {
-    idCheckout: buatIdCheckout(),
-    idPesanan: data.idPesanan,
-    kodeKlaim: data.kodeKlaim,
+    id_checkout: buatIdCheckout(),
+    id_pesanan: data.idPesanan,
+    kode_klaim: data.kodeKlaim,
     id_toko: idToko,
-    namaPenerima,
-    nomorPemesan,
+    nama_penerima: namaPenerima,
+    nomor_pemesan: nomorPemesan,
     total: data.total,
-    status: "menunggu_konfirmasi",
-    item: itemPesanan,
-    createdAt: dibuat,
+    status: "menunggu_otp",
+    created_at: dibuat,
+    items: itemPesanan,
   };
 }
 
@@ -198,7 +201,7 @@ export function PesananProvider({ children }) {
                 ubahStatusPesananLokal(pesanan.idPesanan, "diproses");
               }
             } catch (galat) {
-              if (aktif) {
+              if (aktif && galat.status !== 404) {
                 console.error(
                   `Gagal menyinkronkan status pesanan ${pesanan.idPesanan}.`,
                   galat,
@@ -260,7 +263,7 @@ export function PesananProvider({ children }) {
         idCheckout: dataApi.idCheckout,
         namaPenerima,
         nomorPemesan,
-        status: "menunggu_konfirmasi",
+        status: "menunggu_otp",
         createdAt: dataApi.createdAt,
       };
       simpanPemesanan(dataLokal);

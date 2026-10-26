@@ -94,7 +94,7 @@ async function perbaruiTokoApi(id, data) {
   return result[0];
 }
 
-export async function daftarkanToko(namaToko, password) {
+export async function daftarkanToko(namaToko, password, whatsappNumber) {
   const daftar = await ambilTokoApi();
   if (
     daftar.some(
@@ -112,7 +112,7 @@ export async function daftarkanToko(namaToko, password) {
     .insert([{ 
       nama_toko: namaToko, 
       password_hash: passwordHash, 
-      aktif: true 
+      whatsapp_number: whatsappNumber || null,
     }])
     .select()
     .single();

@@ -76,11 +76,11 @@ export function AuthProvider({ children }) {
     setToko(null);
   }, []);
 
-  const daftar = useCallback(async (namaToko, password) => {
+  const daftar = useCallback(async (namaToko, password, whatsappNumber) => {
     const respons = await fetch("/api/toko/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ namaToko, password }),
+      body: JSON.stringify({ namaToko, password, whatsappNumber }),
     });
     const data = await respons.json();
     if (!respons.ok) {

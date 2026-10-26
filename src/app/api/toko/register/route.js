@@ -3,7 +3,7 @@ import { dataJson, responsGagal } from "@/lib/server/tokoApi";
 
 export async function POST(request) {
   try {
-    const { namaToko, password } = await dataJson(request);
+    const { namaToko, password, whatsappNumber } = await dataJson(request);
     const nama = typeof namaToko === "string" ? namaToko.trim() : "";
     if (nama.length < 2 || nama.length > 80) {
       return Response.json(
@@ -18,7 +18,7 @@ export async function POST(request) {
       );
     }
 
-    const toko = await daftarkanToko(nama, password);
+    const toko = await daftarkanToko(nama, password, whatsappNumber);
     await setelSesiToko(toko);
     return Response.json({ toko }, { status: 201 });
   } catch (error) {

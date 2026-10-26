@@ -28,13 +28,25 @@ export async function ambilPesananToko(idToko, { signal } = {}) {
   return daftar;
 }
 
-export function buatPesanan(data) {
-  const query = supabase
-    .from('orders')
-    .insert([data])
-    .select();
+export async function buatPesanan(data) {
+  const respons = await fetch("/api/pesanan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-  return permintaanPesanan(query);
+  const dataJson = await respons.json();
+
+  if (!respons.ok) {
+    const error = new Error(
+      dataJson?.error ?? `Permintaan pesanan gagal (${respons.status}).`,
+    );
+    error.status = respons.status;
+    throw error;
+  }
+
+  if (respons.status === 204) return null;
+  return dataJson;
 }
 
 export async function ambilStatusPesanan(idPesanan) {
