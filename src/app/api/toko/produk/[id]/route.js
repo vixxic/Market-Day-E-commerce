@@ -11,6 +11,29 @@ export async function PATCH(request, { params }) {
     }
 
     const data = await request.json();
+    const perubahan = {};
+    if (typeof data.nama === "string") perubahan.nama = data.nama.trim();
+    if (data.harga !== undefined) {
+      const harga = Number(data.harga);
+      if (!Number.isFinite(harga) || harga <= 0) {
+        return Response.json({ error: "Harga produk tidak valid." }, { status: 400 });
+      }
+      perubahan.harga = harga;
+    }
+    if (Array.isArray(data.kategori)) perubahan.kategori = data.kategori;
+    if (typeof data.deskripsi === "string") {
+      perubahan.deskripsi = data.deskripsi.trim();
+    }
+    if (Array.isArray(data.rasa)) perubahan.rasa = data.rasa;
+    if (Array.isArray(data.ukuran)) perubahan.ukuran = data.ukuran;
+    const image = data.image ?? data.gambar;
+    if (typeof image === "string" || Array.isArray(image)) {
+      perubahan.gambar = Array.isArray(image) ? image[0] ?? null : image;
+    }
+
+    if (Object.keys(perubahan).length === 0) {
+      return Response.json({ error: "Tidak ada perubahan produk." }, { status: 400 });
+    }
 
     // Security Check: Ensure the product belongs to the logged-in store owner
     const { data: product, error: checkError } = await supabaseServer
@@ -29,7 +52,7 @@ export async function PATCH(request, { params }) {
 
     const { data: updatedProduct, error: updateError } = await supabaseServer
       .from('products')
-      .update(data)
+      .update(perubahan)
       .eq('id', id)
       .select()
       .single();

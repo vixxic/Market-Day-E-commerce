@@ -2,24 +2,8 @@
 
 import "./FilterBar.css";
 
-// context
 import { useGlobalContext } from "@/Context/GlobalContext";
-
-const KATEGORI_BAWAAN = [
-  "Semua",
-  "Manis",
-  "Asin",
-  "Pedas",
-  "Asam",
-  "Gurih",
-  "Segar",
-  "Sehat",
-  "Camilan",
-  "Makanan Berat",
-  "Minuman",
-  "Dessert",
-  "Kue & Roti",
-];
+import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 
 /**
  * Deretan tombol filter kategori (pil).
@@ -30,7 +14,7 @@ const KATEGORI_BAWAAN = [
  * - onPilih  : dipanggil dengan teks kategori saat pil ditekan
  */
 
-export default function FilterBar({ kategori = KATEGORI_BAWAAN }) {
+export default function FilterBar({ kategori = KATEGORI_PRODUK }) {
   const { filterBeranda, setFilterBeranda } = useGlobalContext();
 
   return (

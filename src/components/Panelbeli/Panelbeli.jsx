@@ -3,12 +3,28 @@
 import "./Panelbeli.css";
 import { useEffect, useId, useRef, useState } from "react";
 
-const UKURAN_BAWAAN = ["Small", "Medium", "Large"];
 const KUNCI_TUNGGAL = "__produk__"; // dipakai kalau produk tidak punya "rasa"
 const JUMLAH_MAKS = 99;
 
+function normalisasiPilihan(nilai) {
+  const pilihan = Array.isArray(nilai)
+    ? nilai
+    : typeof nilai === "string"
+      ? nilai.split(",")
+      : [];
+
+  return [
+    ...new Set(
+      pilihan
+        .filter((item) => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
 function ambilUkuranAwal(daftarUkuran) {
-  // Pilih yang di tengah (untuk Small/Medium/Large -> Medium)
+  // Default pilih opsi tengah dari daftar ukuran yang diisi penjual.
   return daftarUkuran[Math.floor((daftarUkuran.length - 1) / 2)];
 }
 
@@ -21,7 +37,7 @@ function ambilUkuranAwal(daftarUkuran) {
  * - produk           : objek produk dari API. Field opsional:
  *                      "rasa"   -> array teks, contoh ["Cokelat", "Matcha"]
  *                                  (ditampilkan sebagai "Jenis Produk")
- *                      "ukuran" -> array teks (default Small, Medium, Large)
+ *                      "ukuran" -> array teks yang diisi penjual
  * - onPesan          : dipanggil dengan array pesanan
  * - onMasukKeranjang : dipanggil dengan array pesanan
  *
@@ -39,16 +55,17 @@ export default function PanelBeli({
   const lembarRef = useRef(null);
 
   // "rasa" di API ditampilkan sebagai "Jenis Produk"
-  const daftarJenis = produk.rasa?.length ? produk.rasa : null;
-  const daftarUkuran = produk.ukuran?.length ? produk.ukuran : UKURAN_BAWAAN;
-  const ukuranAwal = ambilUkuranAwal(daftarUkuran);
+  const jenisProduk = normalisasiPilihan(produk.rasa);
+  const daftarJenis = jenisProduk.length > 0 ? jenisProduk : null;
+  const daftarUkuran = normalisasiPilihan(produk.ukuran);
+  const ukuranAwal =
+    daftarUkuran.length > 0 ? ambilUkuranAwal(daftarUkuran) : "";
   const daftarKunci = daftarJenis ?? [KUNCI_TUNGGAL];
 
   // pesanan = { [jenis]: { [ukuran]: jumlah } }
-  // - tanpa rasa / satu rasa: jenis dan ukuran tengah aktif secara default
-  // - lebih dari satu rasa: pembeli mengaktifkan jenis dan ukuran sendiri
+  // Tanpa variasi jenis, opsi produk langsung siap dipesan.
   const [pesanan, setPesanan] = useState(() => {
-    const awal = { [ukuranAwal]: 1 };
+    const awal = { [daftarUkuran.length > 0 ? ukuranAwal : ""]: 1 };
     if (!daftarJenis) return { [KUNCI_TUNGGAL]: awal };
     if (daftarJenis.length === 1) return { [daftarJenis[0]]: awal };
     return {};
@@ -74,10 +91,14 @@ export default function PanelBeli({
   function pilihJenis(jenis) {
     setPesanan((lama) => {
       if (jenis in lama) {
+        if (daftarJenis.length === 1) return lama;
         const { [jenis]: _dihapus, ...sisa } = lama;
         return sisa;
       }
-      return { ...lama, [jenis]: {} };
+      return {
+        ...lama,
+        [jenis]: { [daftarUkuran.length > 0 ? ukuranAwal : ""]: 1 },
+      };
     });
   }
 
@@ -201,36 +222,40 @@ export default function PanelBeli({
                   {daftarJenis ? `Jenis Produk: ${label}` : label}
                 </p>
 
-                <div className="panel-beli__baris">
-                  <span className="panel-beli__label">Pilih ukuran:</span>
-                  <div
-                    className="panel-beli__ukuran"
-                    role="group"
-                    aria-label={`Ukuran ${label}`}
-                  >
-                    {daftarUkuran.map((u) => (
-                      <button
-                        key={u}
-                        type="button"
-                        aria-pressed={u in ukuranTerpilih}
-                        className={
-                          "panel-beli__ukuran-pil" +
-                          (u in ukuranTerpilih
-                            ? " panel-beli__ukuran-pil--aktif"
-                            : "")
-                        }
-                        onClick={() => pilihUkuran(kunci, u)}
-                      >
-                        {u}
-                      </button>
-                    ))}
+                {daftarUkuran.length > 0 && (
+                  <div className="panel-beli__baris">
+                    <span className="panel-beli__label">Pilih ukuran:</span>
+                    <div
+                      className="panel-beli__ukuran"
+                      role="group"
+                      aria-label={`Ukuran ${label}`}
+                    >
+                      {daftarUkuran.map((u) => (
+                        <button
+                          key={u}
+                          type="button"
+                          aria-pressed={u in ukuranTerpilih}
+                          aria-disabled={daftarUkuran.length === 1}
+                          disabled={daftarUkuran.length === 1}
+                          className={
+                            "panel-beli__ukuran-pil" +
+                            (u in ukuranTerpilih
+                              ? " panel-beli__ukuran-pil--aktif"
+                              : "")
+                          }
+                          onClick={() => pilihUkuran(kunci, u)}
+                        >
+                          {u}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {Object.entries(ukuranTerpilih).map(([ukuran, jumlah]) => (
                   <div className="panel-beli__baris" key={ukuran}>
                     <span className="panel-beli__label">
-                      Jumlah ukuran {ukuran}:
+                      {ukuran ? `Jumlah ukuran ${ukuran}:` : "Jumlah:"}
                     </span>
                     <div className="panel-beli__jumlah">
                       <button

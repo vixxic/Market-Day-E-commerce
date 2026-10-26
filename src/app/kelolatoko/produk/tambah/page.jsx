@@ -7,21 +7,7 @@ import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProduk } from "@/lib/supabaseStorage";
-
-const PILIHAN_KATEGORI = [
-  "Manis",
-  "Asin",
-  "Pedas",
-  "Asam",
-  "Gurih",
-  "Segar",
-  "Sehat",
-  "Camilan",
-  "Makanan Berat",
-  "Minuman",
-  "Dessert",
-  "Kue & Roti",
-];
+import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 
 export default function TambahProdukPage() {
   const router = useRouter();
@@ -171,7 +157,7 @@ export default function TambahProdukPage() {
               role="group"
               aria-label="Pilih satu atau beberapa kategori"
             >
-              {PILIHAN_KATEGORI.map((kategori) => {
+              {KATEGORI_PRODUK.map((kategori) => {
                 const dipilih = form.kategori.includes(kategori);
                 return (
                   <button

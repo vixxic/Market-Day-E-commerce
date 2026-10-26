@@ -9,21 +9,7 @@ import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProduk } from "@/lib/supabaseStorage";
 import { ambilProdukById } from "@/lib/api/produkApi";
 import { Suspense } from "react";
-
-const PILIHAN_KATEGORI = [
-  "Manis",
-  "Asin",
-  "Pedas",
-  "Asam",
-  "Gurih",
-  "Segar",
-  "Sehat",
-  "Camilan",
-  "Makanan Berat",
-  "Minuman",
-  "Dessert",
-  "Kue & Roti",
-];
+import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 
 function EditProdukContent({ params }) {
   const router = useRouter();
@@ -211,7 +197,7 @@ function EditProdukContent({ params }) {
               role="group"
               aria-label="Pilih satu atau beberapa kategori"
             >
-              {PILIHAN_KATEGORI.map((kategori) => {
+              {KATEGORI_PRODUK.map((kategori) => {
                 const dipilih = form.kategori.includes(kategori);
                 return (
                   <button

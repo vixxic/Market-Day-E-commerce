@@ -22,7 +22,17 @@ function Beranda() {
     filterBeranda === "Semua"
       ? daftarProduk
       : daftarProduk.filter((produk) =>
-          (produk.kategori ?? []).includes(filterBeranda),
+          (Array.isArray(produk.kategori)
+            ? produk.kategori
+            : typeof produk.kategori === "string"
+              ? produk.kategori.split(",")
+              : []
+          ).some(
+            (kategori) =>
+              typeof kategori === "string" &&
+              kategori.trim().toLocaleLowerCase() ===
+              filterBeranda.toLocaleLowerCase(),
+          ),
         );
 
   return (

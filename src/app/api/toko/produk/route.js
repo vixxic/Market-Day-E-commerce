@@ -55,6 +55,10 @@ export async function POST(request) {
       nama,
       harga,
       gambar: typeof image === 'string' ? image : (Array.isArray(image) ? image[0] : null),
+      kategori: Array.isArray(data.kategori) ? data.kategori : [],
+      deskripsi: typeof data.deskripsi === "string" ? data.deskripsi.trim() : "",
+      rasa: Array.isArray(data.rasa) ? data.rasa : [],
+      ukuran: Array.isArray(data.ukuran) ? data.ukuran : [],
       id_toko: toko.id,
       created_at: new Date().toISOString(),
     };
