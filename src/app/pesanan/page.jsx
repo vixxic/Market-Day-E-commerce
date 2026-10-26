@@ -12,6 +12,7 @@ import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 
 // status pesanan -> teks & warna label
 const STATUS = {
+  menunggu_otp: { label: "Menunggu Verifikasi OTP", varian: "menunggu" },
   menunggu_konfirmasi: { label: "Menunggu Konfirmasi", varian: "menunggu" },
   diproses: { label: "Sudah diterima", varian: "terverifikasi" },
   selesai: { label: "Selesai", varian: "terverifikasi" },
@@ -107,7 +108,7 @@ function KartuPesanan({ pesanan }) {
               <p>Nomor Pemesan: {pesanan.nomorPemesan || "-"}</p>
               <p>Id Pesanan: {pesanan.idPesanan ?? pesanan.id ?? "-"}</p>
               <p>
-                Code klaim:{" "}
+                Kode Klaim:{" "}
                 <span className="kartu-pesanan__kode">
                   {pesanan.kodeKlaim ?? "-"}
                 </span>

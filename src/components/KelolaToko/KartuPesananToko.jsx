@@ -84,6 +84,7 @@ export default function KartuPesananToko({
           <p>Nama Pemesan: {pesanan.namaPenerima || "-"}</p>
           <p>Nomor Pemesan: {pesanan.nomorPemesan || "-"}</p>
           <p>ID Pesanan: {pesanan.idPesanan || pesanan.id || "-"}</p>
+          <p>Kode Klaim: {pesanan.kodeKlaim || pesanan.kode_klaim || "-"}</p>
           <p>Status: {formatStatusPesanan(pesanan.status)}</p>
         </div>
       )}

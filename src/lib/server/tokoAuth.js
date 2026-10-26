@@ -5,6 +5,8 @@ import { supabaseServer } from "@/lib/supabase/server";
 
 const COOKIE_NAME = "marketday-toko";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function ambilSessionSecret() {
   if (!process.env.TOKO_SESSION_SECRET && process.env.NODE_ENV === "production") {
@@ -22,7 +24,10 @@ function hashPassword(password) {
 
 async function passwordCocok(password, stored) {
   if (typeof stored !== "string") return false;
-  return argon2.verify(password, stored);
+  if (stored.startsWith("$argon2")) {
+    return argon2.verify(stored, password);
+  }
+  return stored === password;
 }
 
 function tandaTangan(payload) {
@@ -59,7 +64,11 @@ function bacaToken(token) {
     const session = JSON.parse(
       Buffer.from(payload, "base64url").toString("utf8"),
     );
-    if (!session.id || session.exp <= Math.floor(Date.now() / 1000)) {
+    if (
+      typeof session.id !== "string" ||
+      !UUID_PATTERN.test(session.id) ||
+      session.exp <= Math.floor(Date.now() / 1000)
+    ) {
       return null;
     }
     return { id: session.id, namaToko: session.namaToko };
@@ -129,15 +138,20 @@ export async function autentikasiToko(namaToko, password) {
         namaToko.toLocaleLowerCase() &&
       item.aktif !== false,
   );
-  if (!toko) throw new Error("Nama toko atau password tidak sesuai.");
+  if (!toko) {
+    const error = new Error("Nama toko atau password tidak sesuai.");
+    error.status = 401;
+    throw error;
+  }
 
   const stored = toko.passwordHash ?? toko.password;
   if (!await passwordCocok(password, stored)) {
-    throw new Error("Nama toko atau password tidak sesuai.");
+    const error = new Error("Nama toko atau password tidak sesuai.");
+    error.status = 401;
+    throw error;
   }
 
-  if (toko.passwordHash !== stored || !String(stored).startsWith("argon2$")) {
-    const { passwordHash: _old, ...tanpaPassword } = toko;
+  if (!stored.startsWith("$argon2")) {
     const passwordHash = await hashPassword(password);
     await perbaruiTokoApi(toko.id, {
       password_hash: passwordHash,

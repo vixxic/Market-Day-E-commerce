@@ -63,6 +63,7 @@ function normalisasiPesananApi(pesanan) {
   return {
     ...pesanan,
     idPesanan: pesanan.id_pesanan ?? pesanan.idPesanan ?? pesanan.id,
+    kodeKlaim: pesanan.kode_klaim ?? pesanan.kodeKlaim,
     item,
     nomorPemesan: pesanan.nomor_pemesan ?? pesanan.nomorPemesan,
     namaPenerima: pesanan.nama_penerima ?? pesanan.namaPenerima,

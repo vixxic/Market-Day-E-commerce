@@ -19,6 +19,9 @@ export async function POST(request) {
     await setelSesiToko(toko);
     return Response.json({ toko });
   } catch (error) {
+    if (error.status === 401) {
+      return Response.json({ error: error.message }, { status: 401 });
+    }
     return responsGagal(error);
   }
 }

@@ -6,7 +6,11 @@ import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
-import { permintaanKelolaToko, gambarProduk } from "@/lib/kelolaTokoClient";
+import {
+  permintaanKelolaToko,
+  gambarProduk,
+  normalisasiPesananToko,
+} from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
 import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
 
@@ -18,24 +22,39 @@ export default function DashboardToko() {
   const [hapusId, setHapusId] = useState(null);
   const [sedangHapus, setSedangHapus] = useState(false);
 
-  async function muatData() {
-    setLoading(true);
-    try {
-      const [daftarProduk, daftarPesanan] = await Promise.all([
-        permintaanKelolaToko("/api/toko/produk"),
-        permintaanKelolaToko("/api/toko/pesanan"),
-      ]);
-      setProduk(daftarProduk);
-      setPesanan(daftarPesanan);
-    } catch (galat) {
-      setError(galat.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    muatData();
+    let aktif = true;
+    let sedangMemuat = false;
+
+    async function muatData(tampilkanLoading = false) {
+      if (sedangMemuat) return;
+      sedangMemuat = true;
+      if (tampilkanLoading) setLoading(true);
+
+      try {
+        const [daftarProduk, daftarPesanan] = await Promise.all([
+          permintaanKelolaToko("/api/toko/produk"),
+          permintaanKelolaToko("/api/toko/pesanan"),
+        ]);
+        if (!aktif) return;
+        setProduk(daftarProduk);
+        setPesanan(daftarPesanan.map(normalisasiPesananToko));
+        setError("");
+      } catch (galat) {
+        if (aktif) setError(galat.message);
+      } finally {
+        sedangMemuat = false;
+        if (aktif && tampilkanLoading) setLoading(false);
+      }
+    }
+
+    muatData(true);
+    const interval = window.setInterval(() => muatData(), 10000);
+
+    return () => {
+      aktif = false;
+      window.clearInterval(interval);
+    };
   }, []);
 
   async function konfirmasiHapus() {

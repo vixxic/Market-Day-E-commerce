@@ -13,6 +13,7 @@ export async function GET(request) {
       .from('orders')
       .select('*')
       .eq('id_toko', toko.id)
+      .neq('status', 'menunggu_otp')
       .order('created_at', { ascending: false });
 
     if (error) throw error;

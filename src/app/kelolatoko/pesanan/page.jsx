@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
-import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
+import {
+  normalisasiPesananToko,
+  permintaanKelolaToko,
+} from "@/lib/kelolaTokoClient";
 
 export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   const router = useRouter();
@@ -19,7 +22,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
     permintaanKelolaToko("/api/toko/pesanan")
       .then((daftar) => {
         if (!aktif) return;
-        setPesanan(daftar);
+        setPesanan(daftar.map(normalisasiPesananToko));
         setError("");
       })
       .catch((galat) => {
@@ -35,7 +38,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
 
   async function muatPesanan() {
     const daftar = await permintaanKelolaToko("/api/toko/pesanan");
-    setPesanan(daftar);
+    setPesanan(daftar.map(normalisasiPesananToko));
     setError("");
   }
 

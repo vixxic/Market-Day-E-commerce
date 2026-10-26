@@ -8,6 +8,7 @@ import {
 
 const KUNCI_DAFTAR = "pesanan-marketday";
 const STATUS_PESANAN = [
+  "menunggu_otp",
   "menunggu_konfirmasi",
   "diproses",
   "selesai",
@@ -23,9 +24,13 @@ export function subscribePesanan(listener) {
 export function buatPesanan(data) {
   const pesanan = {
     ...data,
-    status: "menunggu_konfirmasi",
+    status: data.status ?? "menunggu_konfirmasi",
     dibuat: data.dibuat ?? new Date().toISOString(),
   };
+  return simpanPesananLokal(pesanan);
+}
+
+export function simpanPesananLokal(pesanan) {
   const daftar = ambilDaftarPesanan().filter(
     (item) => item.idPesanan !== pesanan.idPesanan,
   );

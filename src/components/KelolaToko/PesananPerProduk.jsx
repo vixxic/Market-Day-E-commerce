@@ -7,6 +7,7 @@ import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
 import {
   gambarProduk,
+  normalisasiPesananToko,
   permintaanKelolaToko,
 } from "@/lib/kelolaTokoClient";
 
@@ -27,7 +28,7 @@ export default function PesananPerProduk({ id }) {
         setProduk(
           daftarProduk.find((item) => String(item.id) === String(id)) ?? null,
         );
-        setPesanan(daftarPesanan);
+        setPesanan(daftarPesanan.map(normalisasiPesananToko));
         setError("");
       })
       .catch((galat) => {
@@ -46,7 +47,7 @@ export default function PesananPerProduk({ id }) {
     setProduk(
       daftarProduk.find((item) => String(item.id) === String(id)) ?? null,
     );
-    setPesanan(daftarPesanan);
+    setPesanan(daftarPesanan.map(normalisasiPesananToko));
     setError("");
   }
 

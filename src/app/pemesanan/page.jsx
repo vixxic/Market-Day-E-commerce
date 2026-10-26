@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useKeranjangContext } from "@/Context/KeranjangContext";
 import { usePesananContext } from "@/Context/PesananContext";
+import { simpanPesananLokal as perbaruiPesananLokal } from "@/lib/pesanan";
 import { simpanPemesanan } from "@/lib/pemesanan";
 import { formatHarga } from "@/lib/formatHarga";
 
@@ -54,7 +55,7 @@ export default function PagePemesanan() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           orderId: pemesanan.idPesanan,
-          phone: nomorPemesan,
+          phone: nomorPemesan || pemesanan.nomorPemesan,
         }),
       });
       const data = await resp.json();
@@ -93,12 +94,14 @@ export default function PagePemesanan() {
         setGalat(data.error);
         return;
       }
-      simpanPemesanan({
+      const pesananTerverifikasi = {
         ...pemesanan,
-        namaPemesan,
-        nomorPemesan,
+        namaPemesan: namaPemesan || pemesanan.namaPemesan,
+        nomorPemesan: nomorPemesan || pemesanan.nomorPemesan,
         status: "menunggu_konfirmasi",
-      });
+      };
+      simpanPemesanan(pesananTerverifikasi);
+      perbaruiPesananLokal(pesananTerverifikasi);
     } catch (galatSimpan) {
       setGalat(galatSimpan.message);
     } finally {
@@ -148,6 +151,7 @@ export default function PagePemesanan() {
       const kirimData = await kirimResp.json();
       if (!kirimResp.ok) {
         setGalat(kirimData.error ?? "Gagal mengirim OTP. Coba kirim ulang.");
+        setTahapOtp(true);
         return;
       }
       setTahapOtp(true);
