@@ -12,3 +12,15 @@
   text-align: center;
   color: #8c8c8c;
 }
+
+@media (min-width: 768px) {
+  .list-produk-dijual {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .list-produk-dijual {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
