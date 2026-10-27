@@ -19,11 +19,22 @@ export async function GET(request) {
 
     if (error) throw error;
 
-    const dataNormalized = data.map(p => ({
-      ...p,
-      gambar: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar,
-      image: Array.isArray(p.gambar) ? p.gambar[0] : p.gambar
-    }));
+    const dataNormalized = data.map((produk) => {
+      const gambarList =
+        Array.isArray(produk.gambar_list) && produk.gambar_list.length > 0
+          ? produk.gambar_list
+          : Array.isArray(produk.gambar)
+            ? produk.gambar
+            : produk.gambar
+              ? [produk.gambar]
+              : [];
+
+      return {
+        ...produk,
+        gambar: gambarList[0] ?? null,
+        image: gambarList,
+      };
+    });
 
     return Response.json(dataNormalized);
   } catch (error) {
@@ -41,11 +52,23 @@ export async function POST(request) {
     const data = await dataJson(request);
     const nama = typeof data.nama === "string" ? data.nama.trim() : "";
     const harga = Number(data.harga);
-    const image = data.image;
+    const imageList = Array.isArray(data.image)
+      ? data.image
+          .filter((url) => typeof url === "string" && url.trim())
+          .map((url) => url.trim())
+      : typeof data.image === "string" && data.image.trim()
+        ? [data.image.trim()]
+        : [];
 
-    if (!nama || !Number.isFinite(harga) || harga <= 0 || !image) {
+    if (!nama || !Number.isFinite(harga) || harga <= 0 || imageList.length === 0) {
       return Response.json(
         { error: "Nama, harga yang valid, dan foto produk wajib diisi." },
+        { status: 400 },
+      );
+    }
+    if (imageList.length > 5) {
+      return Response.json(
+        { error: "Pilih maksimal 5 foto produk." },
         { status: 400 },
       );
     }
@@ -53,9 +76,14 @@ export async function POST(request) {
     const produkBaru = {
       nama,
       harga,
-      gambar: typeof image === "string" ? image : (Array.isArray(image) ? image[0] : null),
+      gambar: imageList[0],
+      gambar_list: imageList,
       id_toko: toko.id,
       created_at: new Date().toISOString(),
+      kategori: Array.isArray(data.kategori) ? data.kategori : [],
+      deskripsi: typeof data.deskripsi === "string" ? data.deskripsi.trim() : "",
+      rasa: Array.isArray(data.rasa) ? data.rasa : [],
+      ukuran: Array.isArray(data.ukuran) ? data.ukuran : [],
     };
 
     const { data: result, error } = await supabaseServer

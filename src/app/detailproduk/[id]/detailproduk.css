@@ -108,9 +108,20 @@
 
 .detail-produk__deskripsi {
   margin: 10px 0 0;
+  white-space: pre-line;
   font-size: 0.875rem;
   line-height: 1.6;
   color: #111111;
+}
+
+.detail-produk__judul-deskripsi {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.detail-produk__deskripsi p {
+  margin: 0;
 }
 
 /* --- tombol beli: menempel di dasar layar HP --- */

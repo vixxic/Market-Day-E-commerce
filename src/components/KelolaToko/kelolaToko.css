@@ -456,11 +456,37 @@
 }
 
 .kelola-toko__daftar-foto {
+  display: grid;
+  gap: 8px;
   margin: 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
   color: var(--kelola-gelap);
   font-size: 0.9rem;
   overflow-wrap: anywhere;
+}
+
+.kelola-toko__daftar-foto li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kelola-toko__hapus-foto {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 6px 10px;
+  border: 1px solid #c9baba;
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--kelola-gelap);
+  font: inherit;
+  cursor: pointer;
+}
+
+.kelola-toko__hapus-foto:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .kelola-toko__kategori {

@@ -41,10 +41,19 @@ export default function TambahProdukPage() {
     const fileTerpilih = Array.from(event.target.files ?? []);
     const formatDidukung = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 
-    if (fileTerpilih.length > 5) {
-      setFoto([]);
+    const fotoBaru = fileTerpilih.filter(
+      (file) =>
+        !foto.some(
+          (terpilih) =>
+            terpilih.name === file.name &&
+            terpilih.size === file.size &&
+            terpilih.lastModified === file.lastModified,
+        ),
+    );
+
+    if (foto.length + fotoBaru.length > 5) {
       event.target.value = "";
-      setError("Pilih maksimal 5 foto produk.");
+      setError("Produk hanya boleh memiliki maksimal 5 foto.");
       return;
     }
 
@@ -53,7 +62,6 @@ export default function TambahProdukPage() {
         !formatDidukung.includes(file.type) || file.size > 5 * 1024 * 1024,
     );
     if (fotoTidakValid) {
-      setFoto([]);
       event.target.value = "";
       setError(
         "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 5 MB per foto.",
@@ -61,7 +69,8 @@ export default function TambahProdukPage() {
       return;
     }
 
-    setFoto(fileTerpilih);
+    setFoto((sebelumnya) => [...sebelumnya, ...fotoBaru]);
+    event.target.value = "";
     setError("");
   }
 
@@ -177,14 +186,14 @@ export default function TambahProdukPage() {
               })}
             </div>
           </fieldset>
-          <label className="kelola-toko__bidang">
-            Foto produk *
+          <div className="kelola-toko__bidang">
+            <label htmlFor="foto-produk">Foto produk *</label>
             <input
+              id="foto-produk"
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               multiple
-              required
-              disabled={sedangMenyimpan}
+              disabled={sedangMenyimpan || foto.length >= 5}
               onChange={pilihFoto}
             />
             <p className="kelola-toko__bantuan">
@@ -192,14 +201,27 @@ export default function TambahProdukPage() {
             </p>
             {foto.length > 0 && (
               <ul className="kelola-toko__daftar-foto">
-                {foto.map((file) => (
+                {foto.map((file, indeks) => (
                   <li key={`${file.name}-${file.lastModified}`}>
                     {file.name}
+                    <button
+                      type="button"
+                      className="kelola-toko__hapus-foto"
+                      disabled={sedangMenyimpan}
+                      aria-label={`Hapus foto ${file.name}`}
+                      onClick={() =>
+                        setFoto((daftar) =>
+                          daftar.filter((_, posisi) => posisi !== indeks),
+                        )
+                      }
+                    >
+                      Hapus
+                    </button>
                   </li>
                 ))}
               </ul>
             )}
-          </label>
+          </div>
           <label className="kelola-toko__bidang">
             Deskripsi
             <textarea

@@ -11,9 +11,19 @@ import { ambilProdukById } from "@/lib/api/produkApi";
 import { Suspense } from "react";
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 
+function daftarGambarProduk(produk) {
+  const sumber =
+    Array.isArray(produk.gambar_list) && produk.gambar_list.length > 0
+      ? produk.gambar_list
+      : produk.image ?? produk.gambar;
+  return (Array.isArray(sumber) ? sumber : typeof sumber === "string" ? [sumber] : [])
+    .filter((gambar) => typeof gambar === "string" && gambar.trim());
+}
+
 function EditProdukContent({ params }) {
   const router = useRouter();
   const [foto, setFoto] = useState([]);
+  const [gambarTersimpan, setGambarTersimpan] = useState([]);
   const [form, setForm] = useState({
     nama: "",
     harga: "",
@@ -46,6 +56,7 @@ function EditProdukContent({ params }) {
           rasa: Array.isArray(produk.rasa) ? produk.rasa.join(", ") : (produk.rasa || ""),
           ukuran: Array.isArray(produk.ukuran) ? produk.ukuran.join(", ") : (produk.ukuran || ""),
         });
+        setGambarTersimpan(daftarGambarProduk(produk));
       } catch (galat) {
         setError("Gagal memuat data produk: " + galat.message);
       } finally {
@@ -72,10 +83,9 @@ function EditProdukContent({ params }) {
     const fileTerpilih = Array.from(event.target.files ?? []);
     const formatDidukung = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 
-    if (fileTerpilih.length > 5) {
-      setFoto([]);
+    if (gambarTersimpan.length + foto.length + fileTerpilih.length > 5) {
       event.target.value = "";
-      setError("Pilih maksimal 5 foto produk.");
+      setError("Produk hanya boleh memiliki maksimal 5 foto.");
       return;
     }
 
@@ -84,7 +94,6 @@ function EditProdukContent({ params }) {
         !formatDidukung.includes(file.type) || file.size > 5 * 1024 * 1024,
     );
     if (fotoTidakValid) {
-      setFoto([]);
       event.target.value = "";
       setError(
         "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 5 MB per foto.",
@@ -92,7 +101,8 @@ function EditProdukContent({ params }) {
       return;
     }
 
-    setFoto(fileTerpilih);
+    setFoto((sebelumnya) => [...sebelumnya, ...fileTerpilih]);
+    event.target.value = "";
     setError("");
   }
 
@@ -104,24 +114,28 @@ function EditProdukContent({ params }) {
       setError("Pilih minimal satu kategori produk.");
       return;
     }
+    if (gambarTersimpan.length + foto.length === 0) {
+      setError("Pilih minimal satu foto produk.");
+      return;
+    }
 
     setSedangMenyimpan(true);
 
     try {
       const resolvedParams = await params;
       const id = resolvedParams.id;
-      let image = null;
+      let image = [...gambarTersimpan];
 
       if (foto.length > 0) {
         setTahapSimpan("Mengunggah foto...");
         const uploadedImages = await Promise.all(foto.map(unggahFotoProduk));
-        image = uploadedImages[0];
+        image = [...image, ...uploadedImages];
       }
 
       const data = {
         ...form,
         harga: Number(form.harga),
-        image: image,
+        image,
         rasa: form.rasa
           .split(",")
           .map((item) => item.trim())
@@ -217,28 +231,60 @@ function EditProdukContent({ params }) {
               })}
             </div>
           </fieldset>
-          <label className="kelola-toko__bidang">
-            Ganti Foto (Opsional)
+          <div className="kelola-toko__bidang">
+            <label htmlFor="foto-produk">Ganti Foto (Opsional)</label>
             <input
+              id="foto-produk"
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               multiple
-              disabled={sedangMenyimpan}
+              disabled={sedangMenyimpan || gambarTersimpan.length + foto.length >= 5}
               onChange={pilihFoto}
             />
             <p className="kelola-toko__bantuan">
-              Pilih maksimal 5 foto JPG, PNG, WebP, atau AVIF. Ukuran maksimal 5 MB per foto.
+              Pilih hingga 5 foto total. JPG, PNG, WebP, atau AVIF; maksimal 5 MB per foto.
             </p>
-            {foto.length > 0 && (
+            {(gambarTersimpan.length > 0 || foto.length > 0) && (
               <ul className="kelola-toko__daftar-foto">
-                {foto.map((file) => (
+                {gambarTersimpan.map((gambar, indeks) => (
+                  <li key={`${gambar}-${indeks}`}>
+                    <span>Foto tersimpan {indeks + 1}</span>
+                    <button
+                      type="button"
+                      className="kelola-toko__hapus-foto"
+                      disabled={sedangMenyimpan}
+                      aria-label={`Hapus foto tersimpan ${indeks + 1}`}
+                      onClick={() =>
+                        setGambarTersimpan((daftar) =>
+                          daftar.filter((_, posisi) => posisi !== indeks),
+                        )
+                      }
+                    >
+                      Hapus
+                    </button>
+                  </li>
+                ))}
+                {foto.map((file, indeks) => (
                   <li key={`${file.name}-${file.lastModified}`}>
-                    {file.name}
+                    <span>{file.name}</span>
+                    <button
+                      type="button"
+                      className="kelola-toko__hapus-foto"
+                      disabled={sedangMenyimpan}
+                      aria-label={`Hapus foto baru ${file.name}`}
+                      onClick={() =>
+                        setFoto((daftar) =>
+                          daftar.filter((_, posisi) => posisi !== indeks),
+                        )
+                      }
+                    >
+                      Hapus
+                    </button>
                   </li>
                 ))}
               </ul>
             )}
-          </label>
+          </div>
           <label className="kelola-toko__bidang">
             Deskripsi
             <textarea

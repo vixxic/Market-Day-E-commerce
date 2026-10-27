@@ -22,6 +22,8 @@ SUPABASE_SERVICE_ROLE_KEY=<service-role-key-dari-supabase>
 
 Ambil URL project dan service-role key dari dashboard project Supabase (Project Settings → API / API Keys). Buat bucket dengan nama yang sama seperti `SUPABASE_STORAGE_BUCKET` dan atur sebagai **public** agar URL foto dapat ditampilkan. Ganti nilai contoh dengan konfigurasi project Anda, jangan membagikan service-role key, dan jangan pernah memberi key tersebut prefix `NEXT_PUBLIC_` karena hanya boleh digunakan Route Handler server. Setelah mengubah `.env.local`, mulai ulang server Next.js. Endpoint unggah akan menyebutkan nama variabel yang belum diatur jika konfigurasinya masih kurang.
 
+Galeri produk menyimpan hingga lima URL foto dalam kolom `products.gambar_list`. Terapkan migrasi `supabase/migrations/20261027090000_add_product_image_gallery.sql` pada project Supabase sebelum memakai versi aplikasi ini; migrasi tersebut juga menyalin foto lama ke galeri.
+
 Pesanan baru dikirim ke API pesanan dengan `idCheckout`, `idPesanan`, `id_toko`, identitas pemesan, total, status, `item` berisi rincian produk dan varian, serta `createdAt`. Setiap transaksi mengirim satu pesanan untuk satu toko.
 
 Pengiriman OTP WhatsApp memerlukan token API Fonnte di `.env.local`:

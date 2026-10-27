@@ -135,7 +135,15 @@ function IsiDetailProduk() {
               <p className="detail-produk__harga">
                 {formatHarga(produk.harga)}
               </p>
-              <p className="detail-produk__deskripsi">{produk.deskripsi}</p>
+              <section className="detail-produk__deskripsi">
+                <h3 className="detail-produk__judul-deskripsi">
+                  Deskripsi Produk
+                </h3>
+                <p>
+                  {produk.deskripsi?.trim() ||
+                    "Deskripsi produk belum tersedia."}
+                </p>
+              </section>
 
               <div className="detail-produk__aksi">
                 <button

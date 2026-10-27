@@ -28,7 +28,23 @@ export async function PATCH(request, { params }) {
     if (Array.isArray(data.ukuran)) perubahan.ukuran = data.ukuran;
     const image = data.image ?? data.gambar;
     if (typeof image === "string" || Array.isArray(image)) {
-      perubahan.gambar = Array.isArray(image) ? image[0] ?? null : image;
+      const imageList = Array.isArray(image)
+        ? image
+            .filter((url) => typeof url === "string" && url.trim())
+            .map((url) => url.trim())
+        : image.trim()
+          ? [image.trim()]
+          : [];
+
+      if (imageList.length === 0 || imageList.length > 5) {
+        return Response.json(
+          { error: "Produk harus memiliki 1 sampai 5 foto." },
+          { status: 400 },
+        );
+      }
+
+      perubahan.gambar = imageList[0];
+      perubahan.gambar_list = imageList;
     }
 
     if (Object.keys(perubahan).length === 0) {

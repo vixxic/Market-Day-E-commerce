@@ -1,15 +1,5 @@
 export const KATEGORI_PRODUK = [
-  "Manis",
-  "Asin",
-  "Pedas",
-  "Asam",
-  "Gurih",
-  "Segar",
-  "Sehat",
-  "Camilan",
-  "Makanan Berat",
+  "Makanan",
   "Minuman",
   "Dessert",
-  "Kue & Roti",
 ];
-
