@@ -6,13 +6,16 @@ export async function kirimWaFonnte(target, message) {
     throw new Error("Konfigurasi FONNTE_API belum diatur di .env");
   }
 
+  const formData = new FormData();
+  formData.set("target", target);
+  formData.set("message", message);
+
   const response = await fetch(FONNTE_ENDPOINT, {
     method: "POST",
     headers: {
       Authorization: token,
-      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ target, message }),
+    body: formData,
   });
 
   const json = await response.json().catch(() => ({}));

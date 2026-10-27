@@ -169,8 +169,9 @@
 .daftar-toko__aksi {
   margin-top: auto;
   position: sticky;
-  bottom: 0;
-  padding: 50px 0 max(24px, env(safe-area-inset-bottom, 0px));
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  padding: 50px 0 12px;
+  background-color: #ffffff;
 }
 
 .daftar-toko__tombol {
