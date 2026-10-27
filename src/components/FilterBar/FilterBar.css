@@ -88,7 +88,7 @@
   left: 0;
   right: 0;
   height: 200px;
-  background-color: var(--warna-merah-utama); /* fallback */
+  background-color: var(--warna-merah-utama);
   background-image: url("../../assets/placeholder_market_day.png");
   background-position: center;
   background-size: cover;
