@@ -30,7 +30,7 @@ export async function GET(_request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
-    const toko = bacaSesiToko(request);
+    const toko = await bacaSesiToko(request);
     if (!toko) {
       return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
     }
@@ -78,7 +78,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const toko = bacaSesiToko(request);
+    const toko = await bacaSesiToko(request);
     if (!toko) {
       return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
     }

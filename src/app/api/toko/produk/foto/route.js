@@ -11,7 +11,7 @@ const EKSTENSI_FOTO = {
 };
 
 export async function POST(request) {
-  const toko = bacaSesiToko(request);
+  const toko = await bacaSesiToko(request);
   if (!toko) {
     return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
   }

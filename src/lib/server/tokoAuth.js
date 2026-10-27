@@ -183,7 +183,7 @@ export async function hapusSesiToko() {
   });
 }
 
-export function bacaSesiToko(request) {
+export async function bacaSesiToko(request) {
   const cookie = request.headers
     .get("cookie")
     ?.split(";")
@@ -192,7 +192,23 @@ export function bacaSesiToko(request) {
   if (!cookie) return null;
 
   try {
-    return bacaToken(decodeURIComponent(cookie.slice(COOKIE_NAME.length + 1)));
+    const sesi = bacaToken(decodeURIComponent(cookie.slice(COOKIE_NAME.length + 1)));
+    if (!sesi) return null;
+
+    const { data, error } = await supabaseServer
+      .from("stores")
+      .select("id, nama_toko, aktif")
+      .eq("id", sesi.id)
+      .maybeSingle();
+
+    if (error || !data || data.aktif === false) {
+      return null;
+    }
+
+    return {
+      id: String(data.id),
+      namaToko: data.nama_toko,
+    };
   } catch {
     return null;
   }

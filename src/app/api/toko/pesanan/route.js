@@ -4,7 +4,7 @@ import { responsGagal } from "@/lib/server/tokoApi";
 
 export async function GET(request) {
   try {
-    const toko = bacaSesiToko(request);
+    const toko = await bacaSesiToko(request);
     if (!toko) {
       return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
     }
