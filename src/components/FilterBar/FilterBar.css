@@ -87,25 +87,12 @@
   top: 16px;
   left: 0;
   right: 0;
-  height: 150px;
-  background-color: var(--warna-merah-utama);
-  background-image:
-    radial-gradient(
-      circle at calc(50% - 12px) calc(100% - 10px),
-      rgba(255, 255, 255, 0.55) 0 3px,
-      transparent 3.5px
-    ),
-    radial-gradient(
-      circle at 50% calc(100% - 10px),
-      #ffffff 0 3px,
-      transparent 3.5px
-    ),
-    radial-gradient(
-      circle at calc(50% + 12px) calc(100% - 10px),
-      rgba(255, 255, 255, 0.55) 0 3px,
-      transparent 3.5px
-    );
-
+  height: 200px;
+  background-color: var(--warna-merah-utama); /* fallback */
+  background-image: url("../../assets/placeholder_market_day.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   border-radius: 10px;
 }
 
