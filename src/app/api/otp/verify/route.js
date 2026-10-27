@@ -37,7 +37,7 @@ export async function POST(request) {
 
     const { data: order, error: fetchError } = await supabaseServer
       .from("orders")
-      .select("id, status, otp_hash, otp_expires_at, otp_attempts, id_toko, buyer_phone, total, id_checkout")
+      .select("id, status, otp_hash, otp_expires_at, otp_attempts, id_toko, buyer_phone, total, id_pesanan, kode_klaim")
       .eq("id_pesanan", orderId)
       .maybeSingle();
 
@@ -122,11 +122,11 @@ export async function POST(request) {
 
         const body =
           `Pesanan Baru Market Day (OTP Terverifikasi)\n` +
-          `Kode Klaim: ${order.id_checkout}\n` +
+          `Kode Klaim: ${order.kode_klaim}\n` +
+          `ID Pesanan: ${order.id_pesanan}\n` +
           `Total: Rp ${order.total}\n` +
-          `Pemesan: ${order.buyer_phone || "-"}\n` +
-          (order.total ? `Total bayar: Rp ${order.total}\n` : "") +
-          `\nSilakan cek halaman klaim toko Anda.`;
+          `Pemesan: ${order.buyer_phone || "-"}\n\n` +
+          `Silakan cek halaman klaim toko Anda.`;
 
         await kirimPemberitahuanPesananFonnte(store.whatsapp_number, body);
         await supabaseServer
