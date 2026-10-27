@@ -34,6 +34,26 @@
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  min-width: 0;
+}
+
+.header-toko__input-cari {
+  box-sizing: border-box;
+  width: clamp(120px, 42vw, 320px);
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d7c6c6;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.header-toko__input-cari:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
 }
 
 .header-toko__tombol {

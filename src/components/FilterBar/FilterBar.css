@@ -9,6 +9,8 @@
   overscroll-behavior-x: contain;
   scrollbar-width: none; /* Firefox */
   -webkit-overflow-scrolling: touch;
+
+  border-radius: 10px;
 }
 
 .filter-bar::-webkit-scrollbar {
@@ -71,5 +73,50 @@
 @media (prefers-reduced-motion: reduce) {
   .filter-bar__pil {
     transition: none;
+  }
+}
+
+.filter-bar {
+  position: relative;
+  padding-top: calc(16px + 120px + 16px);
+}
+
+.filter-bar::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background-color: var(--warna-merah-utama);
+  background-image:
+    radial-gradient(
+      circle at calc(50% - 12px) calc(100% - 10px),
+      rgba(255, 255, 255, 0.55) 0 3px,
+      transparent 3.5px
+    ),
+    radial-gradient(
+      circle at 50% calc(100% - 10px),
+      #ffffff 0 3px,
+      transparent 3.5px
+    ),
+    radial-gradient(
+      circle at calc(50% + 12px) calc(100% - 10px),
+      rgba(255, 255, 255, 0.55) 0 3px,
+      transparent 3.5px
+    );
+
+  border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+  .filter-bar {
+    padding-top: calc(12px + 200px + 20px);
+  }
+
+  .filter-bar::before {
+    top: 12px;
+    height: 200px;
+    border-radius: 12px;
   }
 }
