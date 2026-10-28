@@ -20,7 +20,7 @@ SUPABASE_STORAGE_BUCKET=produk
 NEXT_PUBLIC_SITE_URL=https://<domain-aplikasi>
 ```
 
-`NEXT_PUBLIC_SITE_URL` dipakai sebagai `metadataBase` agar URL gambar Open Graph/Twitter menjadi absolut. Di Vercel, nilai ini dapat diganti otomatis dari `VERCEL_PROJECT_PRODUCTION_URL` bila variabel tersebut tidak diatur. Ikon situs memakai `public/TR.png`, sedangkan gambar metadata memakai `public/banner-market-day.jpg`.
+`NEXT_PUBLIC_SITE_URL` dipakai sebagai `metadataBase` agar URL gambar Open Graph/Twitter menjadi absolut (nilai tanpa `https://` otomatis dilengkapi). Di Vercel, nilai ini dapat diganti otomatis dari `VERCEL_PROJECT_PRODUCTION_URL`/`VERCEL_URL` bila variabel tersebut tidak diatur. Ikon situs memakai `public/TR.png`, sedangkan gambar pratinjau tautan memakai `public/og-market-day.jpg` (1200×630).
 
 Jangan pernah memberi prefix `NEXT_PUBLIC_` pada `SUPABASE_SERVICE_ROLE_KEY` atau `FONNTE_API`.
 

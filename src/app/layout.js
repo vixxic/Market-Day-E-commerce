@@ -8,14 +8,22 @@ const inter = Inter({
 });
 
 function urlSitus() {
-  const kandidat =
+  const kandidat = (
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : null);
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_URL ||
+    ""
+  ).trim();
+
+  if (!kandidat) return new URL("http://localhost:3000");
+
+  // Terima nilai env dengan atau tanpa protokol, mis. "marketday.vercel.app".
+  const lengkap = /^https?:\/\//i.test(kandidat)
+    ? kandidat
+    : `https://${kandidat}`;
 
   try {
-    return new URL(kandidat ?? "http://localhost:3000");
+    return new URL(lengkap);
   } catch {
     return new URL("http://localhost:3000");
   }
@@ -42,9 +50,10 @@ export const metadata = {
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
     images: [
       {
-        url: "/banner-market-day.jpg",
+        url: "/og-market-day.jpg",
+        type: "image/jpeg",
         width: 1200,
-        height: 600,
+        height: 630,
         alt: "Banner Market Day Sekolah Tri Ratna Jakarta",
       },
     ],
@@ -54,7 +63,7 @@ export const metadata = {
     title: "Market Day",
     description:
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
-    images: ["/banner-market-day.jpg"],
+    images: ["/og-market-day.jpg"],
   },
 };
 

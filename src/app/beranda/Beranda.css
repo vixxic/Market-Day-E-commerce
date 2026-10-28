@@ -177,6 +177,10 @@
   gap: 16px;
 }
 
+.beranda__bagian-heading {
+  flex-wrap: wrap;
+}
+
 .beranda__bagian-heading h2,
 .beranda__katalog-heading h2 {
   margin: 0;
@@ -199,42 +203,56 @@
 
 .beranda__toko-list {
   display: flex;
+  align-items: stretch;
   gap: 12px;
   margin-top: 14px;
-  padding-bottom: 4px;
+  padding: 4px 0 14px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82, 16, 20, 0.26) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 .beranda__toko-list::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+
+.beranda__toko-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.beranda__toko-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(82, 16, 20, 0.24);
 }
 
 .beranda__toko-kartu {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 11px;
-  flex: 0 0 250px;
+  flex-direction: column;
+  flex: 0 0 clamp(232px, 72vw, 264px);
   min-width: 0;
-  padding: 12px 14px;
+  padding-bottom: 12px;
   border: 1px solid #f0e2e2;
-  border-radius: 14px;
+  border-radius: 18px;
+  overflow: hidden;
   background: #ffffff;
   color: inherit;
   text-decoration: none;
   scroll-snap-align: start;
-  box-shadow: 0 4px 16px rgba(82, 16, 20, 0.05);
+  box-shadow: 0 6px 18px rgba(82, 16, 20, 0.06);
   transition:
-    border-color 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .beranda__toko-kartu:hover {
   border-color: #e2c4c4;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(82, 16, 20, 0.09);
+  box-shadow: 0 12px 26px rgba(82, 16, 20, 0.12);
 }
 
 .beranda__toko-kartu:focus-visible {
@@ -242,23 +260,77 @@
   outline-offset: 2px;
 }
 
-.beranda__toko-kartu > svg {
-  flex: 0 0 auto;
-  margin-left: auto;
+.beranda__toko-banner {
+  position: relative;
+  display: block;
+  height: 88px;
+  overflow: hidden;
+  background-color: #6d171c;
+  background-image:
+    radial-gradient(120% 140% at 12% 0%, rgba(255, 255, 255, 0.24), transparent 58%),
+    linear-gradient(135deg, #7a1e24 0%, #521014 62%, #3c090d 100%);
+}
+
+.beranda__toko-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.beranda__toko-banner-inisial {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.26);
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.beranda__toko-jumlah {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
   color: var(--warna-merah-utama);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(32, 4, 6, 0.16);
+}
+
+.beranda__toko-jumlah svg {
+  width: 11px;
+  height: 11px;
+}
+
+.beranda__toko-isi {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 11px 13px 0;
 }
 
 .beranda__toko-avatar {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
   background: linear-gradient(135deg, #f7e8e8, #e6cccc);
   color: var(--warna-merah-utama);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
@@ -272,31 +344,71 @@
 .beranda__toko-teks {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
 .beranda__toko-teks strong {
   overflow: hidden;
   color: #241616;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   line-height: 1.25;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.beranda__toko-teks span {
+.beranda__toko-lokasi {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
+  overflow: hidden;
   color: #8a7070;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.beranda__toko-teks svg {
-  width: 12px;
-  height: 12px;
+.beranda__toko-lokasi svg {
+  flex: 0 0 auto;
+  width: 11px;
+  height: 11px;
+}
+
+.beranda__toko-deskripsi {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 8px 13px 10px;
+  color: #7d6464;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.beranda__toko-kaki {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding: 11px 13px 0;
+  border-top: 1px solid #f6ecec;
+  color: var(--warna-merah-utama);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.beranda__toko-kaki svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.18s ease;
+}
+
+.beranda__toko-kartu:hover .beranda__toko-kaki svg {
+  transform: translateX(3px);
 }
 
 /* ===== Katalog ===== */
@@ -455,15 +567,31 @@
   outline-offset: 3px;
 }
 
+@media (max-width: 639px) {
+  .beranda__toko-list {
+    margin-inline: -16px;
+    padding-inline: 16px;
+    scroll-padding-inline: 16px;
+  }
+}
+
 @media (min-width: 640px) {
   .beranda__toko-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+    padding: 0;
     overflow: visible;
+    scrollbar-width: auto;
   }
 
   .beranda__toko-kartu {
     flex-basis: auto;
+  }
+
+  .beranda__toko-banner {
+    height: 104px;
   }
 }
 
@@ -508,7 +636,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .beranda__toko-kartu {
+  .beranda__toko-kartu,
+  .beranda__toko-kaki svg {
     transition: none;
+  }
+
+  .beranda__toko-kartu:hover .beranda__toko-kaki svg {
+    transform: none;
   }
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiFilter,
+  FiMapPin,
   FiSearch,
   FiShoppingBag,
   FiX,
@@ -238,23 +239,52 @@ function Beranda() {
                 key={toko.id}
                 className="beranda__toko-kartu"
                 href={`/toko/${toko.id}`}
-                aria-label={`Kunjungi toko ${toko.namaToko}`}
+                aria-label={`Kunjungi toko ${toko.namaToko}, ${toko.jumlahProduk} produk`}
               >
-                <span className="beranda__toko-avatar" aria-hidden="true">
-                  {toko.fotoProfil ? (
-                    <img src={toko.fotoProfil} alt="" loading="lazy" />
+                <span className="beranda__toko-banner">
+                  {toko.banner ? (
+                    <img src={toko.banner} alt="" loading="lazy" />
                   ) : (
-                    inisial(toko.namaToko)
+                    <span
+                      className="beranda__toko-banner-inisial"
+                      aria-hidden="true"
+                    >
+                      {inisial(toko.namaToko)}
+                    </span>
                   )}
-                </span>
-                <span className="beranda__toko-teks">
-                  <strong>{toko.namaToko}</strong>
-                  <span>
-                    <FiShoppingBag aria-hidden="true" /> {toko.jumlahProduk}{" "}
-                    produk
+                  <span className="beranda__toko-jumlah">
+                    <FiShoppingBag aria-hidden="true" />
+                    {toko.jumlahProduk} produk
                   </span>
                 </span>
-                <FiArrowRight aria-hidden="true" />
+
+                <span className="beranda__toko-isi">
+                  <span className="beranda__toko-avatar" aria-hidden="true">
+                    {toko.fotoProfil ? (
+                      <img src={toko.fotoProfil} alt="" loading="lazy" />
+                    ) : (
+                      inisial(toko.namaToko)
+                    )}
+                  </span>
+                  <span className="beranda__toko-teks">
+                    <strong>{toko.namaToko}</strong>
+                    {toko.lokasi?.trim() && (
+                      <span className="beranda__toko-lokasi">
+                        <FiMapPin aria-hidden="true" />
+                        {toko.lokasi.trim()}
+                      </span>
+                    )}
+                  </span>
+                </span>
+
+                <span className="beranda__toko-deskripsi">
+                  {toko.deskripsi?.trim() || "Jelajahi produk toko ini."}
+                </span>
+
+                <span className="beranda__toko-kaki">
+                  Kunjungi toko
+                  <FiArrowRight aria-hidden="true" />
+                </span>
               </Link>
             ))}
           </div>
