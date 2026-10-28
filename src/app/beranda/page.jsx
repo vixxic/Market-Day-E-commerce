@@ -24,6 +24,7 @@ import KartuProduk from "@/components/KartuProduk/KartuProduk";
 
 // utils
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
+import Image from "next/image";
 
 const OPSI_URUTAN = [
   { id: "terbaru", label: "Terbaru" },
@@ -162,7 +163,7 @@ function Beranda() {
 
   const filterAktif =
     filterBeranda !== "All" && filterBeranda !== "Semua";
-  const tampilkanToko = !kueriNormal && !filterAktif && tokoTampil.length > 0;
+  const tampilkanToko = !kueriNormal && tokoTampil.length > 0;
 
   return (
     <section className="beranda">
@@ -246,9 +247,11 @@ function Beranda() {
                     toko.banner ? "" : " beranda__toko-banner--bawaan"
                   }`}
                 >
-                  <img
+                  <Image
                     src={toko.banner || "/banner-store-default.png"}
                     alt=""
+                    fill
+                    sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 264px"
                     loading="lazy"
                   />
                   <span className="beranda__toko-jumlah">
@@ -260,7 +263,13 @@ function Beranda() {
                 <span className="beranda__toko-isi">
                   <span className="beranda__toko-avatar" aria-hidden="true">
                     {toko.fotoProfil ? (
-                      <img src={toko.fotoProfil} alt="" loading="lazy" />
+                      <Image
+                        src={toko.fotoProfil}
+                        alt=""
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                      />
                     ) : (
                       inisial(toko.namaToko)
                     )}

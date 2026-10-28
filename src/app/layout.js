@@ -70,7 +70,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="id">
-      <body className={inter.className}>
+      <body
+        className={inter.className}
+        style={{
+          // Tambahkan fallback sistem: font web tidak tersedia di menu
+          // dropdown bawaan browser, sehingga tanpa fallback jatuh ke serif.
+          fontFamily: `${inter.style.fontFamily}, "Segoe UI", system-ui, -apple-system, Arial, sans-serif`,
+        }}
+      >
         <GlobalProvider>{children}</GlobalProvider>
       </body>
     </html>

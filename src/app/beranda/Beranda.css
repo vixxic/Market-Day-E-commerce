@@ -109,6 +109,14 @@
   color: #a58b8b;
 }
 
+/* Sembunyikan tombol hapus bawaan browser; kita punya tombol sendiri. */
+.beranda__pencarian input::-webkit-search-cancel-button,
+.beranda__pencarian input::-webkit-search-decoration {
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .beranda__pencarian:focus-within {
   outline: 3px solid rgba(255, 255, 255, 0.7);
   outline-offset: 2px;
@@ -441,6 +449,16 @@
 .beranda__urutan select:focus-visible {
   outline: 2px solid var(--warna-merah-utama);
   outline-offset: 2px;
+}
+
+/* Daftar pilihan dirender oleh menu bawaan browser, yang tidak memuat
+   font web Inter. Pakai font sistem agar tidak jatuh ke serif. */
+.beranda__urutan select option {
+  color: #2a1818;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .beranda__hasil-baris {
