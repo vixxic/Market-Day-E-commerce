@@ -50,10 +50,10 @@ export const metadata = {
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
     images: [
       {
-        url: "/og-market-day.jpg",
+        url: "/banner-market-day.jpg",
         type: "image/jpeg",
         width: 1200,
-        height: 630,
+        height: 600,
         alt: "Banner Market Day Sekolah Tri Ratna Jakarta",
       },
     ],
@@ -63,7 +63,7 @@ export const metadata = {
     title: "Market Day",
     description:
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
-    images: ["/og-market-day.jpg"],
+    images: ["/banner-market-day.jpg"],
   },
 };
 
