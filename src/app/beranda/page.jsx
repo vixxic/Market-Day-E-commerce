@@ -163,7 +163,7 @@ function Beranda() {
 
   const filterAktif =
     filterBeranda !== "All" && filterBeranda !== "Semua";
-  const tampilkanToko = !kueriNormal && tokoTampil.length > 0;
+  const tampilkanToko = tokoTampil.length > 0;
 
   return (
     <section className="beranda">
