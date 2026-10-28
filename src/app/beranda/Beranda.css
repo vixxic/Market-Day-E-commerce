@@ -278,16 +278,8 @@
   object-fit: cover;
 }
 
-.beranda__toko-banner-inisial {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: rgba(255, 255, 255, 0.26);
-  font-size: 2.4rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1;
+.beranda__toko-banner--bawaan {
+  background: #ffffff;
 }
 
 .beranda__toko-jumlah {
@@ -298,8 +290,9 @@
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
+  border: 1px solid rgba(82, 16, 20, 0.1);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   color: var(--warna-merah-utama);
   font-size: 0.66rem;
   font-weight: 700;

@@ -241,17 +241,16 @@ function Beranda() {
                 href={`/toko/${toko.id}`}
                 aria-label={`Kunjungi toko ${toko.namaToko}, ${toko.jumlahProduk} produk`}
               >
-                <span className="beranda__toko-banner">
-                  {toko.banner ? (
-                    <img src={toko.banner} alt="" loading="lazy" />
-                  ) : (
-                    <span
-                      className="beranda__toko-banner-inisial"
-                      aria-hidden="true"
-                    >
-                      {inisial(toko.namaToko)}
-                    </span>
-                  )}
+                <span
+                  className={`beranda__toko-banner${
+                    toko.banner ? "" : " beranda__toko-banner--bawaan"
+                  }`}
+                >
+                  <img
+                    src={toko.banner || "/banner-store-default.png"}
+                    alt=""
+                    loading="lazy"
+                  />
                   <span className="beranda__toko-jumlah">
                     <FiShoppingBag aria-hidden="true" />
                     {toko.jumlahProduk} produk
