@@ -107,6 +107,10 @@ export default function PanelBeli({
       const ukuranTerpilih = lama[kunci] ?? {};
       if (ukuran in ukuranTerpilih) {
         const { [ukuran]: _dihapus, ...sisaUkuran } = ukuranTerpilih;
+        if (Object.keys(sisaUkuran).length === 0) {
+          const { [kunci]: _kartuDihapus, ...sisaKartu } = lama;
+          return sisaKartu;
+        }
         return { ...lama, [kunci]: sisaUkuran };
       }
       return {
@@ -120,6 +124,11 @@ export default function PanelBeli({
     setPesanan((lama) => {
       if (selisih < 0 && lama[kunci][ukuran] <= 1) {
         const { [ukuran]: _dihapus, ...sisaUkuran } = lama[kunci];
+        // Jangan sisakan kartu kosong saat jumlah turun ke 0.
+        if (Object.keys(sisaUkuran).length === 0) {
+          const { [kunci]: _kartuDihapus, ...sisaKartu } = lama;
+          return sisaKartu;
+        }
         return { ...lama, [kunci]: sisaUkuran };
       }
 
@@ -134,7 +143,9 @@ export default function PanelBeli({
     });
   }
 
-  const kunciTerpilih = daftarKunci.filter((k) => pesanan[k]);
+  const kunciTerpilih = daftarKunci.filter(
+    (k) => pesanan[k] && Object.keys(pesanan[k]).length > 0,
+  );
   const adaPesanan = kunciTerpilih.some(
     (kunci) => Object.keys(pesanan[kunci]).length > 0,
   );
@@ -261,11 +272,10 @@ export default function PanelBeli({
                       <button
                         type="button"
                         className="panel-beli__tombol-jumlah"
-                        aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
-                        disabled={jumlah >= JUMLAH_MAKS}
-                        onClick={() => ubahJumlah(kunci, ukuran, 1)}
+                        aria-label={`Kurangi jumlah ${label} ukuran ${ukuran}`}
+                        onClick={() => ubahJumlah(kunci, ukuran, -1)}
                       >
-                        +
+                        −
                       </button>
                       <output className="panel-beli__angka" aria-live="polite">
                         {jumlah}
@@ -273,10 +283,11 @@ export default function PanelBeli({
                       <button
                         type="button"
                         className="panel-beli__tombol-jumlah"
-                        aria-label={`Kurangi jumlah ${label} ukuran ${ukuran}`}
-                        onClick={() => ubahJumlah(kunci, ukuran, -1)}
+                        aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
+                        disabled={jumlah >= JUMLAH_MAKS}
+                        onClick={() => ubahJumlah(kunci, ukuran, 1)}
                       >
-                        −
+                        +
                       </button>
                     </div>
                   </div>

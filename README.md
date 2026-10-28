@@ -2,17 +2,29 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Struktur data aplikasi
 
-- `src/context/AuthContext.jsx` menyediakan daftar toko publik dan state sesi toko melalui endpoint autentikasi toko.
-- `src/context/ProdukContext.jsx` mengelola produk dari MockAPI.
-- `src/context/KeranjangContext.jsx` mengelola keranjang di `localStorage`.
-- `src/context/PesananContext.jsx` mengelola pemesanan sementara lokal dan pesanan dari API.
+- `src/Context/AuthContext.jsx` menyediakan daftar toko publik dan state sesi toko melalui `/api/toko/*`.
+- `src/Context/ProdukContext.jsx` mengelola katalog produk melalui `/api/produk`.
+- `src/Context/KeranjangContext.jsx` mengelola keranjang di `localStorage`.
+- `src/Context/PesananContext.jsx` mengelola pemesanan sementara lokal dan pesanan dari `/api/pesanan`.
 - `src/providers/GlobalProvider.jsx` menggabungkan provider aplikasi; `GlobalContext` tetap menyimpan state antarmuka.
 - `src/lib/api/produkApi.js`, `src/lib/api/tokoApi.js`, dan `src/lib/api/pesananApi.js` berisi komunikasi API.
 - `src/lib/keranjang.js` menangani data keranjang, sedangkan `src/lib/pesanan.js` menangani salinan riwayat lokal pembeli.
 
-URL API toko, produk, dan pesanan dikonfigurasi melalui `NEXT_PUBLIC_API_TOKO_URL`, `NEXT_PUBLIC_API_PRODUK_URL`, dan `NEXT_PUBLIC_API_PESANAN_URL` di `.env.local`. Atur ketiga variabel tersebut sebelum menjalankan aplikasi; karena digunakan oleh client browser, nilainya bukan tempat untuk menyimpan rahasia atau token.
+Data toko, produk, pesanan, dan analitik disimpan di Supabase. Browser hanya memanggil Route Handler aplikasi (`/api/*`); akses langsung ke tabel memakai service-role key di server. Isi `.env`:
 
-Upload foto produk memerlukan tiga variabel Supabase Storage berikut di `.env.local`:
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key-dari-supabase>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key-dari-supabase>
+SUPABASE_STORAGE_BUCKET=produk
+NEXT_PUBLIC_SITE_URL=https://<domain-aplikasi>
+```
+
+`NEXT_PUBLIC_SITE_URL` dipakai sebagai `metadataBase` agar URL gambar Open Graph/Twitter menjadi absolut. Di Vercel, nilai ini dapat diganti otomatis dari `VERCEL_PROJECT_PRODUCTION_URL` bila variabel tersebut tidak diatur. Ikon situs memakai `public/TR.png`, sedangkan gambar metadata memakai `public/banner-market-day.jpg`.
+
+Jangan pernah memberi prefix `NEXT_PUBLIC_` pada `SUPABASE_SERVICE_ROLE_KEY` atau `FONNTE_API`.
+
+Upload foto produk dan foto profil toko memakai Supabase Storage dengan tiga variabel berikut di `.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
@@ -24,7 +36,7 @@ Ambil URL project dan service-role key dari dashboard project Supabase (Project 
 
 Galeri produk menyimpan hingga lima URL foto dalam kolom `products.gambar_list`. Terapkan migrasi `supabase/migrations/20261027090000_add_product_image_gallery.sql` pada project Supabase sebelum memakai versi aplikasi ini; migrasi tersebut juga menyalin foto lama ke galeri.
 
-Pesanan baru dikirim ke API pesanan dengan `idCheckout`, `idPesanan`, `id_toko`, identitas pemesan, total, status, `item` berisi rincian produk dan varian, serta `createdAt`. Setiap transaksi mengirim satu pesanan untuk satu toko.
+Pesanan baru dikirim ke `POST /api/pesanan` hanya dengan `id_toko`, `nama_penerima`, `nomor_pemesan`, dan `items` (`id_produk`, `jumlah`, `varian`). Server memvalidasi toko dan produk, menghitung ulang harga serta total dari database, lalu membuat `id_pesanan`, `kode_klaim`, dan `status: "menunggu_otp"` sendiri. Nilai `total`, `harga`, `status`, atau ID yang dikirim klien diabaikan. Status pesanan hanya dapat dibaca dengan menyertakan `kode_klaim` yang cocok.
 
 Pengiriman OTP WhatsApp memerlukan token API Fonnte di `.env.local`:
 
@@ -34,22 +46,50 @@ FONNTE_API=<token-api-fonnte>
 
 Jangan gunakan prefix `NEXT_PUBLIC_` untuk token ini. Setelah menambah atau mengubah token, mulai ulang server Next.js. Pastikan token dan perangkat WhatsApp yang terhubung di akun Fonnte masih aktif.
 
-Halaman pengelolaan toko tersedia di `/kelolatoko`. Route Handler di `/api/toko/*` memproses registrasi, login, logout, sesi toko, produk, dan pesanan. Password baru disimpan sebagai hash Argon2 di Supabase. Atur `TOKO_SESSION_SECRET` pada deployment production. MockAPI tetap merupakan API publik untuk keperluan prototipe sekolah; pembatasan kepemilikan diterapkan pada Route Handler aplikasi dan tidak dapat mencegah seseorang memanggil MockAPI langsung.
+Halaman pengelolaan toko tersedia di `/kelolatoko`. Route Handler di `/api/toko/*` memproses registrasi, login, logout, sesi toko, produk, pesanan, profil, dan analitik. Password baru disimpan sebagai hash Argon2 di Supabase dan minimal 8 karakter. Baris password lama yang bukan Argon2 ditolak dan harus diatur ulang; tidak ada lagi perbandingan plaintext.
 
-**Batasan prototipe:** Route Handler menghindari pengiriman password/hash ke antarmuka dan membatasi operasi toko melalui sesi aplikasi. MockAPI tetap publik dan tidak memberikan otorisasi server-side, jadi pengguna masih dapat memanggil endpoint MockAPI langsung. Cocokkan penggunaan dengan kebutuhan prototipe Market Day sekolah dan jangan simpan data sensitif di sana.
+### Keamanan dan variabel lingkungan
+
+Atur variabel berikut pada deployment production:
+
+```dotenv
+TOKO_SESSION_SECRET=<string-acak-panjang>
+OTP_HASH_SECRET=<string-acak-panjang>
+```
+
+- `TOKO_SESSION_SECRET` menandatangani cookie sesi toko (HMAC-SHA256, 7 hari, `HttpOnly`, `SameSite=Lax`, dan prefix `__Host-` di production). Ganti nilainya untuk membatalkan semua sesi lama. Cookie juga memuat versi turunan hash password, sehingga mengganti password toko otomatis membatalkan cookie lamanya.
+- `OTP_HASH_SECRET` menjadi kunci HMAC-SHA256 untuk hash OTP yang terikat ke ID pesanan. Jika tidak diatur, aplikasi memakai `TOKO_SESSION_SECRET`; di production salah satunya wajib ada.
+- Login toko dibatasi per IP dan per nama toko (8 kegagalan per 15 menit per toko, 30 per 15 menit per IP). Pengiriman OTP dibatasi per nomor dan per IP, dan nomor yang diminta harus sama dengan `nomor_pemesan` pada pesanan.
+- OTP dibuat dengan `crypto.randomInt`, berlaku 5 menit, maksimal 3 percobaan, dan dihapus setelah terverifikasi. `kode_klaim` tidak lagi dikirim melalui WhatsApp; penjual membacanya dari dashboard.
+- Unggahan foto memeriksa magic bytes (bukan hanya header MIME), dibatasi 5 MB per file dan kuota 50 MB per toko. URL foto hanya menerima path relatif aplikasi atau URL HTTPS (HTTP juga diizinkan saat development).
+- `next.config.mjs` menambahkan CSP dan header keamanan lain (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, dan HSTS di production).
+- Rotasi `SUPABASE_SERVICE_ROLE_KEY` dan `FONNTE_API` jika file `.env` pernah dibagikan. Jangan pernah memberi prefix `NEXT_PUBLIC_` pada kedua nilai tersebut.
+
+### Profil toko, halaman toko publik, dan analitik
+
+Terapkan migrasi `supabase/migrations/20261028120000_add_store_profiles_and_analytics.sql` pada project Supabase untuk mengaktifkan kolom profil toko (`deskripsi`, `foto_profil`, `banner`, `lokasi`) dan tabel `product_views`. Tanpa migrasi ini aplikasi tetap berjalan, tetapi halaman profil menampilkan peringatan, halaman toko memakai data bawaan, dan analitik kunjungan produk tidak tersedia.
+
+- Profil toko dapat diubah di `/kelolatoko/profil` (nama tampilan, deskripsi, lokasi, nomor WhatsApp, foto profil, dan banner). Foto diunggah ke bucket Supabase Storage yang sama dengan `SUPABASE_STORAGE_BUCKET`. Pendaftaran toko baru di `/daftar-toko` mewajibkan foto profil dan banner; keduanya diunggah setelah akun toko dibuat, lalu disimpan ke profil.
+- Halaman toko publik tersedia di `/toko/[id]` dan menampilkan banner, foto profil, deskripsi, lokasi, kontak WhatsApp, serta katalog produk toko. Saat pemilik toko sedang masuk, tombol edit tampil pada banner dan foto profil dan mengarah ke `/kelolatoko/profil`.
+- Analitik toko tampil pada dashboard `/kelolatoko` dan memadukan data pesanan dengan jumlah kunjungan produk dari `product_views`. Kunjungan dicatat oleh Route Handler `POST /api/produk/[id]/kunjungan` saat halaman detail produk dibuka.
+
+**Batasan prototipe:** Route Handler tidak mengirim password/hash ke antarmuka dan membatasi operasi toko melalui sesi aplikasi. Aktifkan Row Level Security pada tabel Supabase sebagai lapisan pertahanan tambahan; aplikasi sendiri mengakses tabel melalui service role di server, sedangkan browser memakai endpoint `/api/*`. Cocokkan penggunaan dengan kebutuhan prototipe Market Day sekolah dan jangan simpan data sensitif yang tidak diperlukan.
 
 ## Getting Started
 
-First, run the development server:
+Proyek ini memakai [Bun](https://bun.sh) sebagai package manager. Pasang dependensi lalu jalankan server pengembangan:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
+```
+
+Perintah lain:
+
+```bash
+bun run build
+bun run lint
+bun start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

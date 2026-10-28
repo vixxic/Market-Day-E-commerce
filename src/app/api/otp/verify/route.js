@@ -1,22 +1,9 @@
-import { createHash, timingSafeEqual } from "crypto";
 import { supabaseServer } from "@/lib/supabase/server";
 import { dataJson, responsGagal } from "@/lib/server/tokoApi";
 import { kirimPemberitahuanPesananFonnte } from "@/lib/otp/fonnte";
+import { otpCocok } from "@/lib/otp/otpHash";
 
 const OTP_MAX_ATTEMPTS = Number(process.env.OTP_MAX_ATTEMPTS || 3);
-
-function hashOtp(code) {
-  const salt = process.env.OTP_HASH_SALT || "marketday-otp";
-  return createHash("sha256").update(salt + ":" + code).digest("hex");
-}
-
-function safeEqual(a, b) {
-  if (!a || !b) return false;
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ab.length !== bb.length) return false;
-  return timingSafeEqual(ab, bb);
-}
 
 export async function POST(request) {
   try {
@@ -37,12 +24,29 @@ export async function POST(request) {
 
     const { data: order, error: fetchError } = await supabaseServer
       .from("orders")
-      .select("id, status, otp_hash, otp_expires_at, otp_attempts, id_toko, buyer_phone, total, id_pesanan, kode_klaim")
+      .select(
+        "id, status, otp_hash, otp_expires_at, otp_attempts, id_toko, buyer_phone, nomor_pemesan, total, id_pesanan",
+      )
       .eq("id_pesanan", orderId)
       .maybeSingle();
 
-    if (fetchError || !order) {
+    if (fetchError) throw fetchError;
+    if (!order) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
+    }
+
+    const { data: toko, error: tokoError } = await supabaseServer
+      .from("stores")
+      .select("aktif")
+      .eq("id", order.id_toko)
+      .maybeSingle();
+
+    if (tokoError) throw tokoError;
+    if (!toko || toko.aktif === false) {
+      return Response.json(
+        { error: "Toko untuk pesanan ini sudah tidak aktif." },
+        { status: 409 },
+      );
     }
 
     if (order.status === "menunggu_konfirmasi") {
@@ -51,6 +55,13 @@ export async function POST(request) {
         status: order.status,
         message: "Pesanan sudah diverifikasi.",
       });
+    }
+
+    if (order.status !== "menunggu_otp") {
+      return Response.json(
+        { error: "Pesanan ini tidak sedang menunggu verifikasi OTP." },
+        { status: 400 },
+      );
     }
 
     if (!order.otp_hash || !order.otp_expires_at) {
@@ -74,25 +85,25 @@ export async function POST(request) {
       );
     }
 
-    const expected = hashOtp(otp);
-    const success = safeEqual(expected, order.otp_hash);
-
-    if (!success) {
+    if (!otpCocok(orderId, otp, order.otp_hash)) {
       await supabaseServer
         .from("orders")
         .update({ otp_attempts: (order.otp_attempts || 0) + 1 })
-        .eq("id_pesanan", orderId);
+        .eq("id", order.id)
+        .eq("otp_hash", order.otp_hash);
 
       return Response.json(
         {
           error: "Kode OTP tidak sesuai.",
-          remainingAttempts: Math.max(0, OTP_MAX_ATTEMPTS - (order.otp_attempts + 1)),
+          remainingAttempts: Math.max(
+            0,
+            OTP_MAX_ATTEMPTS - (order.otp_attempts + 1),
+          ),
         },
         { status: 400 },
       );
     }
 
-    // Success: verification
     const verifiedAt = new Date().toISOString();
     const { data: updated, error: updateError } = await supabaseServer
       .from("orders")
@@ -103,13 +114,21 @@ export async function POST(request) {
         otp_expires_at: null,
         otp_attempts: 0,
       })
-      .eq("id_pesanan", orderId)
+      .eq("id", order.id)
+      .eq("otp_hash", order.otp_hash)
       .select("id, status, id_toko")
-      .single();
+      .maybeSingle();
 
     if (updateError) throw updateError;
+    if (!updated) {
+      return Response.json(
+        { error: "Kode OTP sudah berubah. Silakan coba lagi." },
+        { status: 409 },
+      );
+    }
 
-    // Trigger seller notification (best effort, fire-and-forget)
+    // Notifikasi penjual bersifat best effort. Kode klaim tidak dikirim ke
+    // WhatsApp pihak ketiga; penjual membacanya dari dashboard.
     Promise.resolve().then(async () => {
       try {
         const { data: store } = await supabaseServer
@@ -122,11 +141,10 @@ export async function POST(request) {
 
         const body =
           `Pesanan Baru Market Day (OTP Terverifikasi)\n` +
-          `Kode Klaim: ${order.kode_klaim}\n` +
           `ID Pesanan: ${order.id_pesanan}\n` +
           `Total: Rp ${order.total}\n` +
-          `Pemesan: ${order.buyer_phone || "-"}\n\n` +
-          `Silakan cek halaman klaim toko Anda.`;
+          `Pemesan: ${order.buyer_phone || order.nomor_pemesan || "-"}\n\n` +
+          `Buka dashboard toko untuk melihat detail dan kode klaim.`;
 
         await kirimPemberitahuanPesananFonnte(store.whatsapp_number, body);
         await supabaseServer

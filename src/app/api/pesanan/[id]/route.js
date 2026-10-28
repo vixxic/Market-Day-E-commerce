@@ -1,21 +1,51 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
 import { dataJson, responsGagal } from "@/lib/server/tokoApi";
+import { ambilIpKlien } from "@/lib/server/klien";
+import { tambahHit } from "@/lib/server/rateLimitMemori";
+import { bandingKonstan } from "@/lib/server/validasiInput";
 
-export async function GET(_request, { params }) {
+const KOLOM_PESANAN_AMAN =
+  "id, id_pesanan, kode_klaim, id_toko, total, status, nama_penerima, nomor_pemesan, created_at, updated_at, items";
+
+export async function GET(request, { params }) {
   const { id } = await params;
   if (!id) {
     return Response.json({ error: "ID pesanan diperlukan." }, { status: 400 });
   }
 
+  const batas = tambahHit(`status-pesanan:${ambilIpKlien(request)}`, 60, 60_000);
+  if (!batas.boleh) {
+    return Response.json(
+      { error: "Terlalu banyak permintaan. Coba lagi sebentar." },
+      { status: 429 },
+    );
+  }
+
+  const kodeKlaim = (
+    new URL(request.url).searchParams.get("kodeKlaim") ?? ""
+  )
+    .trim()
+    .toUpperCase();
+
+  if (!kodeKlaim) {
+    return Response.json(
+      { error: "Kode klaim diperlukan untuk melihat status pesanan." },
+      { status: 400 },
+    );
+  }
+
   try {
     const { data, error } = await supabaseServer
       .from("orders")
-      .select("id, id_pesanan, status")
+      .select("id, id_pesanan, status, kode_klaim")
       .eq("id_pesanan", id)
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
+    if (error) throw error;
+
+    const kodeTersimpan = String(data?.kode_klaim ?? "").toUpperCase();
+    if (!data || !bandingKonstan(kodeKlaim, kodeTersimpan)) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
 
@@ -66,7 +96,7 @@ export async function PATCH(request, { params }) {
       .from("orders")
       .update({ status })
       .eq("id_pesanan", id)
-      .select()
+      .select(KOLOM_PESANAN_AMAN)
       .single();
 
     if (updateError) throw updateError;

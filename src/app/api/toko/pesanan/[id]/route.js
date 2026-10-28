@@ -41,7 +41,7 @@ export async function PATCH(request, { params }) {
       .from('orders')
       .update({ status })
       .eq('id', id)
-      .select()
+      .select('id, id_pesanan, kode_klaim, id_toko, total, status, nama_penerima, nomor_pemesan, created_at, updated_at, items')
       .single();
 
     if (updateError) throw updateError;

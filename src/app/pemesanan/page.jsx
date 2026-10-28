@@ -8,6 +8,16 @@ import { usePesananContext } from "@/Context/PesananContext";
 import { simpanPesananLokal as perbaruiPesananLokal } from "@/lib/pesanan";
 import { simpanPemesanan } from "@/lib/pemesanan";
 import { formatHarga } from "@/lib/formatHarga";
+import OtpInput from "./OtpInput";
+
+function formatHitungMundur(detik) {
+  const menit = Math.floor(detik / 60);
+  const sisaDetik = detik % 60;
+  return `${String(menit).padStart(2, "0")}:${String(sisaDetik).padStart(
+    2,
+    "0",
+  )}`;
+}
 
 export default function PagePemesanan() {
   const router = useRouter();
@@ -28,6 +38,7 @@ export default function PagePemesanan() {
   const [kodeOtp, setKodeOtp] = useState("");
   const [sedangKirimOtp, setSedangKirimOtp] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [infoOtp, setInfoOtp] = useState("");
 
   const judulSelesaiRef = useRef(null);
 
@@ -49,6 +60,7 @@ export default function PagePemesanan() {
     if (!pemesanan || cooldown > 0) return;
     setSedangKirimOtp(true);
     setGalat("");
+    setInfoOtp("");
     try {
       const resp = await fetch("/api/otp/kirim", {
         method: "POST",
@@ -64,7 +76,8 @@ export default function PagePemesanan() {
         return;
       }
       setCooldown(data.cooldown ?? 60);
-      alert("Kode OTP baru dikirim ke WhatsApp Anda.");
+      setKodeOtp("");
+      setInfoOtp("Kode OTP baru telah dikirim ke WhatsApp Anda.");
     } catch (e) {
       setGalat("Gagal mengirim ulang OTP: " + e.message);
     } finally {
@@ -75,6 +88,7 @@ export default function PagePemesanan() {
   async function verifikasiOtp(event) {
     event.preventDefault();
     setGalat("");
+    setInfoOtp("");
     if (kodeOtp.trim().length !== 6) {
       setGalat("Masukkan 6 digit kode OTP.");
       return;
@@ -133,18 +147,18 @@ export default function PagePemesanan() {
     setGalat("");
     setSedangMenyimpan(true);
     try {
-      await buatPesanan(pemesanan, nama, nomor);
+      const pesananTersimpan = await buatPesanan(pemesanan, nama, nomor);
       if (pemesanan.dariKeranjang) {
         new Set(pemesanan.item.map((baris) => baris.idProduk)).forEach(
           hapusDariKeranjang,
         );
       }
-      // kirim OTP
+      // kirim OTP memakai ID pesanan yang dibuat server
       const kirimResp = await fetch("/api/otp/kirim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: pemesanan.idPesanan,
+          orderId: pesananTersimpan?.idPesanan ?? pemesanan.idPesanan,
           phone: nomor,
         }),
       });
@@ -163,6 +177,8 @@ export default function PagePemesanan() {
     }
   }
 
+  const nomorOtp = (nomorPemesan || pemesanan?.nomorPemesan || "").trim();
+
   return (
     <div className="pemesanan">
       <header className="pemesanan__header">
@@ -177,7 +193,9 @@ export default function PagePemesanan() {
               <path d="M20 12H4M10.5 5.5 4 12l6.5 6.5" />
             </svg>
           </button>
-          <h1 className="pemesanan__judul-halaman">Detail Pemesanan</h1>
+          {!(tahapOtp && !menungguKonfirmasi) && (
+            <h1 className="pemesanan__judul-halaman">Detail Pemesanan</h1>
+          )}
         </div>
       </header>
 
@@ -194,7 +212,7 @@ export default function PagePemesanan() {
         </div>
       )}
 
-      {siap && pemesanan && (!menungguKonfirmasi && !tahapOtp || sedangMenyimpan) && (
+      {siap && pemesanan && !menungguKonfirmasi && !tahapOtp && (
 
         <form
           className="pemesanan__isi"
@@ -281,61 +299,64 @@ export default function PagePemesanan() {
       )}
 
       {siap && pemesanan && tahapOtp && !menungguKonfirmasi && (
-    <form
-      className="pemesanan__isi"
-      onSubmit={verifikasiOtp}
-    >
-      {(error || galat) && (
-        <p className="pemesanan__galat" role="alert">
-          {galat || error}
-        </p>
+        <form className="pemesanan__otp" onSubmit={verifikasiOtp} noValidate>
+          <h1 className="pemesanan__otp-judul">Verifikasi OTP</h1>
+          <p className="pemesanan__otp-subjudul">
+            Kami telah mengirim kode verifikasi 6 digit ke nomor WhatsApp{" "}
+            {nomorOtp ? (
+              <strong className="pemesanan__otp-nomor">{nomorOtp}</strong>
+            ) : (
+              "pemesan"
+            )}
+            .
+          </p>
+
+          {(error || galat) && (
+            <p className="pemesanan__galat" role="alert">
+              {galat || error}
+            </p>
+          )}
+
+          <OtpInput
+            nilai={kodeOtp}
+            onUbah={setKodeOtp}
+            nonaktif={sedangMenyimpan}
+          />
+
+          <button
+            type="submit"
+            className="pemesanan__otp-tombol"
+            disabled={sedangMenyimpan}
+          >
+            {sedangMenyimpan ? "Memverifikasi..." : "Verifikasi OTP"}
+          </button>
+
+          {cooldown > 0 && (
+            <p className="pemesanan__otp-timer">
+              Kirim ulang kode dalam{" "}
+              <strong>{formatHitungMundur(cooldown)}</strong>
+            </p>
+          )}
+
+          {infoOtp && (
+            <p className="pemesanan__otp-info" role="status">
+              {infoOtp}
+            </p>
+          )}
+
+          <p className="pemesanan__otp-kirim-ulang">
+            Belum menerima kode OTP?{" "}
+            <button
+              type="button"
+              className="pemesanan__otp-tautan"
+              disabled={sedangKirimOtp || cooldown > 0}
+              onClick={kirimUlangOtp}
+            >
+              {sedangKirimOtp ? "Mengirim..." : "Kirim ulang OTP"}
+            </button>
+          </p>
+        </form>
       )}
-      <section className="pemesanan__total">
-        <p className="pemesanan__label">Kode OTP</p>
-        <p className="pemesanan__total-harga">6 digit</p>
-      </section>
-      <div className="pemesanan__bidang">
-        <label className="pemesanan__label" htmlFor="kode-otp">
-          Kode OTP WhatsApp
-        </label>
-        <input
-          id="kode-otp"
-          className="pemesanan__input"
-          type="text"
-          inputMode="numeric"
-          maxLength={6}
-          placeholder="123456"
-          value={kodeOtp}
-          onChange={(event) => setKodeOtp(event.target.value)}
-          required
-        />
-      </div>
-      <p className="pemesanan__peringatan" role="note">
-        Masukkan kode 6 digit yang dikirim ke WhatsApp pemesan. Berlaku 5 menit.
-      </p>
-      <div className="pemesanan__aksi">
-        <button
-          type="submit"
-          className="pemesanan__tombol-selesai"
-          disabled={sedangMenyimpan}
-        >
-          {sedangMenyimpan ? "Memverifikasi..." : "Verifikasi OTP"}
-        </button>
-        <button
-          type="button"
-          className="pemesanan__tombol-kecil"
-          disabled={sedangKirimOtp || cooldown > 0}
-          onClick={kirimUlangOtp}
-        >
-          {sedangKirimOtp
-            ? "Mengirim..."
-            : cooldown > 0
-            ? `Kirim ulang OTP (${cooldown})`
-            : "Kirim ulang OTP"}
-        </button>
-      </div>
-    </form>
-  )}
 
       {siap && pemesanan && menungguKonfirmasi && !sedangMenyimpan && (
     <section className="pemesanan__selesai" role="status">

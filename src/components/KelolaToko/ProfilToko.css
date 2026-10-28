@@ -1,0 +1,327 @@
+.profil-toko {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.profil-toko__sukses,
+.profil-toko__peringatan {
+  margin: 0 0 16px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.profil-toko__sukses {
+  background: #edf7f0;
+  color: #2f6b45;
+}
+
+.profil-toko__peringatan {
+  background: #fff7e8;
+  color: #805b19;
+}
+
+.profil-toko__peringatan code {
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+.profil-toko__preview {
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.profil-toko__banner {
+  position: relative;
+  height: 168px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: var(--kelola-gelap);
+  background-image:
+    linear-gradient(115deg, rgba(42, 6, 9, 0.68), rgba(82, 16, 20, 0.25)),
+    url("../../assets/placeholder_market_day.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.profil-toko__banner--foto {
+  background-position: center;
+  background-size: cover;
+}
+
+.profil-toko__banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(24, 5, 7, 0.35), transparent 60%);
+  pointer-events: none;
+}
+
+.profil-toko__ubah-banner {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--kelola-gelap);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+
+.profil-toko__hapus-banner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #9d1d1d;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+
+.profil-toko__ubah-banner:disabled,
+.profil-toko__hapus-banner:disabled,
+.profil-toko__ubah-avatar:disabled,
+.profil-toko__hapus-avatar:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.profil-toko__identitas {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: -42px 16px 0;
+  padding: 0;
+}
+
+.profil-toko__avatar {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 94px;
+  height: 94px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  overflow: visible;
+  background: linear-gradient(135deg, #f7e8e8, #e4c9c9);
+  color: var(--kelola-gelap);
+  font-size: 1.35rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(50, 8, 12, 0.18);
+}
+
+.profil-toko__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profil-toko__ubah-avatar,
+.profil-toko__hapus-avatar {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--kelola-gelap);
+  color: #ffffff;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.profil-toko__ubah-avatar {
+  right: -2px;
+  bottom: 2px;
+}
+
+.profil-toko__hapus-avatar {
+  right: -2px;
+  top: 2px;
+  background: #ffffff;
+  color: #9d1d1d;
+}
+
+.profil-toko__preview-teks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-bottom: 8px;
+}
+
+.profil-toko__preview-teks strong {
+  overflow: hidden;
+  color: var(--kelola-gelap);
+  font-size: 1.05rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.profil-toko__preview-teks span {
+  color: #8a7070;
+  font-size: 0.7rem;
+}
+
+.profil-toko__preview-teks a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  color: var(--kelola-merah);
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.profil-toko__preview-teks a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.profil-toko__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #f0e2e2;
+  border-radius: 16px;
+  background: #fffafa;
+}
+
+.profil-toko__bidang {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profil-toko__bidang > span {
+  color: var(--kelola-gelap);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.profil-toko__bidang input,
+.profil-toko__bidang textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c9baba;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.profil-toko__bidang input {
+  min-height: 44px;
+}
+
+.profil-toko__bidang textarea {
+  min-height: 116px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.profil-toko__bidang input:focus-visible,
+.profil-toko__bidang textarea:focus-visible {
+  outline: 2px solid var(--kelola-gelap);
+  outline-offset: 1px;
+}
+
+.profil-toko__bidang small {
+  align-self: flex-end;
+  color: #9a8080;
+  font-size: 0.66rem;
+}
+
+.profil-toko__baris {
+  display: grid;
+  gap: 16px;
+}
+
+.profil-toko__bantuan {
+  margin: 0;
+  color: #8a7070;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.profil-toko__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+}
+
+.profil-toko__aksi button,
+.profil-toko__tombol-sekunder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profil-toko__aksi button {
+  border: 0;
+  background: var(--kelola-tombol);
+  color: #ffffff;
+}
+
+.profil-toko__aksi button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.profil-toko__tombol-sekunder {
+  border: 1px solid #e4d3d3;
+  background: #ffffff;
+  color: var(--kelola-gelap);
+}
+
+.profil-toko__aksi button:focus-visible,
+.profil-toko__tombol-sekunder:focus-visible {
+  outline: 2px solid var(--kelola-gelap);
+  outline-offset: 2px;
+}
+
+@media (min-width: 560px) {
+  .profil-toko__baris {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

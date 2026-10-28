@@ -1,16 +1,14 @@
 .filter-bar {
-  --filter-warna-nonaktif: #c0393d;
+  --filter-warna-nonaktif: #f3e4e4;
 
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 0px;
+  gap: 8px;
+  padding: 4px 0 8px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-
-  border-radius: 10px;
 }
 
 .filter-bar::-webkit-scrollbar {
@@ -18,36 +16,59 @@
 }
 
 .filter-bar__pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   flex: 0 0 auto;
-  min-height: 20px;
+  min-height: 36px;
   min-width: 60px;
-  padding: 0 10px;
-  border: 0;
+  padding: 0 13px;
+  border: 1px solid transparent;
   border-radius: 999px;
   background-color: var(--filter-warna-nonaktif);
-  color: #ffffff;
+  color: var(--warna-merah-utama);
   font: inherit;
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
     background-color 0.15s ease,
+    color 0.15s ease,
     transform 0.12s ease;
 }
 
 .filter-bar__pil--aktif {
   background-color: var(--warna-merah-utama);
+  color: #ffffff;
+}
+
+.filter-bar__jumlah {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--warna-merah-utama);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-bar__pil--aktif .filter-bar__jumlah {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 .filter-bar__pil:hover:not(.filter-bar__pil--aktif) {
-  filter: brightness(1.08);
+  background-color: #ecd5d5;
 }
 
 .filter-bar__pil:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
 }
 
 .filter-bar__pil:focus-visible {
@@ -57,53 +78,19 @@
 
 @media (min-width: 768px) {
   .filter-bar {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 32px;
     flex-wrap: wrap;
     overflow-x: visible;
+    padding-bottom: 4px;
   }
 
   .filter-bar__pil {
     min-height: 40px;
-    font-size: 0.9375rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .filter-bar__pil {
     transition: none;
-  }
-}
-
-.filter-bar {
-  position: relative;
-  padding-top: calc(16px + 150px + 16px);
-}
-
-.filter-bar::before {
-  content: "";
-  position: absolute;
-  top: 16px;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background-color: var(--warna-merah-utama);
-  background-image: url("../../assets/placeholder_market_day.png");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  border-radius: 10px;
-}
-
-@media (min-width: 768px) {
-  .filter-bar {
-    padding-top: calc(12px + 200px + 20px);
-  }
-
-  .filter-bar::before {
-    top: 12px;
-    height: 200px;
-    border-radius: 12px;
   }
 }

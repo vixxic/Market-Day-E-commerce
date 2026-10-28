@@ -247,6 +247,193 @@
   font-weight: 700;
 }
 
+/* Tahap verifikasi OTP */
+.pemesanan__otp {
+  --otp-hijau: #35b34a;
+  --otp-hijau-tua: #1f9d3d;
+  --otp-teks: #16221b;
+  --otp-redup: #7d8c83;
+
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vh, 44px) 0 max(24px, env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.pemesanan__otp-judul {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 1.25rem + 1.1vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--otp-teks);
+}
+
+.pemesanan__otp-subjudul {
+  max-width: 330px;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--otp-redup);
+}
+
+.pemesanan__otp-nomor {
+  color: var(--otp-hijau);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.pemesanan__otp .pemesanan__galat {
+  width: 100%;
+  margin-top: 18px;
+  text-align: left;
+}
+
+.pemesanan__otp-kotak {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 380px;
+  margin-top: 28px;
+}
+
+.pemesanan__otp-input {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 52px;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1.5px solid #e1e8e2;
+  border-radius: 14px;
+  background-color: #f6f9f6;
+  color: var(--otp-teks);
+  font: inherit;
+  font-size: clamp(1.05rem, 0.9rem + 0.7vw, 1.3rem);
+  font-weight: 700;
+  text-align: center;
+  caret-color: var(--otp-hijau);
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.pemesanan__otp-input--terisi {
+  border-color: #c3e6c8;
+  background-color: #ffffff;
+}
+
+.pemesanan__otp-input:focus {
+  outline: none;
+  border-color: var(--otp-hijau);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(53, 179, 74, 0.16);
+}
+
+.pemesanan__otp-input:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.pemesanan__otp-tombol {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 28px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(82, 16, 20, 0.22);
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.pemesanan__otp-tombol:hover:not(:disabled) {
+  background-color: #6b171c;
+  box-shadow: 0 12px 26px rgba(82, 16, 20, 0.28);
+}
+
+.pemesanan__otp-tombol:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.pemesanan__otp-tombol:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  box-shadow: none;
+}
+
+.pemesanan__otp-timer,
+.pemesanan__otp-info {
+  margin: 18px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--otp-redup);
+  font-variant-numeric: tabular-nums;
+}
+
+.pemesanan__otp-timer strong {
+  color: var(--otp-hijau);
+  font-weight: 700;
+}
+
+.pemesanan__otp-info {
+  color: var(--otp-hijau-tua);
+  font-weight: 600;
+}
+
+.pemesanan__otp-kirim-ulang {
+  width: 100%;
+  margin: 18px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--otp-redup);
+}
+
+.pemesanan__otp-tautan {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--otp-hijau);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pemesanan__otp-tautan:hover:not(:disabled) {
+  color: var(--otp-hijau-tua);
+  text-decoration: underline;
+}
+
+.pemesanan__otp-tautan:disabled {
+  color: #a9bcae;
+  cursor: default;
+}
+
+.pemesanan__otp-input:focus-visible,
+.pemesanan__otp-tombol:focus-visible,
+.pemesanan__otp-tautan:focus-visible {
+  outline: 2px solid var(--otp-hijau-tua);
+  outline-offset: 2px;
+}
+
 @media (min-width: 768px) {
   .pemesanan__isi {
     padding-bottom: 32px;

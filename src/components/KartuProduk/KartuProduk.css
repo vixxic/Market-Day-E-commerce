@@ -1,6 +1,4 @@
-/* ===== Kartu Produk (mobile first) =====
-   Lebar kartu mengikuti wadah induknya (grid),
-   jadi aman dipakai 2 kolom di HP, 3-4 kolom di tablet/laptop. */
+/* ===== Kartu Produk (mobile first) ===== */
 
 .kartu-produk {
   display: flex;
@@ -12,10 +10,19 @@
 
 .kartu-produk__gambar {
   position: relative;
+  display: block;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
-  background-color: #d9d9d9;
+  background: linear-gradient(135deg, #f1e7e7, #e2d2d2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.kartu-produk__gambar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(82, 16, 20, 0.14);
 }
 
 .kartu-produk__gambar:focus-visible {
@@ -28,33 +35,69 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.kartu-produk__gambar:hover .kartu-produk__foto {
+  transform: scale(1.035);
+}
+
+.kartu-produk__kosong {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  color: #8d6a6a;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.kartu-produk__kategori {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--warna-merah-utama);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(82, 16, 20, 0.12);
+  backdrop-filter: blur(6px);
 }
 
 .kartu-produk__info {
-  /* mengisi sisa tinggi kartu, sehingga kartu yang lebih pendek
-     ikut setinggi kartu terpanjang di baris grid yang sama */
   flex: 1 1 auto;
   display: flex;
-  align-items: flex-start; /* teks tetap menempel di bawah gambar */
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
 }
 
-.kartu-produk__teks {
-  flex: 1 1 auto;
-  min-width: 0;
+.kartu-produk__tautan-utama {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kartu-produk__tautan-utama:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .kartu-produk__nama {
   margin: 0;
   font-size: clamp(0.9375rem, 0.85rem + 0.45vw, 1.1875rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.25;
-  color: #000000;
-  /* maksimal 2 baris, sisanya dipotong dengan "..." */
+  color: #1b1111;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -64,51 +107,72 @@
 .kartu-produk__harga {
   margin: 0;
   font-size: clamp(0.8125rem, 0.75rem + 0.35vw, 1rem);
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.2;
   color: var(--warna-merah-utama);
   font-variant-numeric: tabular-nums;
 }
 
 .kartu-produk__toko {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
+  color: #786262;
   font-size: 0.75rem;
   line-height: 1.2;
-  color: #7d7d7d;
-}
-
-.kartu-produk__tombol-tambah svg {
-  width: 46%;
-  height: 46%;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-}
-
-.kartu-produk__tombol-tambah:hover {
-  filter: brightness(1.15);
-}
-
-.kartu-produk__tombol-tambah:active {
-  transform: scale(0.92);
-}
-
-.kartu-produk__tombol-tambah:focus-visible {
-  outline: 2px solid var(--warna-merah-utama);
-  outline-offset: 3px;
-}
-
-.kartu-produk__gambar {
-  display: block;
-}
-.kartu-produk__teks {
-  color: inherit;
   text-decoration: none;
 }
 
+a.kartu-produk__toko:hover .kartu-produk__toko-nama {
+  color: var(--warna-merah-utama);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.kartu-produk__toko:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+.kartu-produk__toko--statis {
+  cursor: default;
+}
+
+.kartu-produk__toko-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e8d6d6;
+  color: var(--warna-merah-utama);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.kartu-produk__toko-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kartu-produk__toko-nama {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .kartu-produk__tombol-tambah {
+  .kartu-produk__gambar,
+  .kartu-produk__foto {
     transition: none;
   }
 }

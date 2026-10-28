@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useAuthContext } from "@/Context/AuthContext";
 import { MdLogout } from "react-icons/md";
+import { FiUser } from "react-icons/fi";
 
 export default function KelolaLayout({ children }) {
   const { toko, memuatSesi, keluar } = useAuthContext();
@@ -40,14 +41,25 @@ export default function KelolaLayout({ children }) {
             <Link className="kelola-toko__brand" href="/kelolatoko">
               {toko.namaToko}
             </Link>
-            <button
-              type="button"
-              className="kelola-toko__keluar"
-              onClick={logout}
-              aria-label="Keluar dari toko"
-            >
-              <MdLogout size={23} />
-            </button>
+            <div className="kelola-toko__header-aksi">
+              {pathname === "/kelolatoko" && (
+                <Link
+                  className="kelola-toko__keluar"
+                  href="/kelolatoko/profil"
+                  aria-label="Atur profil toko"
+                >
+                  <FiUser size={21} />
+                </Link>
+              )}
+              <button
+                type="button"
+                className="kelola-toko__keluar"
+                onClick={logout}
+                aria-label="Keluar dari toko"
+              >
+                <MdLogout size={23} />
+              </button>
+            </div>
           </header>
           {errorKeluar && (
             <p className="kelola-toko__galat" role="alert">

@@ -1,26 +1,514 @@
+/* ===== Beranda / katalog publik ===== */
+
+.beranda {
+  padding-bottom: 104px;
+}
+
+.beranda__hero {
+  position: relative;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 4px auto 0;
+  padding: clamp(28px, 6vw, 64px);
+  border-radius: 22px;
+  overflow: hidden;
+  color: #ffffff;
+  background-color: var(--warna-merah-utama);
+  background-image:
+    linear-gradient(115deg, rgba(42, 6, 9, 0.72) 0%, rgba(82, 16, 20, 0.42) 50%, rgba(82, 16, 20, 0.06) 100%),
+    url("../../assets/placeholder_market_day.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.beranda__hero::after {
+  content: "";
+  position: absolute;
+  right: -120px;
+  bottom: -150px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.beranda__hero-isi {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+}
+
+.beranda__eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.beranda__eyebrow--gelap {
+  margin-bottom: 6px;
+  color: #9b7676;
+  opacity: 1;
+}
+
+.beranda__hero-judul {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3.3rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.beranda__hero-teks {
+  max-width: 48ch;
+  margin: 16px 0 22px;
+  font-size: clamp(0.9rem, 0.85rem + 0.2vw, 1rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.beranda__pencarian {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 500px);
+  min-height: 52px;
+  padding: 0 8px 0 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #a58b8b;
+  box-shadow: 0 10px 28px rgba(32, 4, 6, 0.22);
+}
+
+.beranda__pencarian > svg {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.beranda__pencarian input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 50px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #221515;
+  font: inherit;
+  font-size: 0.92rem;
+  outline: none;
+}
+
+.beranda__pencarian input::placeholder {
+  color: #a58b8b;
+}
+
+.beranda__pencarian:focus-within {
+  outline: 3px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.beranda__hapus-cari {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f5eaea;
+  color: var(--warna-merah-utama);
+  cursor: pointer;
+}
+
+.beranda__hapus-cari svg {
+  width: 17px;
+  height: 17px;
+}
+
+.beranda__hapus-cari:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.beranda__hero-statistik {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.beranda__hero-statistik span {
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.76rem;
+  line-height: 1.2;
+  backdrop-filter: blur(6px);
+}
+
+.beranda__hero-statistik strong {
+  color: #ffffff;
+  font-size: 0.86rem;
+}
+
+/* ===== Toko ===== */
+
+.beranda__toko,
+.beranda__katalog {
+  max-width: 1200px;
+  margin: 30px auto 0;
+}
+
+.beranda__bagian-heading,
+.beranda__katalog-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.beranda__bagian-heading h2,
+.beranda__katalog-heading h2 {
+  margin: 0;
+  color: #1b1111;
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.beranda__hitung-toko {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #f5eaea;
+  color: var(--warna-merah-utama);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.beranda__toko-list {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.beranda__toko-list::-webkit-scrollbar {
+  display: none;
+}
+
+.beranda__toko-kartu {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex: 0 0 250px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #f0e2e2;
+  border-radius: 14px;
+  background: #ffffff;
+  color: inherit;
+  text-decoration: none;
+  scroll-snap-align: start;
+  box-shadow: 0 4px 16px rgba(82, 16, 20, 0.05);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.beranda__toko-kartu:hover {
+  border-color: #e2c4c4;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(82, 16, 20, 0.09);
+}
+
+.beranda__toko-kartu:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.beranda__toko-kartu > svg {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--warna-merah-utama);
+}
+
+.beranda__toko-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f7e8e8, #e6cccc);
+  color: var(--warna-merah-utama);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.beranda__toko-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.beranda__toko-teks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.beranda__toko-teks strong {
+  overflow: hidden;
+  color: #241616;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.beranda__toko-teks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #8a7070;
+  font-size: 0.72rem;
+}
+
+.beranda__toko-teks svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== Katalog ===== */
+
+.beranda__katalog {
+  margin-top: 34px;
+}
+
+.beranda__katalog-heading {
+  margin-bottom: 10px;
+}
+
+.beranda__urutan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  color: #7d6262;
+  font-size: 0.76rem;
+}
+
+.beranda__urutan select {
+  min-height: 38px;
+  max-width: 170px;
+  padding: 0 28px 0 12px;
+  border: 1px solid #e4d3d3;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2a1818;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.beranda__urutan select:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.beranda__hasil-baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  margin: 4px 0 14px;
+}
+
+.beranda__hasil {
+  margin: 0;
+  color: #765d5d;
+  font-size: 0.8rem;
+}
+
+.beranda__hasil strong {
+  color: var(--warna-merah-utama);
+}
+
+.beranda__filter-aktif {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #f7ebe8;
+  color: var(--warna-merah-utama);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.beranda__filter-aktif svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== Grid produk ===== */
+
 .list-produk-dijual {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-
-  max-width: 1200px;
-  margin: 20px auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 14px;
+  margin: 0;
 }
 
 .beranda__status {
-  padding: 24px 16px;
+  padding: 20px 0;
   text-align: center;
-  color: #8c8c8c;
+  color: #8c7676;
+  font-size: 0.88rem;
+}
+
+.beranda__status--galat {
+  color: #9d1d1d;
+}
+
+.beranda__kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 48px 20px;
+  border: 1px dashed #e4d3d3;
+  border-radius: 18px;
+  background: #fffafa;
+  text-align: center;
+}
+
+.beranda__kosong-ikon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #f7e8e8;
+  color: var(--warna-merah-utama);
+}
+
+.beranda__kosong-ikon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.beranda__kosong h3 {
+  margin: 4px 0 0;
+  color: #2a1818;
+  font-size: 1.05rem;
+}
+
+.beranda__kosong p {
+  max-width: 38ch;
+  margin: 0;
+  color: #8a7070;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.beranda__kosong-tombol {
+  margin-top: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.beranda__kosong-tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 3px;
+}
+
+@media (min-width: 640px) {
+  .beranda__toko-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .beranda__toko-kartu {
+    flex-basis: auto;
+  }
 }
 
 @media (min-width: 768px) {
+  .beranda__hero {
+    min-height: 360px;
+  }
+
   .list-produk-dijual {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+
+  .beranda__toko-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
   }
 }
 
 @media (min-width: 1100px) {
   .list-produk-dijual {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .beranda__katalog-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .beranda__urutan {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .beranda__urutan select {
+    max-width: none;
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beranda__toko-kartu {
+    transition: none;
   }
 }

@@ -35,11 +35,22 @@
 }
 
 .kelola-toko__keluar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   border: 0;
+  border-radius: 50%;
   background: transparent;
   color: var(--kelola-gelap);
   font: inherit;
   cursor: pointer;
+}
+
+.kelola-toko__header-aksi {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .kelola-toko__judul {
@@ -91,6 +102,61 @@
   font-weight: 800;
   line-height: 1.1;
 }
+
+.kelola-toko__profil-aksi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -18px 0 34px;
+  padding: 14px 16px;
+  border: 1px solid #f0e2e2;
+  border-radius: 14px;
+  background: #fffafa;
+}
+
+.kelola-toko__profil-teks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.kelola-toko__profil-teks strong {
+  color: var(--kelola-gelap);
+  font-size: 0.85rem;
+}
+
+.kelola-toko__profil-teks span {
+  color: #8a7070;
+  font-size: 0.73rem;
+  line-height: 1.45;
+}
+
+.kelola-toko__profil-tombol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kelola-toko__tombol.kelola-toko__tombol--ringan {
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid #e4d3d3;
+  background: #ffffff;
+  color: var(--kelola-gelap);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.kelola-toko__tombol.kelola-toko__tombol--ringan:hover {
+  border-color: #d9bebe;
+  background: #f7e7e6;
+  color: var(--warna-merah-utama);
+}
+
 
 .kelola-toko__produk-heading {
   display: flex;

@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiEdit, FiTrash2, FiExternalLink } from "react-icons/fi";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
+import AnalitikToko from "@/components/KelolaToko/AnalitikToko";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 import {
   permintaanKelolaToko,
@@ -13,12 +14,17 @@ import {
 } from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
 import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
+import { useAuthContext } from "@/Context/AuthContext";
 
 export default function DashboardToko() {
+  const { toko } = useAuthContext();
   const [produk, setProduk] = useState([]);
   const [pesanan, setPesanan] = useState([]);
+  const [analitik, setAnalitik] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [memuatAnalitik, setMemuatAnalitik] = useState(true);
   const [error, setError] = useState("");
+  const [errorAnalitik, setErrorAnalitik] = useState("");
   const [hapusId, setHapusId] = useState(null);
   const [sedangHapus, setSedangHapus] = useState(false);
 
@@ -32,19 +38,30 @@ export default function DashboardToko() {
       if (tampilkanLoading) setLoading(true);
 
       try {
-        const [daftarProduk, daftarPesanan] = await Promise.all([
+        const [daftarProduk, daftarPesanan, dataAnalitik] = await Promise.all([
           permintaanKelolaToko("/api/toko/produk"),
           permintaanKelolaToko("/api/toko/pesanan"),
+          permintaanKelolaToko("/api/toko/analitik").catch((galat) => {
+            if (aktif) setErrorAnalitik(galat.message);
+            return null;
+          }),
         ]);
         if (!aktif) return;
         setProduk(daftarProduk);
         setPesanan(daftarPesanan.map(normalisasiPesananToko));
+        if (dataAnalitik) {
+          setAnalitik(dataAnalitik);
+          setErrorAnalitik("");
+        }
         setError("");
       } catch (galat) {
         if (aktif) setError(galat.message);
       } finally {
         sedangMemuat = false;
-        if (aktif && tampilkanLoading) setLoading(false);
+        if (aktif) {
+          setMemuatAnalitik(false);
+          if (tampilkanLoading) setLoading(false);
+        }
       }
     }
 
@@ -115,6 +132,39 @@ export default function DashboardToko() {
           </Link>
         </div>
 
+        {toko && (
+          <div className="kelola-toko__profil-aksi">
+            <div className="kelola-toko__profil-teks">
+              <strong>Profil toko publik</strong>
+              <span>
+                Atur foto profil, banner, dan deskripsi yang dilihat pembeli.
+              </span>
+            </div>
+            <div className="kelola-toko__profil-tombol">
+              <Link
+                className="kelola-toko__tombol kelola-toko__tombol--ringan"
+                href="/kelolatoko/profil"
+              >
+                Atur profil
+              </Link>
+              <Link
+                className="kelola-toko__tombol kelola-toko__tombol--ringan"
+                href={`/toko/${toko.id}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Lihat toko <FiExternalLink size={14} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <AnalitikToko
+          data={analitik}
+          loading={memuatAnalitik}
+          error={errorAnalitik}
+        />
+
         <section>
           <div className="kelola-toko__produk-heading">
             <h2 className="kelola-toko__tag">Produkmu</h2>
@@ -161,7 +211,15 @@ export default function DashboardToko() {
                     <p className="kelola-toko__harga">
                       {formatHarga(item.harga)}
                     </p>
-                    <div className="kelola-toko__aksi-grup" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                    <div
+                      className="kelola-toko__aksi-grup"
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: "8px",
+                        marginTop: "8px",
+                      }}
+                    >
                       <Link
                         className="kelola-toko__tombol kelola-toko__produk-aksi"
                         href={`/kelolatoko/produk/${item.id}`}
@@ -200,7 +258,7 @@ export default function DashboardToko() {
         <FiPlus aria-hidden="true" strokeWidth={1.6} />
       </Link>
       <NavigasiBawah halamanAktif="masuktoko" />
-      
+
       <PopupKonfirmasi
         buka={hapusId !== null}
         judul="Hapus Produk?"

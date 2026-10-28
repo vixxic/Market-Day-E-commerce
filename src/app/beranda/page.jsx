@@ -1,9 +1,17 @@
 "use client";
 
 import "./Beranda.css";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  FiArrowRight,
+  FiFilter,
+  FiSearch,
+  FiShoppingBag,
+  FiX,
+} from "react-icons/fi";
 
-//context
+// context
 import { useGlobalContext } from "@/Context/GlobalContext";
 import { useProdukContext } from "@/Context/ProdukContext";
 import { useAuthContext } from "@/Context/AuthContext";
@@ -13,12 +21,46 @@ import HeaderToko from "@/components/HeaderToko/HeaderToko";
 import FilterBar from "@/components/FilterBar/FilterBar";
 import KartuProduk from "@/components/KartuProduk/KartuProduk";
 
+// utils
+import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
+
+const OPSI_URUTAN = [
+  { id: "terbaru", label: "Terbaru" },
+  { id: "termurah", label: "Harga terendah" },
+  { id: "termahal", label: "Harga tertinggi" },
+  { id: "nama", label: "Nama A–Z" },
+];
+
+function daftarKategori(produk) {
+  if (Array.isArray(produk.kategori)) return produk.kategori;
+  if (typeof produk.kategori === "string") {
+    return produk.kategori.split(",").map((item) => item.trim());
+  }
+  return [];
+}
+
+function inisial(nama) {
+  return String(nama ?? "Toko")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((kata) => kata[0])
+    .join("")
+    .toUpperCase();
+}
+
+function waktuProduk(produk) {
+  const waktu = Date.parse(produk.created_at ?? "");
+  return Number.isFinite(waktu) ? waktu : 0;
+}
+
 function Beranda() {
   const { filterBeranda } = useGlobalContext();
   const { daftarProduk, loading, error } = useProdukContext();
   const { daftarToko, errorToko } = useAuthContext();
   const [pencarianTerbuka, setPencarianTerbuka] = useState(false);
   const [kueriCari, setKueriCari] = useState("");
+  const [urutan, setUrutan] = useState("terbaru");
 
   function togglePencarian() {
     if (pencarianTerbuka) {
@@ -29,91 +71,310 @@ function Beranda() {
     setPencarianTerbuka(true);
   }
 
+  const petaToko = useMemo(
+    () =>
+      new Map(daftarToko.map((toko) => [String(toko.id), toko])),
+    [daftarToko],
+  );
+
   const kueriNormal = kueriCari.trim().toLocaleLowerCase();
-  const produkTampil = daftarProduk.filter((produk) => {
-    const cocokKategori =
-      filterBeranda === "All" ||
-      filterBeranda === "Semua" ||
-      (Array.isArray(produk.kategori)
-        ? produk.kategori
-        : typeof produk.kategori === "string"
-          ? produk.kategori.split(",")
-          : []
-      ).some(
-        (kategori) =>
-          typeof kategori === "string" &&
-          kategori.trim().toLocaleLowerCase() ===
-            filterBeranda.toLocaleLowerCase(),
-      );
 
-    const namaToko =
-      daftarToko.find(
-        (toko) => String(toko.id) === String(produk.id_toko),
-      )?.namaToko ?? "";
-    const teksCari = [
-      produk.nama,
-      produk.deskripsi,
-      namaToko,
-      ...(Array.isArray(produk.kategori)
-        ? produk.kategori
-        : typeof produk.kategori === "string"
-          ? produk.kategori.split(",")
-          : []),
-      ...(Array.isArray(produk.rasa) ? produk.rasa : []),
-      ...(Array.isArray(produk.ukuran) ? produk.ukuran : []),
-    ]
-      .filter((teks) => typeof teks === "string")
-      .join(" ")
-      .toLocaleLowerCase();
+  const hitunganKategori = useMemo(() => {
+    const hasil = { All: daftarProduk.length };
+    for (const kategori of KATEGORI_PRODUK) hasil[kategori] = 0;
 
-    return cocokKategori && (!kueriNormal || teksCari.includes(kueriNormal));
-  });
+    for (const produk of daftarProduk) {
+      for (const kategori of daftarKategori(produk)) {
+        const kunci = KATEGORI_PRODUK.find(
+          (item) =>
+            item.toLocaleLowerCase() === String(kategori).toLocaleLowerCase(),
+        );
+        if (kunci) hasil[kunci] += 1;
+      }
+    }
+
+    return hasil;
+  }, [daftarProduk]);
+
+  const produkTampil = useMemo(() => {
+    const hasil = daftarProduk
+      .map((produk, indeks) => ({ produk, indeks }))
+      .filter(({ produk }) => {
+        const kategoriProduk = daftarKategori(produk);
+        const cocokKategori =
+          filterBeranda === "All" ||
+          filterBeranda === "Semua" ||
+          kategoriProduk.some(
+            (kategori) =>
+              String(kategori).trim().toLocaleLowerCase() ===
+              filterBeranda.toLocaleLowerCase(),
+          );
+
+        const namaToko =
+          petaToko.get(String(produk.id_toko))?.namaToko ?? "";
+        const teksCari = [
+          produk.nama,
+          produk.deskripsi,
+          namaToko,
+          ...kategoriProduk,
+          ...(Array.isArray(produk.rasa) ? produk.rasa : []),
+          ...(Array.isArray(produk.ukuran) ? produk.ukuran : []),
+        ]
+          .filter((teks) => typeof teks === "string")
+          .join(" ")
+          .toLocaleLowerCase();
+
+        return cocokKategori && (!kueriNormal || teksCari.includes(kueriNormal));
+      });
+
+    hasil.sort((a, b) => {
+      if (urutan === "termurah") {
+        return Number(a.produk.harga) - Number(b.produk.harga);
+      }
+      if (urutan === "termahal") {
+        return Number(b.produk.harga) - Number(a.produk.harga);
+      }
+      if (urutan === "nama") {
+        return String(a.produk.nama).localeCompare(String(b.produk.nama), "id");
+      }
+
+      const selisih = waktuProduk(b.produk) - waktuProduk(a.produk);
+      return selisih !== 0 ? selisih : a.indeks - b.indeks;
+    });
+
+    return hasil.map(({ produk }) => produk);
+  }, [daftarProduk, filterBeranda, kueriNormal, petaToko, urutan]);
+
+  const tokoTampil = useMemo(
+    () =>
+      daftarToko
+        .map((toko) => ({
+          ...toko,
+          jumlahProduk: daftarProduk.filter(
+            (produk) => String(produk.id_toko) === String(toko.id),
+          ).length,
+        }))
+        .sort((a, b) => b.jumlahProduk - a.jumlahProduk)
+        .slice(0, 6),
+    [daftarProduk, daftarToko],
+  );
+
+  const filterAktif =
+    filterBeranda !== "All" && filterBeranda !== "Semua";
+  const tampilkanToko = !kueriNormal && !filterAktif && tokoTampil.length > 0;
 
   return (
-    <section>
+    <section className="beranda">
       <HeaderToko
         pencarianTerbuka={pencarianTerbuka}
         nilaiCari={kueriCari}
         onCariKlik={togglePencarian}
         onCariUbah={setKueriCari}
       />
-      <FilterBar />
 
-      {loading && <p className="beranda__status">Memuat produk...</p>}
-      {error && (
-        <p className="beranda__status">Produk gagal dimuat: {error}</p>
-      )}
-      {errorToko && (
-        <p className="beranda__status" role="alert">
-          Informasi toko gagal dimuat: {errorToko}
-        </p>
-      )}
-      {!loading && !error && produkTampil.length === 0 && (
-        <p className="beranda__status">
-          {kueriNormal
-            ? "Produk tidak ditemukan. Coba kata kunci lain."
-            : "Belum ada produk di kategori ini."}
-        </p>
-      )}
+      <header className="beranda__hero">
+        <div className="beranda__hero-isi">
+          <p className="beranda__eyebrow">Market Day · Sekolah</p>
+          <h2 className="beranda__hero-judul">
+            Dukung toko teman, temukan jajanan favorit.
+          </h2>
+          <p className="beranda__hero-teks">
+            Belanja langsung dari toko siswa. Pilih produk, pesan, lalu ambil
+            pesananmu di sekolah.
+          </p>
 
-      {!loading && !error && produkTampil.length > 0 && (
-        <div className="list-produk-dijual">
-          {produkTampil.map((produk) => (
-            <KartuProduk
-              key={produk.id}
-              href={`/detailproduk/${produk.id}`}
-              nama={produk.nama}
-              harga={produk.harga}
-              gambar={produk.gambar}
-              namaToko={
-                daftarToko.find(
-                  (toko) => String(toko.id) === String(produk.id_toko),
-                )?.namaToko
-              }
+          <div className="beranda__pencarian">
+            <FiSearch aria-hidden="true" />
+            <input
+              type="search"
+              value={kueriCari}
+              onChange={(event) => setKueriCari(event.target.value)}
+              placeholder="Cari produk atau nama toko..."
+              aria-label="Cari produk atau nama toko"
             />
-          ))}
+            {kueriCari && (
+              <button
+                type="button"
+                className="beranda__hapus-cari"
+                aria-label="Hapus pencarian"
+                onClick={() => setKueriCari("")}
+              >
+                <FiX aria-hidden="true" />
+              </button>
+            )}
+          </div>
+
+          <div className="beranda__hero-statistik">
+            <span>
+              <strong>{daftarProduk.length}</strong> produk
+            </span>
+            <span>
+              <strong>{daftarToko.length}</strong> toko
+            </span>
+            <span>
+              <strong>{KATEGORI_PRODUK.length}</strong> kategori
+            </span>
+          </div>
         </div>
+      </header>
+
+      {tampilkanToko && (
+        <section className="beranda__toko" aria-labelledby="judul-toko-beranda">
+          <div className="beranda__bagian-heading">
+            <div>
+              <p className="beranda__eyebrow beranda__eyebrow--gelap">
+                Jelajahi
+              </p>
+              <h2 id="judul-toko-beranda">Toko di Market Day</h2>
+            </div>
+            <span className="beranda__hitung-toko">
+              {daftarToko.length} toko aktif
+            </span>
+          </div>
+
+          <div className="beranda__toko-list">
+            {tokoTampil.map((toko) => (
+              <Link
+                key={toko.id}
+                className="beranda__toko-kartu"
+                href={`/toko/${toko.id}`}
+                aria-label={`Kunjungi toko ${toko.namaToko}`}
+              >
+                <span className="beranda__toko-avatar" aria-hidden="true">
+                  {toko.fotoProfil ? (
+                    <img src={toko.fotoProfil} alt="" loading="lazy" />
+                  ) : (
+                    inisial(toko.namaToko)
+                  )}
+                </span>
+                <span className="beranda__toko-teks">
+                  <strong>{toko.namaToko}</strong>
+                  <span>
+                    <FiShoppingBag aria-hidden="true" /> {toko.jumlahProduk}{" "}
+                    produk
+                  </span>
+                </span>
+                <FiArrowRight aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
+
+      <section
+        className="beranda__katalog"
+        aria-labelledby="judul-katalog-beranda"
+      >
+        <div className="beranda__katalog-heading">
+          <div>
+            <p className="beranda__eyebrow beranda__eyebrow--gelap">Katalog</p>
+            <h2 id="judul-katalog-beranda">Produk pilihan</h2>
+          </div>
+
+          <label className="beranda__urutan">
+            <span>Urutkan</span>
+            <select
+              value={urutan}
+              onChange={(event) => setUrutan(event.target.value)}
+            >
+              {OPSI_URUTAN.map((opsi) => (
+                <option key={opsi.id} value={opsi.id}>
+                  {opsi.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <FilterBar hitungan={hitunganKategori} />
+
+        <div className="beranda__hasil-baris">
+          <p className="beranda__hasil" aria-live="polite">
+            {loading
+              ? "Memuat produk..."
+              : `${produkTampil.length} produk`}
+            {!loading && kueriNormal && (
+              <>
+                {" "}
+                untuk <strong>“{kueriCari.trim()}”</strong>
+              </>
+            )}
+            {!loading && !kueriNormal && filterAktif && (
+              <>
+                {" "}
+                di kategori <strong>{filterBeranda}</strong>
+              </>
+            )}
+          </p>
+
+          {filterAktif && (
+            <span className="beranda__filter-aktif">
+              <FiFilter aria-hidden="true" /> {filterBeranda}
+            </span>
+          )}
+        </div>
+
+        {loading && <p className="beranda__status">Memuat produk...</p>}
+
+        {error && (
+          <p className="beranda__status beranda__status--galat" role="alert">
+            Produk gagal dimuat: {error}
+          </p>
+        )}
+        {errorToko && (
+          <p className="beranda__status beranda__status--galat" role="alert">
+            Informasi toko gagal dimuat: {errorToko}
+          </p>
+        )}
+
+        {!loading && !error && produkTampil.length === 0 && (
+          <div className="beranda__kosong">
+            <span className="beranda__kosong-ikon" aria-hidden="true">
+              <FiShoppingBag />
+            </span>
+            <h3>
+              {kueriNormal
+                ? "Produk tidak ditemukan"
+                : "Belum ada produk di sini"}
+            </h3>
+            <p>
+              {kueriNormal
+                ? "Coba kata kunci lain atau jelajahi kategori yang tersedia."
+                : "Produk baru akan muncul di katalog ini. Coba pilih kategori lain."}
+            </p>
+            {kueriNormal && (
+              <button
+                type="button"
+                className="beranda__kosong-tombol"
+                onClick={() => setKueriCari("")}
+              >
+                Hapus pencarian
+              </button>
+            )}
+          </div>
+        )}
+
+        {!loading && !error && produkTampil.length > 0 && (
+          <div className="list-produk-dijual">
+            {produkTampil.map((produk) => {
+              const toko = petaToko.get(String(produk.id_toko));
+              return (
+                <KartuProduk
+                  key={produk.id}
+                  href={`/detailproduk/${produk.id}`}
+                  nama={produk.nama}
+                  harga={produk.harga}
+                  gambar={produk.gambar}
+                  kategori={produk.kategori}
+                  namaToko={toko?.namaToko}
+                  fotoToko={toko?.fotoProfil}
+                  hrefToko={toko ? `/toko/${toko.id}` : undefined}
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
     </section>
   );
 }

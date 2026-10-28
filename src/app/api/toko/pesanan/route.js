@@ -11,7 +11,7 @@ export async function GET(request) {
     
     const { data, error } = await supabaseServer
       .from('orders')
-      .select('*')
+      .select('id, id_checkout, id_pesanan, kode_klaim, id_toko, total, dari_keranjang, status, nama_penerima, nomor_pemesan, created_at, updated_at, items')
       .eq('id_toko', toko.id)
       .neq('status', 'menunggu_otp')
       .order('created_at', { ascending: false });

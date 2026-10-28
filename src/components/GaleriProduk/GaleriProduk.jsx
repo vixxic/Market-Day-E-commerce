@@ -4,19 +4,16 @@ import "./GaleriProduk.css";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Foto produk yang bisa digeser. Titik pagination hanya muncul
- * kalau jumlah foto lebih dari 1.
+ * Foto produk yang bisa digeser. Thumbnail hanya muncul kalau jumlah foto
+ * lebih dari 1.
  *
  * Props:
- * - gambar : array URL gambar, contoh ["/products/a.jpg", "/products/b.jpg"]
- * - nama   : nama produk (untuk teks alt)
+ * - gambar  : array URL gambar, contoh ["/products/a.jpg", "/products/b.jpg"]
+ * - nama    : nama produk (untuk teks alt)
+ * - otomatis: geser otomatis setiap 2 detik (default true)
  */
-export default function GaleriProduk({ gambar = [], nama }) {
-  // Ensure gambar is always an array to avoid .map errors
-  const fotoList = Array.isArray(gambar) 
-    ? gambar 
-    : (gambar ? [gambar] : []);
-
+export default function GaleriProduk({ gambar = [], nama, otomatis = true }) {
+  const fotoList = Array.isArray(gambar) ? gambar : gambar ? [gambar] : [];
   const jalurRef = useRef(null);
   const indeksAktifRef = useRef(0);
   const [indeksAktif, setIndeksAktif] = useState(0);
@@ -46,7 +43,7 @@ export default function GaleriProduk({ gambar = [], nama }) {
   }
 
   useEffect(() => {
-    if (!banyakFoto || dijeda) return undefined;
+    if (!otomatis || !banyakFoto || dijeda) return undefined;
 
     const timer = window.setInterval(() => {
       const indeksBerikutnya = (indeksAktifRef.current + 1) % fotoList.length;
@@ -65,7 +62,7 @@ export default function GaleriProduk({ gambar = [], nama }) {
     }, 2000);
 
     return () => window.clearInterval(timer);
-  }, [banyakFoto, dijeda, fotoList.length]);
+  }, [otomatis, banyakFoto, dijeda, fotoList.length]);
 
   function saatTombolDitekan(e) {
     if (!banyakFoto) return;
@@ -81,54 +78,70 @@ export default function GaleriProduk({ gambar = [], nama }) {
 
   return (
     <div className="galeri-produk">
-      <div
-        ref={jalurRef}
-        className="galeri-produk__jalur"
-        onScroll={saatDigeser}
-        onKeyDown={saatTombolDitekan}
-        onMouseEnter={() => setDijeda(true)}
-        onMouseLeave={() => setDijeda(false)}
-        onFocus={() => setDijeda(true)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) {
-            setDijeda(false);
-          }
-        }}
-        tabIndex={banyakFoto ? 0 : undefined}
-        role={banyakFoto ? "group" : undefined}
-        aria-roledescription={banyakFoto ? "carousel" : undefined}
-        aria-label={banyakFoto ? `Foto ${nama}` : undefined}
-      >
-        {fotoList.length === 0 && <div className="galeri-produk__slide" />}
+      <div className="galeri-produk__bingkai">
+        <div
+          ref={jalurRef}
+          className="galeri-produk__jalur"
+          onScroll={saatDigeser}
+          onKeyDown={saatTombolDitekan}
+          onMouseEnter={() => setDijeda(true)}
+          onMouseLeave={() => setDijeda(false)}
+          onFocus={() => setDijeda(true)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setDijeda(false);
+            }
+          }}
+          tabIndex={banyakFoto ? 0 : undefined}
+          role={banyakFoto ? "group" : undefined}
+          aria-roledescription={banyakFoto ? "carousel" : undefined}
+          aria-label={banyakFoto ? `Foto ${nama}` : undefined}
+        >
+          {fotoList.length === 0 && (
+            <div className="galeri-produk__slide galeri-produk__slide--kosong">
+              <span>Foto belum tersedia</span>
+            </div>
+          )}
 
-        {fotoList.map((src, i) => (
-          <div className="galeri-produk__slide" key={src + i}>
-            <img
-              className="galeri-produk__foto"
-              src={src}
-              alt={`${nama} (foto ${i + 1} dari ${fotoList.length})`}
-              loading={i === 0 ? "eager" : "lazy"}
-              decoding="async"
-              draggable={false}
-            />
-          </div>
-        ))}
+          {fotoList.map((src, i) => (
+            <div className="galeri-produk__slide" key={src + i}>
+              <img
+                className="galeri-produk__foto"
+                src={src}
+                alt={`${nama} (foto ${i + 1} dari ${fotoList.length})`}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
+
+        {banyakFoto && (
+          <span className="galeri-produk__penghitung" aria-hidden="true">
+            {indeksAktif + 1}/{fotoList.length}
+          </span>
+        )}
       </div>
 
       {banyakFoto && (
-        <div className="galeri-produk__titik-wadah">
-          {fotoList.map((_, i) => (
+        <div className="galeri-produk__thumbnail" aria-label="Pilih foto produk">
+          {fotoList.map((src, i) => (
             <button
-              key={i}
+              key={`thumb-${src}-${i}`}
               type="button"
               className={
-                "galeri-produk__titik" +
-                (i === indeksAktif ? " galeri-produk__titik--aktif" : "")
+                "galeri-produk__thumbnail-tombol" +
+                (i === indeksAktif
+                  ? " galeri-produk__thumbnail-tombol--aktif"
+                  : "")
               }
-              aria-label={`Foto ${i + 1} dari ${fotoList.length}`}
+              aria-label={`Tampilkan foto ${i + 1}`}
               aria-current={i === indeksAktif ? "true" : undefined}
               onClick={() => keFoto(i)}
-            />
+            >
+              <img src={src} alt="" loading="lazy" decoding="async" />
+            </button>
           ))}
         </div>
       )}

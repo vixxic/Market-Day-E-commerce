@@ -139,6 +139,98 @@
   outline-offset: 1px;
 }
 
+.daftar-toko__foto {
+  display: grid;
+  gap: 12px;
+}
+
+.daftar-toko__foto-kartu {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #ecdcdc;
+  border-radius: 12px;
+  background-color: #fbf7f7;
+}
+
+.daftar-toko__foto-judul {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #5c3b3b;
+}
+
+.daftar-toko__foto-preview {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  border-radius: 10px;
+  background-color: #f0e3e3;
+  color: #a58b8b;
+  overflow: hidden;
+}
+
+.daftar-toko__foto-preview--avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+}
+
+.daftar-toko__foto-preview--banner {
+  height: 120px;
+}
+
+.daftar-toko__foto-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.daftar-toko__foto-preview svg {
+  width: 26px;
+  height: 26px;
+}
+
+.daftar-toko__unggah {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: start;
+  padding: 10px 14px;
+  border: 1px solid #e0c3c3;
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--warna-merah-utama);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.daftar-toko__unggah input {
+  display: none;
+}
+
+.daftar-toko__unggah:focus-within {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.daftar-toko__petunjuk {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #7d6262;
+}
+
+.daftar-toko__lengkapi {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.daftar-toko__lengkapi a {
+  color: var(--warna-merah-utama);
+  font-weight: 600;
+}
+
 .daftar-toko__galat {
   margin: 0;
   font-size: 0.8125rem;

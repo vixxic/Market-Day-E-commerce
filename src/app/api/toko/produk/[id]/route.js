@@ -1,6 +1,16 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
-import { responsGagal } from "@/lib/server/tokoApi";
+import { dataJson, responsGagal } from "@/lib/server/tokoApi";
+import {
+  daftarTeks,
+  daftarUrlGambar,
+  hargaValid,
+  teksOpsional,
+  teksWajib,
+} from "@/lib/server/validasiInput";
+
+const KOLOM_PRODUK =
+  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function PATCH(request, { params }) {
   try {
@@ -10,39 +20,44 @@ export async function PATCH(request, { params }) {
       return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
     }
 
-    const data = await request.json();
+    const data = await dataJson(request);
     const perubahan = {};
-    if (typeof data.nama === "string") perubahan.nama = data.nama.trim();
-    if (data.harga !== undefined) {
-      const harga = Number(data.harga);
-      if (!Number.isFinite(harga) || harga <= 0) {
-        return Response.json({ error: "Harga produk tidak valid." }, { status: 400 });
-      }
-      perubahan.harga = harga;
+
+    if ("nama" in data) {
+      perubahan.nama = teksWajib(data.nama, "Nama produk", {
+        min: 1,
+        max: 100,
+      });
     }
-    if (Array.isArray(data.kategori)) perubahan.kategori = data.kategori;
-    if (typeof data.deskripsi === "string") {
-      perubahan.deskripsi = data.deskripsi.trim();
+    if ("harga" in data) {
+      perubahan.harga = hargaValid(data.harga);
     }
-    if (Array.isArray(data.rasa)) perubahan.rasa = data.rasa;
-    if (Array.isArray(data.ukuran)) perubahan.ukuran = data.ukuran;
+    if ("kategori" in data) {
+      perubahan.kategori = daftarTeks(data.kategori, "Kategori", {
+        maksItem: 10,
+        maksPanjang: 40,
+      });
+    }
+    if ("deskripsi" in data) {
+      perubahan.deskripsi =
+        teksOpsional(data.deskripsi, "Deskripsi", { max: 2000 }) ?? "";
+    }
+    if ("rasa" in data) {
+      perubahan.rasa = daftarTeks(data.rasa, "Rasa", {
+        maksItem: 10,
+        maksPanjang: 40,
+      });
+    }
+    if ("ukuran" in data) {
+      perubahan.ukuran = daftarTeks(data.ukuran, "Ukuran", {
+        maksItem: 10,
+        maksPanjang: 40,
+      });
+    }
+
     const image = data.image ?? data.gambar;
-    if (typeof image === "string" || Array.isArray(image)) {
-      const imageList = Array.isArray(image)
-        ? image
-            .filter((url) => typeof url === "string" && url.trim())
-            .map((url) => url.trim())
-        : image.trim()
-          ? [image.trim()]
-          : [];
-
-      if (imageList.length === 0 || imageList.length > 5) {
-        return Response.json(
-          { error: "Produk harus memiliki 1 sampai 5 foto." },
-          { status: 400 },
-        );
-      }
-
+    if (image !== undefined) {
+      const imageList = daftarUrlGambar(image, "Foto produk");
       perubahan.gambar = imageList[0];
       perubahan.gambar_list = imageList;
     }
@@ -62,7 +77,7 @@ export async function PATCH(request, { params }) {
       return Response.json({ error: "Produk tidak ditemukan." }, { status: 404 });
     }
 
-    if (product.id_toko !== toko.id) {
+    if (String(product.id_toko) !== String(toko.id)) {
       return Response.json({ error: "Anda tidak memiliki izin untuk mengubah produk ini." }, { status: 403 });
     }
 
@@ -70,13 +85,19 @@ export async function PATCH(request, { params }) {
       .from('products')
       .update(perubahan)
       .eq('id', id)
-      .select()
+      .select(KOLOM_PRODUK)
       .single();
 
     if (updateError) throw updateError;
 
     return Response.json(updatedProduct);
   } catch (error) {
+    if (error?.publik) {
+      return Response.json(
+        { error: error.message },
+        { status: error.status ?? 400 },
+      );
+    }
     return responsGagal(error);
   }
 }
@@ -100,7 +121,7 @@ export async function DELETE(request, { params }) {
       return Response.json({ error: "Produk tidak ditemukan." }, { status: 404 });
     }
 
-    if (product.id_toko !== toko.id) {
+    if (String(product.id_toko) !== String(toko.id)) {
       return Response.json({ error: "Anda tidak memiliki izin untuk menghapus produk ini." }, { status: 403 });
     }
 

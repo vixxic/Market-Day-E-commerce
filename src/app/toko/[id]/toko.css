@@ -1,0 +1,554 @@
+/* ===== Halaman toko publik ===== */
+
+.toko-publik {
+  min-height: 100dvh;
+  padding-bottom: 112px;
+  color: #1b1111;
+}
+
+.toko-publik__header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.92);
+  padding-top: env(safe-area-inset-top, 0px);
+  backdrop-filter: blur(12px);
+}
+
+.toko-publik__header-isi {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  max-width: 1100px;
+  min-height: 62px;
+  margin: 0 auto;
+}
+
+.toko-publik__header-judul {
+  overflow: hidden;
+  color: var(--warna-merah-utama);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.toko-publik__ikon-tombol {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--warna-merah-utama);
+  font-size: 1.2rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.toko-publik__ikon-tombol:hover {
+  background: rgba(82, 16, 20, 0.06);
+}
+
+.toko-publik__ikon-tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.toko-publik__pesan {
+  max-width: 1100px;
+  margin: 8px auto 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #f7ebe8;
+  color: var(--warna-merah-utama);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.toko-publik__isi {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ===== Banner & identitas ===== */
+
+.toko-publik__hero {
+  position: relative;
+}
+
+.toko-publik__banner {
+  position: relative;
+  height: clamp(160px, 28vw, 260px);
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: var(--warna-merah-utama);
+  background-image: url("../../../assets/placeholder_market_day.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.toko-publik__banner--foto {
+  background-position: center;
+  background-size: cover;
+}
+
+.toko-publik__edit-banner {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--warna-merah-utama);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(32, 4, 6, 0.16);
+}
+
+.toko-publik__edit-banner:hover {
+  background: #ffffff;
+}
+
+.toko-publik__edit-banner:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.toko-publik__avatar {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 102px;
+  height: 102px;
+  margin: -52px 0 0 20px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: #f3e2e2;
+  color: var(--warna-merah-utama);
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  box-shadow: 0 10px 28px rgba(50, 8, 12, 0.18);
+}
+
+.toko-publik__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.toko-publik__edit-avatar {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+}
+
+.toko-publik__edit-avatar svg {
+  width: 14px;
+  height: 14px;
+}
+
+.toko-publik__edit-avatar:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.toko-publik__info {
+  padding: 14px 18px 0;
+}
+
+.toko-publik__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eaf4ed;
+  color: #2f6b45;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.toko-publik__badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2f6b45;
+}
+
+.toko-publik__info h1 {
+  margin: 0;
+  color: #1b1111;
+  font-size: clamp(1.7rem, 1.35rem + 1.7vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.toko-publik__deskripsi {
+  max-width: 65ch;
+  margin: 10px 0 0;
+  color: #6f5a5a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.toko-publik__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+  color: #806868;
+  font-size: 0.78rem;
+}
+
+.toko-publik__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toko-publik__meta svg {
+  width: 14px;
+  height: 14px;
+  color: var(--warna-merah-utama);
+}
+
+.toko-publik__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.toko-publik__tombol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toko-publik__tombol--wa {
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+}
+
+.toko-publik__tombol--sekunder {
+  border-color: #e4d3d3;
+  background: #ffffff;
+  color: var(--warna-merah-utama);
+}
+
+.toko-publik__tombol:hover {
+  filter: brightness(1.06);
+}
+
+.toko-publik__tombol:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+/* ===== Katalog toko ===== */
+
+.toko-publik__katalog {
+  margin-top: 34px;
+  padding: 0 2px;
+}
+
+.toko-publik__katalog-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.toko-publik__eyebrow {
+  margin: 0 0 5px;
+  color: #9b7676;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.toko-publik__katalog-heading h2 {
+  margin: 0;
+  color: #1b1111;
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.toko-publik__katalog-heading > span {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #f5eaea;
+  color: var(--warna-merah-utama);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.toko-publik__kontrol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.toko-publik__pencarian {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 8px 0 14px;
+  border: 1px solid #e7d7d7;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #a58b8b;
+}
+
+.toko-publik__pencarian > svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+.toko-publik__pencarian input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #221515;
+  font: inherit;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.toko-publik__pencarian:focus-within {
+  border-color: var(--warna-merah-utama);
+  box-shadow: 0 0 0 3px rgba(82, 16, 20, 0.08);
+}
+
+.toko-publik__pencarian button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f5eaea;
+  color: var(--warna-merah-utama);
+  cursor: pointer;
+}
+
+.toko-publik__kategori {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.toko-publik__kategori::-webkit-scrollbar {
+  display: none;
+}
+
+.toko-publik__kategori-pil {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #f3e4e4;
+  color: var(--warna-merah-utama);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.toko-publik__kategori-pil--aktif {
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+}
+
+.toko-publik__kategori-pil:focus-visible {
+  outline: 2px solid var(--warna-merah-utama);
+  outline-offset: 2px;
+}
+
+.toko-publik__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 14px;
+}
+
+/* ===== Status ===== */
+
+.toko-publik__status {
+  padding: 36px 16px;
+  color: #8c7676;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.toko-publik__status--kotak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 460px;
+  margin: 56px auto;
+  padding: 34px 24px;
+  border: 1px solid #f0e2e2;
+  border-radius: 18px;
+  background: #fffafa;
+}
+
+.toko-publik__status--kotak h1 {
+  margin: 0;
+  color: #2a1818;
+  font-size: 1.25rem;
+}
+
+.toko-publik__status--kotak p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.toko-publik__status--kotak button {
+  margin-top: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toko-publik__kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 44px 20px;
+  border: 1px dashed #e4d3d3;
+  border-radius: 18px;
+  background: #fffafa;
+  text-align: center;
+}
+
+.toko-publik__kosong > span {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f7e8e8;
+  color: var(--warna-merah-utama);
+  font-size: 1.35rem;
+}
+
+.toko-publik__kosong h3 {
+  margin: 4px 0 0;
+  color: #2a1818;
+  font-size: 1.02rem;
+}
+
+.toko-publik__kosong p {
+  margin: 0;
+  color: #8a7070;
+  font-size: 0.84rem;
+}
+
+@media (min-width: 640px) {
+  .toko-publik__kontrol {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .toko-publik__pencarian {
+    flex: 1 1 300px;
+  }
+
+  .toko-publik__kategori {
+    flex: 0 1 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .toko-publik__header-isi {
+    min-height: 68px;
+  }
+
+  .toko-publik__avatar {
+    width: 122px;
+    height: 122px;
+    margin-top: -62px;
+    margin-left: 28px;
+    font-size: 1.85rem;
+  }
+
+  .toko-publik__info {
+    padding: 18px 28px 0;
+  }
+
+  .toko-publik__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .toko-publik__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

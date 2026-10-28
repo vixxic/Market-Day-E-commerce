@@ -11,9 +11,6 @@ import {
 import {
   ambilDaftarProduk as requestDaftarProduk,
   ambilProdukById as requestProdukById,
-  hapusProduk as requestHapusProduk,
-  tambahProduk as requestTambahProduk,
-  ubahProduk as requestUbahProduk,
 } from "@/lib/api/produkApi";
 
 const ProdukContext = createContext(null);
@@ -68,66 +65,14 @@ export function ProdukProvider({ children }) {
     [daftarProduk],
   );
 
-  const tambahProduk = useCallback(async (data) => {
-    try {
-      const produk = await requestTambahProduk(data);
-      setDaftarProduk((daftar) => [...daftar, produk]);
-      setError(null);
-      return produk;
-    } catch (galat) {
-      setError(galat.message);
-      throw galat;
-    }
-  }, []);
-
-  const ubahProduk = useCallback(async (id, data) => {
-    try {
-      const produk = await requestUbahProduk(id, data);
-      setDaftarProduk((daftar) =>
-        daftar.map((item) =>
-          String(item.id) === String(id) ? produk : item,
-        ),
-      );
-      setError(null);
-      return produk;
-    } catch (galat) {
-      setError(galat.message);
-      throw galat;
-    }
-  }, []);
-
-  const hapusProduk = useCallback(async (id) => {
-    try {
-      await requestHapusProduk(id);
-      setDaftarProduk((daftar) =>
-        daftar.filter((produk) => String(produk.id) !== String(id)),
-      );
-      setError(null);
-    } catch (galat) {
-      setError(galat.message);
-      throw galat;
-    }
-  }, []);
-
   const value = useMemo(
     () => ({
       daftarProduk,
       loading,
       error,
       ambilProdukById,
-      tambahProduk,
-      ubahProduk,
-      hapusProduk,
     }),
-    [
-      daftarProduk,
-      loading,
-      error,
-      ambilProdukById,
-      tambahProduk,
-      ubahProduk,
-      hapusProduk,
-    ],
+    [daftarProduk, loading, error, ambilProdukById],
   );
 
   return (

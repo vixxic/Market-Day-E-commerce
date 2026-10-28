@@ -16,14 +16,12 @@ import {
 } from "@/lib/api/pesananApi";
 import {
   buatPesanan as simpanPesananLokal,
-  hapusPesanan as hapusPesananLokal,
   ubahStatusPesanan as ubahStatusPesananLokal,
   parseDaftarPesananSnapshot,
   subscribePesanan,
 } from "@/lib/pesanan";
 import {
   getDaftarPesananSnapshot,
-  buatIdCheckout,
   getPemesananSnapshot,
   subscribePemesanan,
   siapkanPemesanan as siapkanPemesananLokal,
@@ -90,29 +88,17 @@ function susunDataPesanan(data, namaPenerima, nomorPemesan) {
 
   const itemPesanan = data.item.map((item) => ({
     id_produk: item.idProduk,
-    nama: item.nama,
-    harga: item.harga,
-    gambar: item.gambar ?? null,
     jumlah: item.jumlah,
-    subtotal: item.harga * item.jumlah,
     varian: {
       rasa: item.jenis ?? null,
-      ukuran: item.ukuran,
+      ukuran: item.ukuran ?? null,
     },
   }));
 
-  const dibuat = new Date().toISOString();
-
   return {
-    id_checkout: buatIdCheckout(),
-    id_pesanan: data.idPesanan,
-    kode_klaim: data.kodeKlaim,
     id_toko: idToko,
     nama_penerima: namaPenerima,
     nomor_pemesan: nomorPemesan,
-    total: data.total,
-    status: "menunggu_otp",
-    created_at: dibuat,
     items: itemPesanan,
   };
 }
@@ -191,8 +177,10 @@ export function PesananProvider({ children }) {
         await Promise.all(
           menunggu.map(async (pesanan) => {
             try {
+              if (!pesanan.kodeKlaim) return;
               const statusServer = await ambilStatusPesananApi(
                 pesanan.idPesanan,
+                pesanan.kodeKlaim,
               );
               if (
                 aktif &&
@@ -254,43 +242,32 @@ export function PesananProvider({ children }) {
   }, []);
 
   const buatPesanan = useCallback(async (data, namaPenerima, nomorPemesan) => {
-    let tersimpanDiServer = null;
-    let pesanan = null;
-
     try {
       const dataApi = susunDataPesanan(data, namaPenerima, nomorPemesan);
+      const tersimpanDiServer = await kirimPesanan(dataApi);
+      const pesananServer = normalisasiPesananApi(tersimpanDiServer);
+
       const dataLokal = {
         ...data,
-        idCheckout: dataApi.idCheckout,
+        idCheckout: tersimpanDiServer.id_checkout ?? data.idCheckout,
+        idPesanan: pesananServer.idPesanan,
+        kodeKlaim: pesananServer.kodeKlaim,
+        total: tersimpanDiServer.total ?? data.total,
         namaPenerima,
         nomorPemesan,
         status: "menunggu_otp",
-        createdAt: dataApi.createdAt,
+        createdAt: pesananServer.createdAt,
       };
+
       simpanPemesanan(dataLokal);
-      pesanan = simpanPesananLokal(dataLokal);
-      tersimpanDiServer = await kirimPesanan(dataApi);
+      const pesanan = simpanPesananLokal(dataLokal);
+
       if (String(idTokoAktif) === String(dataApi.id_toko)) {
-        setPesananToko((daftar) => [
-          normalisasiPesananApi(tersimpanDiServer),
-          ...daftar,
-        ]);
+        setPesananToko((daftar) => [pesananServer, ...daftar]);
       }
       setErrorOperasi(null);
       return pesanan;
     } catch (galat) {
-      if (pesanan) {
-        try {
-          hapusPesananLokal(data.idPesanan);
-        } catch (galatPembersihan) {
-          console.error("Gagal membersihkan pesanan lokal.", galatPembersihan);
-        }
-      }
-      try {
-        simpanPemesanan(data);
-      } catch (galatPembersihan) {
-        console.error("Gagal memulihkan pemesanan lokal.", galatPembersihan);
-      }
       setErrorOperasi(galat.message);
       throw galat;
     }

@@ -1,0 +1,342 @@
+.analitik-toko {
+  margin: 0 0 48px;
+}
+
+.analitik-toko__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.analitik-toko__eyebrow {
+  margin: 0 0 4px;
+  color: var(--kelola-merah);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.analitik-toko__heading h2 {
+  margin: 0;
+  color: #1b1111;
+  font-size: clamp(1.2rem, 1.08rem + 0.55vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.analitik-toko__periode {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--kelola-muda);
+  color: var(--kelola-gelap);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.analitik-toko__status {
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--kelola-muda);
+  color: var(--kelola-gelap);
+  font-size: 0.85rem;
+}
+
+.analitik-toko__status--galat {
+  color: #9d1d1d;
+}
+
+.analitik-toko__ringkasan {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.analitik-toko__kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #f0e2e2;
+  border-radius: 14px;
+  background: #fffafa;
+}
+
+.analitik-toko__kpi-ikon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 4px;
+  border-radius: 9px;
+  background: #f7e8e8;
+  color: var(--kelola-gelap);
+}
+
+.analitik-toko__kpi-ikon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.analitik-toko__kpi-label {
+  overflow: hidden;
+  color: #8a7070;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__kpi strong {
+  overflow: hidden;
+  color: var(--kelola-gelap);
+  font-size: clamp(1.15rem, 0.98rem + 0.8vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__kpi small {
+  overflow: hidden;
+  color: #9a8080;
+  font-size: 0.64rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__catatan {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff7e8;
+  color: #805b19;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.analitik-toko__catatan code {
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+.analitik-toko__panel {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid #f0e2e2;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.analitik-toko__panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.analitik-toko__panel-heading h3 {
+  margin: 0;
+  color: #241616;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.analitik-toko__panel-heading p {
+  margin: 2px 0 0;
+  color: #9a8080;
+  font-size: 0.68rem;
+}
+
+.analitik-toko__panel-heading > strong {
+  flex: 0 0 auto;
+  color: var(--kelola-gelap);
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.analitik-toko__grafik {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 150px;
+  padding-top: 4px;
+}
+
+.analitik-toko__kolom {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  height: 100%;
+}
+
+.analitik-toko__batang-wadah {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border-radius: 6px;
+  background: #fbf3f2;
+}
+
+.analitik-toko__batang {
+  display: block;
+  width: min(100%, 34px);
+  border-radius: 6px 6px 3px 3px;
+  background: linear-gradient(to top, var(--kelola-gelap), var(--kelola-tombol));
+  transition: height 0.4s ease;
+}
+
+.analitik-toko__batang--kosong {
+  background: #ecdada;
+}
+
+.analitik-toko__kolom-hari {
+  overflow: hidden;
+  max-width: 100%;
+  color: #6f5a5a;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__kolom-tanggal {
+  overflow: hidden;
+  max-width: 100%;
+  color: #a28a8a;
+  font-size: 0.56rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__daftar-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.analitik-toko__daftar {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.analitik-toko__daftar li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #f7eeee;
+}
+
+.analitik-toko__daftar li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.analitik-toko__nomor {
+  flex: 0 0 auto;
+  width: 18px;
+  color: #a28a8a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.analitik-toko__thumb {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #f7e8e8;
+  color: var(--kelola-gelap);
+  font-size: 0.9rem;
+}
+
+.analitik-toko__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.analitik-toko__daftar-teks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.analitik-toko__daftar-teks strong {
+  overflow: hidden;
+  color: #2a1818;
+  font-size: 0.79rem;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__daftar-teks small {
+  overflow: hidden;
+  color: #8a7070;
+  font-size: 0.64rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.analitik-toko__daftar-nilai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--kelola-gelap);
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.analitik-toko__daftar-nilai svg {
+  width: 14px;
+  height: 14px;
+  color: #9a8080;
+}
+
+.analitik-toko__kosong {
+  margin: 0;
+  padding: 16px 0;
+  color: #8a7070;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .analitik-toko__ringkasan {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .analitik-toko__daftar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

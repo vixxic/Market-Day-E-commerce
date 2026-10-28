@@ -4,6 +4,16 @@ import {
   dataJson,
   responsGagal,
 } from "@/lib/server/tokoApi";
+import {
+  daftarTeks,
+  daftarUrlGambar,
+  hargaValid,
+  teksOpsional,
+  teksWajib,
+} from "@/lib/server/validasiInput";
+
+const KOLOM_PRODUK =
+  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function GET(request) {
   try {
@@ -14,7 +24,7 @@ export async function GET(request) {
 
     const { data, error } = await supabaseServer
       .from('products')
-      .select('*')
+      .select(KOLOM_PRODUK)
       .eq('id_toko', toko.id);
 
     if (error) throw error;
@@ -50,28 +60,9 @@ export async function POST(request) {
     }
 
     const data = await dataJson(request);
-    const nama = typeof data.nama === "string" ? data.nama.trim() : "";
-    const harga = Number(data.harga);
-    const imageList = Array.isArray(data.image)
-      ? data.image
-          .filter((url) => typeof url === "string" && url.trim())
-          .map((url) => url.trim())
-      : typeof data.image === "string" && data.image.trim()
-        ? [data.image.trim()]
-        : [];
-
-    if (!nama || !Number.isFinite(harga) || harga <= 0 || imageList.length === 0) {
-      return Response.json(
-        { error: "Nama, harga yang valid, dan foto produk wajib diisi." },
-        { status: 400 },
-      );
-    }
-    if (imageList.length > 5) {
-      return Response.json(
-        { error: "Pilih maksimal 5 foto produk." },
-        { status: 400 },
-      );
-    }
+    const nama = teksWajib(data.nama, "Nama produk", { min: 1, max: 100 });
+    const harga = hargaValid(data.harga);
+    const imageList = daftarUrlGambar(data.image, "Foto produk");
 
     const produkBaru = {
       nama,
@@ -80,20 +71,37 @@ export async function POST(request) {
       gambar_list: imageList,
       id_toko: toko.id,
       created_at: new Date().toISOString(),
-      kategori: Array.isArray(data.kategori) ? data.kategori : [],
-      deskripsi: typeof data.deskripsi === "string" ? data.deskripsi.trim() : "",
-      rasa: Array.isArray(data.rasa) ? data.rasa : [],
-      ukuran: Array.isArray(data.ukuran) ? data.ukuran : [],
+      kategori: daftarTeks(data.kategori, "Kategori", {
+        maksItem: 10,
+        maksPanjang: 40,
+      }),
+      deskripsi:
+        teksOpsional(data.deskripsi, "Deskripsi", { max: 2000 }) ?? "",
+      rasa: daftarTeks(data.rasa, "Rasa", {
+        maksItem: 10,
+        maksPanjang: 40,
+      }),
+      ukuran: daftarTeks(data.ukuran, "Ukuran", {
+        maksItem: 10,
+        maksPanjang: 40,
+      }),
     };
 
     const { data: result, error } = await supabaseServer
       .from('products')
       .insert([produkBaru])
-      .select();
+      .select(KOLOM_PRODUK);
 
     if (error) throw error;
     return Response.json(result[0], { status: 201 });
   } catch (error) {
+    if (error?.publik) {
+      return Response.json(
+        { error: error.message },
+        { status: error.status ?? 400 },
+      );
+    }
+
     console.error("Gagal menyimpan produk:", error);
     return Response.json(
       { error: "Produk belum berhasil disimpan. Silakan coba lagi." },

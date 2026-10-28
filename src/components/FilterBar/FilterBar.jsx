@@ -11,12 +11,14 @@ const KATEGORI_FILTER = ["All", ...KATEGORI_PRODUK];
  * Deretan tombol filter kategori (pil).
  *
  * Props:
- * - kategori : array teks, contoh ["All", "Manis", "Asin"]
- * - aktif    : teks kategori yang sedang dipilih
- * - onPilih  : dipanggil dengan teks kategori saat pil ditekan
+ * - kategori  : array teks, contoh ["All", "Manis", "Asin"]
+ * - hitungan  : objek jumlah produk per kategori, contoh { All: 12, Makanan: 5 }
  */
 
-export default function FilterBar({ kategori = KATEGORI_FILTER }) {
+export default function FilterBar({
+  kategori = KATEGORI_FILTER,
+  hitungan,
+}) {
   const { filterBeranda, setFilterBeranda } = useGlobalContext();
 
   return (
@@ -27,6 +29,7 @@ export default function FilterBar({ kategori = KATEGORI_FILTER }) {
     >
       {kategori.map((nama) => {
         const dipilih = nama === filterBeranda;
+        const jumlah = hitungan?.[nama];
         return (
           <button
             key={nama}
@@ -37,7 +40,12 @@ export default function FilterBar({ kategori = KATEGORI_FILTER }) {
             aria-pressed={dipilih}
             onClick={() => setFilterBeranda(nama)}
           >
-            {nama}
+            <span>{nama}</span>
+            {typeof jumlah === "number" && (
+              <span className="filter-bar__jumlah" aria-hidden="true">
+                {jumlah}
+              </span>
+            )}
           </button>
         );
       })}
