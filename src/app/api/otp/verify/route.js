@@ -105,22 +105,26 @@ export async function POST(request) {
     }
 
     const verifiedAt = new Date().toISOString();
-    const { data: updated, error: updateError } = await supabaseServer
-      .from("orders")
-      .update({
-        status: "menunggu_konfirmasi",
-        otp_verified_at: verifiedAt,
-        otp_hash: null,
-        otp_expires_at: null,
-        otp_attempts: 0,
-      })
-      .eq("id", order.id)
-      .eq("otp_hash", order.otp_hash)
-      .select("id, status, id_toko")
-      .maybeSingle();
+    const { data: updated, error: updateError } = await supabaseServer.rpc(
+      "verifikasi_otp_dan_kurangi_stok",
+      {
+        p_order_id: order.id,
+        p_otp_hash: order.otp_hash,
+        p_verified_at: verifiedAt,
+      },
+    );
 
     if (updateError) throw updateError;
-    if (!updated) {
+    if (updated?.result === "stock_unavailable") {
+      return Response.json(
+        {
+          error:
+            "Stok produk pada pesanan sudah tidak mencukupi. Silakan buat pesanan baru dengan jumlah yang tersedia.",
+        },
+        { status: 409 },
+      );
+    }
+    if (updated?.result !== "success") {
       return Response.json(
         { error: "Kode OTP sudah berubah. Silakan coba lagi." },
         { status: 409 },
