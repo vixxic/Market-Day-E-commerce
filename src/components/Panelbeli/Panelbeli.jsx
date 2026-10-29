@@ -28,6 +28,15 @@ function ambilUkuranAwal(daftarUkuran) {
   return daftarUkuran[Math.floor((daftarUkuran.length - 1) / 2)];
 }
 
+function jumlahPesanan(pesanan) {
+  return Object.values(pesanan).reduce(
+    (total, ukuran) =>
+      total +
+      Object.values(ukuran).reduce((jumlah, nilai) => jumlah + nilai, 0),
+    0,
+  );
+}
+
 /**
  * Panel yang naik dari bawah saat tombol "Beli" ditekan.
  *
@@ -61,11 +70,16 @@ export default function PanelBeli({
   const ukuranAwal =
     daftarUkuran.length > 0 ? ambilUkuranAwal(daftarUkuran) : "";
   const daftarKunci = daftarJenis ?? [KUNCI_TUNGGAL];
+  const stok = Number.isSafeInteger(Number(produk.stok))
+    ? Math.max(0, Number(produk.stok))
+    : 0;
 
   // pesanan = { [jenis]: { [ukuran]: jumlah } }
   // Tanpa variasi jenis, opsi produk langsung siap dipesan.
   const [pesanan, setPesanan] = useState(() => {
-    const awal = { [daftarUkuran.length > 0 ? ukuranAwal : ""]: 1 };
+    const awal = {
+      [daftarUkuran.length > 0 ? ukuranAwal : ""]: Math.min(1, stok),
+    };
     if (!daftarJenis) return { [KUNCI_TUNGGAL]: awal };
     if (daftarJenis.length === 1) return { [daftarJenis[0]]: awal };
     return {};
@@ -95,9 +109,15 @@ export default function PanelBeli({
         const { [jenis]: _dihapus, ...sisa } = lama;
         return sisa;
       }
+      if (jumlahPesanan(lama) >= stok) return lama;
       return {
         ...lama,
-        [jenis]: { [daftarUkuran.length > 0 ? ukuranAwal : ""]: 1 },
+        [jenis]: {
+          [daftarUkuran.length > 0 ? ukuranAwal : ""]: Math.min(
+            1,
+            stok - jumlahPesanan(lama),
+          ),
+        },
       };
     });
   }
@@ -113,15 +133,20 @@ export default function PanelBeli({
         }
         return { ...lama, [kunci]: sisaUkuran };
       }
+      if (jumlahPesanan(lama) >= stok) return lama;
       return {
         ...lama,
-        [kunci]: { ...ukuranTerpilih, [ukuran]: 1 },
+        [kunci]: {
+          ...ukuranTerpilih,
+          [ukuran]: Math.min(1, stok - jumlahPesanan(lama)),
+        },
       };
     });
   }
 
   function ubahJumlah(kunci, ukuran, selisih) {
     setPesanan((lama) => {
+      if (selisih > 0 && jumlahPesanan(lama) >= stok) return lama;
       if (selisih < 0 && lama[kunci][ukuran] <= 1) {
         const { [ukuran]: _dihapus, ...sisaUkuran } = lama[kunci];
         // Jangan sisakan kartu kosong saat jumlah turun ke 0.
@@ -144,7 +169,9 @@ export default function PanelBeli({
   }
 
   const kunciTerpilih = daftarKunci.filter(
-    (k) => pesanan[k] && Object.keys(pesanan[k]).length > 0,
+    (k) =>
+      pesanan[k] &&
+      Object.values(pesanan[k]).some((jumlah) => jumlah > 0),
   );
   const adaPesanan = kunciTerpilih.some(
     (kunci) => Object.keys(pesanan[kunci]).length > 0,
@@ -185,6 +212,15 @@ export default function PanelBeli({
           <h2 id={idJudul} className="panel-beli__judul">
             {daftarJenis ? "Jenis Produk" : "Atur Pesanan"}
           </h2>
+          <p
+            className={
+              "panel-beli__stok" +
+              (stok === 0 ? " panel-beli__stok--habis" : "")
+            }
+            role="status"
+          >
+            {stok > 0 ? `Stok tersedia: ${stok}` : "Stok produk habis"}
+          </p>
 
           {daftarJenis && (
             <>
@@ -205,8 +241,12 @@ export default function PanelBeli({
                       }
                       aria-pressed={dipilih}
                       aria-disabled={
-                        daftarJenis.length === 1 ? "true" : undefined
+                        daftarJenis.length === 1 ||
+                        (!dipilih && jumlahPesanan(pesanan) >= stok)
+                          ? "true"
+                          : undefined
                       }
+                      disabled={!dipilih && jumlahPesanan(pesanan) >= stok}
                       onClick={() => pilihJenis(jenis)}
                     >
                       {jenis}
@@ -246,8 +286,16 @@ export default function PanelBeli({
                           key={u}
                           type="button"
                           aria-pressed={u in ukuranTerpilih}
-                          aria-disabled={daftarUkuran.length === 1}
-                          disabled={daftarUkuran.length === 1}
+                          aria-disabled={
+                            daftarUkuran.length === 1 ||
+                            (!(u in ukuranTerpilih) &&
+                              jumlahPesanan(pesanan) >= stok)
+                          }
+                          disabled={
+                            daftarUkuran.length === 1 ||
+                            (!(u in ukuranTerpilih) &&
+                              jumlahPesanan(pesanan) >= stok)
+                          }
                           className={
                             "panel-beli__ukuran-pil" +
                             (u in ukuranTerpilih
@@ -284,7 +332,10 @@ export default function PanelBeli({
                         type="button"
                         className="panel-beli__tombol-jumlah"
                         aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
-                        disabled={jumlah >= JUMLAH_MAKS}
+                        disabled={
+                          jumlah >= JUMLAH_MAKS ||
+                          jumlahPesanan(pesanan) >= stok
+                        }
                         onClick={() => ubahJumlah(kunci, ukuran, 1)}
                       >
                         +
@@ -307,7 +358,7 @@ export default function PanelBeli({
           <button
             type="button"
             className="panel-beli__tombol panel-beli__tombol--pesan"
-            disabled={!adaPesanan}
+            disabled={!adaPesanan || stok === 0}
             onClick={() => onPesan?.(susunPesanan())}
           >
             Pesan
@@ -315,7 +366,7 @@ export default function PanelBeli({
           <button
             type="button"
             className="panel-beli__tombol panel-beli__tombol--keranjang"
-            disabled={!adaPesanan}
+            disabled={!adaPesanan || stok === 0}
             onClick={() => onMasukKeranjang?.(susunPesanan())}
           >
             Masuk Keranjang

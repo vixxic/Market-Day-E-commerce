@@ -87,6 +87,17 @@
   color: #000000;
 }
 
+.panel-beli__stok {
+  margin: -6px 0 0;
+  color: #687b39;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.panel-beli__stok--habis {
+  color: #9d1d1d;
+}
+
 /* --- pilihan jenis --- */
 .panel-beli__pilihan-jenis {
   display: flex;

@@ -5,12 +5,13 @@ import {
   daftarTeks,
   daftarUrlGambar,
   hargaValid,
+  stokValid,
   teksOpsional,
   teksWajib,
 } from "@/lib/server/validasiInput";
 
 const KOLOM_PRODUK =
-  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function PATCH(request, { params }) {
   try {
@@ -31,6 +32,9 @@ export async function PATCH(request, { params }) {
     }
     if ("harga" in data) {
       perubahan.harga = hargaValid(data.harga);
+    }
+    if ("stok" in data) {
+      perubahan.stok = stokValid(data.stok);
     }
     if ("kategori" in data) {
       perubahan.kategori = daftarTeks(data.kategori, "Kategori", {

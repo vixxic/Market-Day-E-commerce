@@ -8,12 +8,13 @@ import {
   daftarTeks,
   daftarUrlGambar,
   hargaValid,
+  stokValid,
   teksOpsional,
   teksWajib,
 } from "@/lib/server/validasiInput";
 
 const KOLOM_PRODUK =
-  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function GET(request) {
   try {
@@ -62,11 +63,13 @@ export async function POST(request) {
     const data = await dataJson(request);
     const nama = teksWajib(data.nama, "Nama produk", { min: 1, max: 100 });
     const harga = hargaValid(data.harga);
+    const stok = stokValid(data.stok);
     const imageList = daftarUrlGambar(data.image, "Foto produk");
 
     const produkBaru = {
       nama,
       harga,
+      stok,
       gambar: imageList[0],
       gambar_list: imageList,
       id_toko: toko.id,

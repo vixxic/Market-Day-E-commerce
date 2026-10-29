@@ -3,7 +3,7 @@ import { responsGagal } from "@/lib/server/tokoApi";
 import { POLA_UUID } from "@/lib/server/validasiInput";
 
 const KOLOM_PRODUK =
-  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function GET(_request, { params }) {
   const { id } = await params;

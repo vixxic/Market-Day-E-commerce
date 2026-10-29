@@ -211,6 +211,9 @@ export default function DashboardToko() {
                     <p className="kelola-toko__harga">
                       {formatHarga(item.harga)}
                     </p>
+                    <p className="kelola-toko__harga">
+                      Stok: {Number(item.stok ?? 0)}
+                    </p>
                     <div
                       className="kelola-toko__aksi-grup"
                       style={{

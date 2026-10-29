@@ -2,7 +2,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { responsGagal } from "@/lib/server/tokoApi";
 
 const KOLOM_PRODUK =
-  "id, nama, harga, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
 
 export async function GET() {
   try {

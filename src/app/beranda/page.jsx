@@ -1,7 +1,7 @@
 "use client";
 
 import "./Beranda.css";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -56,6 +56,16 @@ function waktuProduk(produk) {
   return Number.isFinite(waktu) ? waktu : 0;
 }
 
+function posisiHalamanToko(jalur) {
+  const maksimal = jalur.scrollWidth - jalur.clientWidth;
+  if (maksimal <= 0 || jalur.clientWidth === 0) return [0];
+
+  const jumlahHalaman = Math.ceil(maksimal / jalur.clientWidth) + 1;
+  return Array.from({ length: jumlahHalaman }, (_, indeks) =>
+    Math.min(indeks * jalur.clientWidth, maksimal),
+  );
+}
+
 function Beranda() {
   const { filterBeranda } = useGlobalContext();
   const { daftarProduk, loading, error } = useProdukContext();
@@ -63,6 +73,10 @@ function Beranda() {
   const [pencarianTerbuka, setPencarianTerbuka] = useState(false);
   const [kueriCari, setKueriCari] = useState("");
   const [urutan, setUrutan] = useState("terbaru");
+  const [jedaSliderToko, setJedaSliderToko] = useState(false);
+  const [halamanAktifToko, setHalamanAktifToko] = useState(0);
+  const [jumlahHalamanToko, setJumlahHalamanToko] = useState(1);
+  const jalurTokoRef = useRef(null);
 
   function togglePencarian() {
     if (pencarianTerbuka) {
@@ -74,8 +88,7 @@ function Beranda() {
   }
 
   const petaToko = useMemo(
-    () =>
-      new Map(daftarToko.map((toko) => [String(toko.id), toko])),
+    () => new Map(daftarToko.map((toko) => [String(toko.id), toko])),
     [daftarToko],
   );
 
@@ -112,8 +125,7 @@ function Beranda() {
               filterBeranda.toLocaleLowerCase(),
           );
 
-        const namaToko =
-          petaToko.get(String(produk.id_toko))?.namaToko ?? "";
+        const namaToko = petaToko.get(String(produk.id_toko))?.namaToko ?? "";
         const teksCari = [
           produk.nama,
           produk.deskripsi,
@@ -126,7 +138,9 @@ function Beranda() {
           .join(" ")
           .toLocaleLowerCase();
 
-        return cocokKategori && (!kueriNormal || teksCari.includes(kueriNormal));
+        return (
+          cocokKategori && (!kueriNormal || teksCari.includes(kueriNormal))
+        );
       });
 
     hasil.sort((a, b) => {
@@ -161,8 +175,71 @@ function Beranda() {
     [daftarProduk, daftarToko],
   );
 
-  const filterAktif =
-    filterBeranda !== "All" && filterBeranda !== "Semua";
+  useEffect(() => {
+    const jalur = jalurTokoRef.current;
+    if (!jalur) return undefined;
+
+    function perbaruiHalaman() {
+      const posisiHalaman = posisiHalamanToko(jalur);
+      const halamanTerdekat = posisiHalaman.reduce(
+        (terdekat, posisi, indeks) =>
+          Math.abs(posisi - jalur.scrollLeft) <
+          Math.abs(posisiHalaman[terdekat] - jalur.scrollLeft)
+            ? indeks
+            : terdekat,
+        0,
+      );
+      setJumlahHalamanToko(posisiHalaman.length);
+      setHalamanAktifToko(halamanTerdekat);
+    }
+
+    const pengamatUkuran = new ResizeObserver(perbaruiHalaman);
+    pengamatUkuran.observe(jalur);
+    perbaruiHalaman();
+    return () => pengamatUkuran.disconnect();
+  }, [tokoTampil.length]);
+
+  const pilihHalamanToko = useCallback((indeks) => {
+    const jalur = jalurTokoRef.current;
+    if (!jalur) return;
+
+    const posisiHalaman = posisiHalamanToko(jalur);
+    const posisi = posisiHalaman[indeks];
+    if (posisi === undefined) return;
+
+    const kurangiGerak = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    jalur.scrollTo({
+      left: posisi,
+      behavior: kurangiGerak ? "auto" : "smooth",
+    });
+  }, []);
+
+  const geserToko = useCallback(
+    (arah) => {
+      const jalur = jalurTokoRef.current;
+      if (!jalur) return;
+
+      const posisiHalaman = posisiHalamanToko(jalur);
+      const halamanBerikutnya =
+        (halamanAktifToko + arah + posisiHalaman.length) % posisiHalaman.length;
+      pilihHalamanToko(halamanBerikutnya);
+    },
+    [halamanAktifToko, pilihHalamanToko],
+  );
+
+  useEffect(() => {
+    if (jumlahHalamanToko < 2 || jedaSliderToko) return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => geserToko(1), 4000);
+    return () => window.clearInterval(timer);
+  }, [geserToko, jedaSliderToko, jumlahHalamanToko]);
+
+  const filterAktif = filterBeranda !== "All" && filterBeranda !== "Semua";
   const tampilkanToko = tokoTampil.length > 0;
 
   return (
@@ -229,12 +306,43 @@ function Beranda() {
               </p>
               <h2 id="judul-toko-beranda">Toko di Market Day</h2>
             </div>
-            <span className="beranda__hitung-toko">
-              {daftarToko.length} toko aktif
-            </span>
+            <div className="beranda__toko-kontrol">
+              <span className="beranda__hitung-toko">
+                {daftarToko.length} toko aktif
+              </span>
+            </div>
           </div>
 
-          <div className="beranda__toko-list">
+          <div
+            ref={jalurTokoRef}
+            className="beranda__toko-list"
+            role="region"
+            aria-label="Daftar toko Market Day"
+            aria-roledescription="carousel"
+            onScroll={(event) => {
+              const posisiHalaman = posisiHalamanToko(event.currentTarget);
+              const halamanTerdekat = posisiHalaman.reduce(
+                (terdekat, posisi, indeks) =>
+                  Math.abs(posisi - event.currentTarget.scrollLeft) <
+                  Math.abs(
+                    posisiHalaman[terdekat] - event.currentTarget.scrollLeft,
+                  )
+                    ? indeks
+                    : terdekat,
+                0,
+              );
+              setJumlahHalamanToko(posisiHalaman.length);
+              setHalamanAktifToko(halamanTerdekat);
+            }}
+            onMouseEnter={() => setJedaSliderToko(true)}
+            onMouseLeave={() => setJedaSliderToko(false)}
+            onFocusCapture={() => setJedaSliderToko(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setJedaSliderToko(false);
+              }
+            }}
+          >
             {tokoTampil.map((toko) => (
               <Link
                 key={toko.id}
@@ -296,6 +404,27 @@ function Beranda() {
               </Link>
             ))}
           </div>
+          {jumlahHalamanToko > 1 && (
+            <nav className="beranda__toko-pagination" aria-label="Halaman toko">
+              {Array.from({ length: jumlahHalamanToko }, (_, indeks) => (
+                <button
+                  key={indeks}
+                  type="button"
+                  className={
+                    "beranda__toko-pagination-titik" +
+                    (indeks === halamanAktifToko
+                      ? " beranda__toko-pagination-titik--aktif"
+                      : "")
+                  }
+                  aria-label={`Tampilkan halaman toko ${indeks + 1}`}
+                  aria-current={
+                    indeks === halamanAktifToko ? "page" : undefined
+                  }
+                  onClick={() => pilihHalamanToko(indeks)}
+                />
+              ))}
+            </nav>
+          )}
         </section>
       )}
 
@@ -328,9 +457,7 @@ function Beranda() {
 
         <div className="beranda__hasil-baris">
           <p className="beranda__hasil" aria-live="polite">
-            {loading
-              ? "Memuat produk..."
-              : `${produkTampil.length} produk`}
+            {loading ? "Memuat produk..." : `${produkTampil.length} produk`}
             {!loading && kueriNormal && (
               <>
                 {" "}

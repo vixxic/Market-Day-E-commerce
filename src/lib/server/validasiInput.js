@@ -82,6 +82,22 @@ export function hargaValid(nilai, label = "Harga") {
   return Math.round(harga);
 }
 
+export function stokValid(nilai) {
+  if (
+    (typeof nilai !== "number" && typeof nilai !== "string") ||
+    String(nilai).trim() === ""
+  ) {
+    throw galatValidasi("Stok produk wajib diisi.");
+  }
+
+  const stok = Number(nilai);
+  if (!Number.isSafeInteger(stok) || stok < 0 || stok > 2_147_483_647) {
+    throw galatValidasi("Stok produk harus berupa bilangan bulat minimal 0.");
+  }
+
+  return stok;
+}
+
 export function urlGambarAman(nilai, label) {  if (nilai === null || nilai === undefined || nilai === "") return null;
   if (typeof nilai !== "string") {
     throw galatValidasi(`${label} tidak valid.`);

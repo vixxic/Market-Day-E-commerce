@@ -27,6 +27,7 @@ function EditProdukContent({ params }) {
   const [form, setForm] = useState({
     nama: "",
     harga: "",
+    stok: "0",
     kategori: [],
     deskripsi: "",
     rasa: "",
@@ -51,6 +52,7 @@ function EditProdukContent({ params }) {
         setForm({
           nama: produk.nama || "",
           harga: String(produk.harga || ""),
+          stok: String(produk.stok ?? 0),
           kategori: Array.isArray(produk.kategori) ? produk.kategori : [],
           deskripsi: produk.deskripsi || "",
           rasa: Array.isArray(produk.rasa) ? produk.rasa.join(", ") : (produk.rasa || ""),
@@ -135,6 +137,7 @@ function EditProdukContent({ params }) {
       const data = {
         ...form,
         harga: Number(form.harga),
+        stok: Number(form.stok),
         image,
         rasa: form.rasa
           .split(",")
@@ -203,6 +206,21 @@ function EditProdukContent({ params }) {
               value={form.harga}
               onChange={(event) => ubah("harga", event.target.value)}
             />
+          </label>
+          <label className="kelola-toko__bidang">
+            Stok *
+            <input
+              required
+              type="number"
+              min="0"
+              max="2147483647"
+              step="1"
+              value={form.stok}
+              onChange={(event) => ubah("stok", event.target.value)}
+            />
+            <span className="kelola-toko__bantuan">
+              Masukkan jumlah produk yang tersedia.
+            </span>
           </label>
           <fieldset className="kelola-toko__bidang kelola-toko__kategori">
             <legend>Kategori *</legend>
