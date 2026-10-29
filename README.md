@@ -72,7 +72,7 @@ Terapkan migrasi `supabase/migrations/20261028120000_add_store_profiles_and_anal
 - Profil toko dapat diubah di `/kelolatoko/profil` (nama tampilan, deskripsi, lokasi, nomor WhatsApp, foto profil, dan banner). Foto diunggah ke bucket Supabase Storage yang sama dengan `SUPABASE_STORAGE_BUCKET`. Pendaftaran toko baru di `/daftar-toko` mewajibkan foto profil dan banner; keduanya diunggah setelah akun toko dibuat, lalu disimpan ke profil.
 - Halaman toko publik tersedia di `/toko/[id]` dan menampilkan banner, foto profil, deskripsi, lokasi, kontak WhatsApp, serta katalog produk toko. Saat pemilik toko sedang masuk, tombol edit tampil pada banner dan foto profil dan mengarah ke `/kelolatoko/profil`.
 - Analitik toko tampil pada dashboard `/kelolatoko` dan memadukan data pesanan dengan jumlah kunjungan produk dari `product_views`. Kunjungan dicatat oleh Route Handler `POST /api/produk/[id]/kunjungan` saat halaman detail produk dibuka.
-
+- Status pesanan berubah ke `diproses` saat toko menerima, lalu `selesai` saat pesanan diserahkan. Pesanan selesai tidak dihapus: tetap terhitung di analitik (pendapatan dan produk terjual) dan tampil di `/kelolatoko/riwayat` dengan filter bulan dan tanggal spesifik, beserta ringkasan per periode.
 **Batasan prototipe:** Route Handler tidak mengirim password/hash ke antarmuka dan membatasi operasi toko melalui sesi aplikasi. Aktifkan Row Level Security pada tabel Supabase sebagai lapisan pertahanan tambahan; aplikasi sendiri mengakses tabel melalui service role di server, sedangkan browser memakai endpoint `/api/*`. Cocokkan penggunaan dengan kebutuhan prototipe Market Day sekolah dan jangan simpan data sensitif yang tidak diperlukan.
 
 ## Getting Started

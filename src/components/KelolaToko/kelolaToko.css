@@ -63,8 +63,8 @@
 
 .kelola-toko__statistik {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
   margin: 0 0 44px;
 }
 
@@ -182,6 +182,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  padding-bottom: 4rem;
 }
 
 .kelola-toko__produk {
@@ -265,7 +266,7 @@
 .kelola-toko__tambah {
   position: fixed;
   bottom: max(85px, env(safe-area-inset-bottom, 0px));
-  left: max(calc((100vw - 760px) / 2 + 28px), 28px);
+  right: max(calc((100vw - 760px) / 2 + 28px), 28px);
   display: grid;
   place-items: center;
   width: 52px;
@@ -350,6 +351,14 @@
   object-fit: cover;
 }
 
+.kelola-toko__order-img--kosong {
+  display: grid;
+  place-items: center;
+  background: #f3e7e7;
+  color: #b08a8a;
+  font-size: 1.6rem;
+}
+
 .kelola-toko__order-info {
   display: flex;
   flex-direction: column;
@@ -386,6 +395,22 @@
 
 .kelola-toko__selesaikan {
   background: #2f6b45;
+}
+
+.kelola-toko__tautan-riwayat {
+  margin: 20px 0 0;
+  text-align: right;
+}
+
+.kelola-toko__tautan-riwayat a {
+  color: var(--kelola-merah);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.kelola-toko__tautan-riwayat a:hover {
+  text-decoration: underline;
 }
 
 .kelola-toko__detail {
@@ -613,12 +638,17 @@
     gap: 18px;
   }
 
+  /* Bila jumlah kartu ganjil, kartu terakhir memakai lebar penuh. */
+  .kelola-toko__stat:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
   .kelola-toko__stat {
     padding: 12px 16px;
   }
 
   .kelola-toko__tambah {
-    left: 22px;
+    right: 22px;
   }
 
   .kelola-toko__terima {
