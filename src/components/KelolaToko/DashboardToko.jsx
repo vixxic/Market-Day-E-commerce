@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FiPlus, FiEdit, FiTrash2, FiExternalLink } from "react-icons/fi";
+import { FiPlus, FiEdit, FiTrash2, FiExternalLink, FiClock } from "react-icons/fi";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import AnalitikToko from "@/components/KelolaToko/AnalitikToko";
@@ -93,8 +93,9 @@ export default function DashboardToko() {
   const menunggu = pesanan.filter(
     (item) => item.status === "menunggu_konfirmasi",
   ).length;
-  const diterima = pesanan.filter((item) =>
-    ["diproses", "selesai", "terverifikasi"].includes(item.status),
+  const diterima = pesanan.filter((item) => item.status === "diproses").length;
+  const riwayat = pesanan.filter((item) =>
+    ["selesai", "terverifikasi"].includes(item.status),
   ).length;
 
   return (
@@ -129,6 +130,15 @@ export default function DashboardToko() {
               </span>
             </div>
             <span>Permintaan pesanan</span>
+          </Link>
+          <Link className="kelola-toko__stat" href="/kelolatoko/riwayat">
+            <div className="toko-stat-enter">
+              <strong>{riwayat}</strong>
+              <span>
+                <FiClock size={19} aria-hidden="true" />
+              </span>
+            </div>
+            <span>Riwayat pesanan</span>
           </Link>
         </div>
 

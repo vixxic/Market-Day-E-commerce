@@ -27,9 +27,12 @@ export async function PATCH(request, { params }) {
     }
 
     const { status } = await dataJson(request);
+    // Pesanan yang sudah selesai tidak dihapus agar tetap terhitung di
+    // analitik dan riwayat toko.
     const transisiValid =
-      status === "diproses" && order.status === "menunggu_konfirmasi";
-    
+      (status === "diproses" && order.status === "menunggu_konfirmasi") ||
+      (status === "selesai" && order.status === "diproses");
+
     if (!transisiValid) {
       return Response.json(
         { error: "Status pesanan tidak dapat diubah ke status tersebut." },
@@ -74,9 +77,12 @@ export async function DELETE(request, { params }) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
 
-    if (order.status !== "diproses") {
+    if (!["ditolak", "dibatalkan"].includes(order.status)) {
       return Response.json(
-        { error: "Hanya pesanan yang sedang diproses dapat dihapus." },
+        {
+          error:
+            "Pesanan yang sudah diterima tidak dapat dihapus. Tandai selesai agar masuk riwayat.",
+        },
         { status: 400 },
       );
     }

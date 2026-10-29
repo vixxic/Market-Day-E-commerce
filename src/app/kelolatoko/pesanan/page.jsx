@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
@@ -49,13 +50,24 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   async function selesaikanPesanan(item) {
     setIdMemproses(item.id);
     try {
-      await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
-        method: "DELETE",
-      });
+      const diperbarui = await permintaanKelolaToko(
+        `/api/toko/pesanan/${item.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "selesai" }),
+        },
+      );
       setPesanan((daftar) =>
-        daftar.filter(
-          (pesananTersimpan) =>
-            String(pesananTersimpan.id) !== String(item.id),
+        daftar.map((pesananTersimpan) =>
+          String(pesananTersimpan.id) === String(item.id)
+            ? {
+                ...pesananTersimpan,
+                status: "selesai",
+                updated_at:
+                  diperbarui?.updated_at ?? pesananTersimpan.updated_at,
+              }
+            : pesananTersimpan,
         ),
       );
       setError("");
@@ -89,7 +101,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   const ditampilkan = pesanan.filter((item) =>
     statusHalaman === "permintaan"
       ? item.status === "menunggu_konfirmasi"
-      : ["diproses", "selesai", "terverifikasi"].includes(item.status),
+      : item.status === "diproses",
   );
 
   return (
@@ -142,6 +154,14 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
             />
           ))}
         </div>
+
+        {statusHalaman === "diterima" && (
+          <p className="kelola-toko__tautan-riwayat">
+            <Link href="/kelolatoko/riwayat">
+              Lihat riwayat pesanan selesai
+            </Link>
+          </p>
+        )}
       </main>
     </KelolaLayout>
   );

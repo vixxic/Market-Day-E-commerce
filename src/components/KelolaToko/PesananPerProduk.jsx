@@ -58,13 +58,24 @@ export default function PesananPerProduk({ id }) {
   async function selesaikanPesanan(item) {
     setIdMemproses(item.id);
     try {
-      await permintaanKelolaToko(`/api/toko/pesanan/${item.id}`, {
-        method: "DELETE",
-      });
+      const diperbarui = await permintaanKelolaToko(
+        `/api/toko/pesanan/${item.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "selesai" }),
+        },
+      );
       setPesanan((daftar) =>
-        daftar.filter(
-          (pesananTersimpan) =>
-            String(pesananTersimpan.id) !== String(item.id),
+        daftar.map((pesananTersimpan) =>
+          String(pesananTersimpan.id) === String(item.id)
+            ? {
+                ...pesananTersimpan,
+                status: "selesai",
+                updated_at:
+                  diperbarui?.updated_at ?? pesananTersimpan.updated_at,
+              }
+            : pesananTersimpan,
         ),
       );
       setError("");
