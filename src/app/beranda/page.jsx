@@ -67,11 +67,14 @@ function posisiHalamanToko(jalur) {
 }
 
 function Beranda() {
-  const { filterBeranda } = useGlobalContext();
+  const {
+    filterBeranda,
+    kueriBeranda: kueriCari,
+    setKueriBeranda,
+  } = useGlobalContext();
   const { daftarProduk, loading, error } = useProdukContext();
   const { daftarToko, errorToko } = useAuthContext();
   const [pencarianTerbuka, setPencarianTerbuka] = useState(false);
-  const [kueriCari, setKueriCari] = useState("");
   const [urutan, setUrutan] = useState("terbaru");
   const [jedaSliderToko, setJedaSliderToko] = useState(false);
   const [halamanAktifToko, setHalamanAktifToko] = useState(0);
@@ -81,7 +84,7 @@ function Beranda() {
   function togglePencarian() {
     if (pencarianTerbuka) {
       setPencarianTerbuka(false);
-      setKueriCari("");
+      setKueriBeranda("");
       return;
     }
     setPencarianTerbuka(true);
@@ -248,10 +251,10 @@ function Beranda() {
         pencarianTerbuka={pencarianTerbuka}
         nilaiCari={kueriCari}
         onCariKlik={togglePencarian}
-        onCariUbah={setKueriCari}
+        onCariUbah={setKueriBeranda}
       />
 
-      <header className="beranda__hero">
+      <header className="beranda__hero" id="cara-pesan">
         <div className="beranda__hero-isi">
           <p className="beranda__eyebrow">Market Day · Sekolah</p>
           <h2 className="beranda__hero-judul">
@@ -261,27 +264,6 @@ function Beranda() {
             Belanja langsung dari toko siswa. Pilih produk, pesan, lalu ambil
             pesananmu di sekolah.
           </p>
-
-          <div className="beranda__pencarian">
-            <FiSearch aria-hidden="true" />
-            <input
-              type="search"
-              value={kueriCari}
-              onChange={(event) => setKueriCari(event.target.value)}
-              placeholder="Cari produk atau nama toko..."
-              aria-label="Cari produk atau nama toko"
-            />
-            {kueriCari && (
-              <button
-                type="button"
-                className="beranda__hapus-cari"
-                aria-label="Hapus pencarian"
-                onClick={() => setKueriCari("")}
-              >
-                <FiX aria-hidden="true" />
-              </button>
-            )}
-          </div>
 
           <div className="beranda__hero-statistik">
             <span>
@@ -297,14 +279,104 @@ function Beranda() {
         </div>
       </header>
 
+      <section
+        className="beranda__katalog"
+        aria-labelledby="judul-katalog-beranda"
+      >
+        <div className="beranda__katalog-heading">
+          <div>
+            <p className="beranda__eyebrow beranda__eyebrow--gelap">
+              Katalog Produk
+            </p>
+          </div>
+        </div>
+
+        <div className="urutkan_filterBar">
+          <FilterBar hitungan={hitunganKategori} />
+          <label className="beranda__urutan">
+            <span>Urutkan</span>
+            <select
+              value={urutan}
+              onChange={(event) => setUrutan(event.target.value)}
+            >
+              {OPSI_URUTAN.map((opsi) => (
+                <option key={opsi.id} value={opsi.id}>
+                  {opsi.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {loading && <p className="beranda__status">Memuat produk...</p>}
+
+        {error && (
+          <p className="beranda__status beranda__status--galat" role="alert">
+            Produk gagal dimuat: {error}
+          </p>
+        )}
+        {errorToko && (
+          <p className="beranda__status beranda__status--galat" role="alert">
+            Informasi toko gagal dimuat: {errorToko}
+          </p>
+        )}
+
+        {!loading && !error && produkTampil.length === 0 && (
+          <div className="beranda__kosong">
+            <span className="beranda__kosong-ikon" aria-hidden="true">
+              <FiShoppingBag />
+            </span>
+            <h3>
+              {kueriNormal
+                ? "Produk tidak ditemukan"
+                : "Belum ada produk di sini"}
+            </h3>
+            <p>
+              {kueriNormal
+                ? "Coba kata kunci lain atau jelajahi kategori yang tersedia."
+                : "Produk baru akan muncul di katalog ini. Coba pilih kategori lain."}
+            </p>
+            {kueriNormal && (
+              <button
+                type="button"
+                className="beranda__kosong-tombol"
+                onClick={() => setKueriBeranda("")}
+              >
+                Hapus pencarian
+              </button>
+            )}
+          </div>
+        )}
+
+        {!loading && !error && produkTampil.length > 0 && (
+          <div className="list-produk-dijual">
+            {produkTampil.map((produk) => {
+              const toko = petaToko.get(String(produk.id_toko));
+              return (
+                <KartuProduk
+                  key={produk.id}
+                  href={`/detailproduk/${produk.id}`}
+                  nama={produk.nama}
+                  harga={produk.harga}
+                  gambar={produk.gambar}
+                  kategori={produk.kategori}
+                  namaToko={toko?.namaToko}
+                  fotoToko={toko?.fotoProfil}
+                  hrefToko={toko ? `/toko/${toko.id}` : undefined}
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {tampilkanToko && (
         <section className="beranda__toko" aria-labelledby="judul-toko-beranda">
           <div className="beranda__bagian-heading">
             <div>
               <p className="beranda__eyebrow beranda__eyebrow--gelap">
-                Jelajahi
+                Jelajahi Toko Market Day
               </p>
-              <h2 id="judul-toko-beranda">Toko di Market Day</h2>
             </div>
             <div className="beranda__toko-kontrol">
               <span className="beranda__hitung-toko">
@@ -427,119 +499,6 @@ function Beranda() {
           )}
         </section>
       )}
-
-      <section
-        className="beranda__katalog"
-        aria-labelledby="judul-katalog-beranda"
-      >
-        <div className="beranda__katalog-heading">
-          <div>
-            <p className="beranda__eyebrow beranda__eyebrow--gelap">Katalog</p>
-            <h2 id="judul-katalog-beranda">Produk pilihan</h2>
-          </div>
-
-          <label className="beranda__urutan">
-            <span>Urutkan</span>
-            <select
-              value={urutan}
-              onChange={(event) => setUrutan(event.target.value)}
-            >
-              {OPSI_URUTAN.map((opsi) => (
-                <option key={opsi.id} value={opsi.id}>
-                  {opsi.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <FilterBar hitungan={hitunganKategori} />
-
-        <div className="beranda__hasil-baris">
-          <p className="beranda__hasil" aria-live="polite">
-            {loading ? "Memuat produk..." : `${produkTampil.length} produk`}
-            {!loading && kueriNormal && (
-              <>
-                {" "}
-                untuk <strong>“{kueriCari.trim()}”</strong>
-              </>
-            )}
-            {!loading && !kueriNormal && filterAktif && (
-              <>
-                {" "}
-                di kategori <strong>{filterBeranda}</strong>
-              </>
-            )}
-          </p>
-
-          {filterAktif && (
-            <span className="beranda__filter-aktif">
-              <FiFilter aria-hidden="true" /> {filterBeranda}
-            </span>
-          )}
-        </div>
-
-        {loading && <p className="beranda__status">Memuat produk...</p>}
-
-        {error && (
-          <p className="beranda__status beranda__status--galat" role="alert">
-            Produk gagal dimuat: {error}
-          </p>
-        )}
-        {errorToko && (
-          <p className="beranda__status beranda__status--galat" role="alert">
-            Informasi toko gagal dimuat: {errorToko}
-          </p>
-        )}
-
-        {!loading && !error && produkTampil.length === 0 && (
-          <div className="beranda__kosong">
-            <span className="beranda__kosong-ikon" aria-hidden="true">
-              <FiShoppingBag />
-            </span>
-            <h3>
-              {kueriNormal
-                ? "Produk tidak ditemukan"
-                : "Belum ada produk di sini"}
-            </h3>
-            <p>
-              {kueriNormal
-                ? "Coba kata kunci lain atau jelajahi kategori yang tersedia."
-                : "Produk baru akan muncul di katalog ini. Coba pilih kategori lain."}
-            </p>
-            {kueriNormal && (
-              <button
-                type="button"
-                className="beranda__kosong-tombol"
-                onClick={() => setKueriCari("")}
-              >
-                Hapus pencarian
-              </button>
-            )}
-          </div>
-        )}
-
-        {!loading && !error && produkTampil.length > 0 && (
-          <div className="list-produk-dijual">
-            {produkTampil.map((produk) => {
-              const toko = petaToko.get(String(produk.id_toko));
-              return (
-                <KartuProduk
-                  key={produk.id}
-                  href={`/detailproduk/${produk.id}`}
-                  nama={produk.nama}
-                  harga={produk.harga}
-                  gambar={produk.gambar}
-                  kategori={produk.kategori}
-                  namaToko={toko?.namaToko}
-                  fotoToko={toko?.fotoProfil}
-                  hrefToko={toko ? `/toko/${toko.id}` : undefined}
-                />
-              );
-            })}
-          </div>
-        )}
-      </section>
     </section>
   );
 }

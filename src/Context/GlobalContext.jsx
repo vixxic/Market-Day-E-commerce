@@ -8,12 +8,15 @@ export function GlobalProvider({ children }) {
   // States
   const [pages, setPages] = useState("beranda");
   const [filterBeranda, setFilterBeranda] = useState("All");
+  const [kueriBeranda, setKueriBeranda] = useState("");
 
   const value = {
     pages,
     setPages,
     filterBeranda,
     setFilterBeranda,
+    kueriBeranda,
+    setKueriBeranda,
   };
 
   return (

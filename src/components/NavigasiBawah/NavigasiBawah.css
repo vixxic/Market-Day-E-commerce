@@ -4,8 +4,7 @@
   right: 0;
   bottom: 0;
   z-index: 100;
-  background-color: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -17,6 +16,7 @@
   margin: 0 auto;
   padding: 6px 8px 8px;
   list-style: none;
+  background-color: #800020;
 }
 
 .navigasi-bawah__butir {
@@ -32,14 +32,14 @@
   gap: 6px;
   min-height: 56px;
   padding: 6px 0 2px;
-  color: #8c8c8c;
+  color: rgba(255, 255, 255, 0.82) !important;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   transition: color 0.15s ease;
 }
 
 .navigasi-bawah__tautan--aktif {
-  color: var(--warna-merah-utama);
+  color: #ffffff !important;
 }
 
 .navigasi-bawah__ikon {
@@ -62,15 +62,15 @@
 }
 
 .navigasi-bawah__tautan--aktif .navigasi-bawah__indikator {
-  background-color: var(--warna-merah-utama);
+  background-color: #ffffff !important;
 }
 
 .navigasi-bawah__tautan:hover {
-  color: var(--warna-merah-utama);
+  color: #ffffff;
 }
 
 .navigasi-bawah__tautan:focus-visible {
-  outline: 2px solid var(--warna-merah-utama);
+  outline: 2px solid #ffffff;
   outline-offset: -2px;
   border-radius: 12px;
 }
@@ -90,6 +90,12 @@
 
   .navigasi-bawah__daftar {
     padding: 6px 12px 8px;
+  }
+}
+
+@media (min-width: 900px) {
+  .navigasi-bawah {
+    display: none;
   }
 }
 

@@ -1,0 +1,84 @@
+.header-toko--desktop {
+  display: none;
+}
+
+.header-toko--mobile {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .header-toko--desktop {
+    display: block;
+    margin: -16px -16px 0;
+    border-bottom-color: #efd8dd;
+  }
+
+  .header-toko--mobile {
+    display: none;
+  }
+
+  .header-toko__merek {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1099px) {
+  .header-toko__subjudul {
+    display: none;
+  }
+
+  .header-toko__menu {
+    gap: 0;
+  }
+
+  .header-toko__menu-tautan {
+    padding-inline: 8px;
+    font-size: 0.88rem;
+  }
+
+  .header-toko__keranjang {
+    gap: 6px;
+    padding-inline: 10px;
+    font-size: 0.88rem;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1099px) {
+  .header-toko__isi {
+    gap: 10px;
+  }
+
+  .header-toko__merek {
+    gap: 8px;
+    flex-basis: 160px;
+  }
+
+  .header-toko__logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-toko__logo svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-toko__judul {
+    font-size: 1.05rem;
+  }
+
+  .header-toko__cari {
+    min-width: 140px;
+  }
+
+  .header-toko__menu-tautan {
+    padding-inline: 4px;
+    font-size: 0.8rem;
+  }
+
+  .header-toko__keranjang {
+    gap: 5px;
+    padding-inline: 8px;
+    font-size: 0.82rem;
+  }
+}

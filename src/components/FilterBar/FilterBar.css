@@ -24,8 +24,9 @@
   min-width: 60px;
   padding: 0 13px;
   border: 1px solid transparent;
-  border-radius: 999px;
-  background-color: var(--filter-warna-nonaktif);
+  border-radius: 10px;
+  background-color: #fcf6f6;
+  border: solid rgb(200, 200, 200) 1px;
   color: var(--warna-merah-utama);
   font: inherit;
   font-size: 0.8rem;

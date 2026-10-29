@@ -1,16 +1,7 @@
 "use client";
 
 import "./HeaderToko.css";
-import { useEffect, useRef } from "react";
-
-/**
- * Header bagian atas halaman.
- *
- * Props:
- * - judul        : teks judul di kiri (default "Market Day")
- * - onCariKlik   : dipanggil saat ikon cari ditekan
- * - onTokoKlik   : dipanggil saat ikon toko ditekan
- */
+import { useEffect, useRef, useState } from "react";
 
 export default function HeaderToko({
   judul = "Market Day",
@@ -21,13 +12,31 @@ export default function HeaderToko({
   onTokoKlik,
 }) {
   const inputCariRef = useRef(null);
+  const [sudahScroll, setSudahScroll] = useState(false);
 
   useEffect(() => {
     if (pencarianTerbuka) inputCariRef.current?.focus();
   }, [pencarianTerbuka]);
 
+  useEffect(() => {
+    function perbaruiStatusScroll() {
+      setSudahScroll(window.scrollY > 8);
+    }
+
+    perbaruiStatusScroll();
+    window.addEventListener("scroll", perbaruiStatusScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", perbaruiStatusScroll);
+    };
+  }, []);
+
   return (
-    <header className="header-toko">
+    <header
+      className={`header-toko header-toko--mobile${
+        sudahScroll ? " header-toko--tergulir" : ""
+      }`}
+    >
       <div className="header-toko__isi">
         <h1 className="header-toko__judul">{judul}</h1>
 
@@ -49,7 +58,9 @@ export default function HeaderToko({
             className="header-toko__tombol header-toko__tombol--cari"
             aria-label={pencarianTerbuka ? "Tutup pencarian" : "Cari produk"}
             aria-expanded={pencarianTerbuka}
-            aria-controls={pencarianTerbuka ? "header-toko-pencarian" : undefined}
+            aria-controls={
+              pencarianTerbuka ? "header-toko-pencarian" : undefined
+            }
             onClick={onCariKlik}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

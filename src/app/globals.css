@@ -2,10 +2,23 @@ body {
   margin: 0%;
   box-sizing: border-box;
   padding: 16px;
+  padding-top: 0;
+}
+
+@media (max-width: 899px) {
+  html,
+  body {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 :root {
-  --warna-merah-utama: #521014;
+  --warna-merah-utama: #800020;
 }
 
 .daftar-produk {

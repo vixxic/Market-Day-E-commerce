@@ -2,6 +2,7 @@
 
 import "./KartuProduk.css";
 import Link from "next/link";
+import { FiArrowUpRight } from "react-icons/fi";
 import { formatHarga } from "@/lib/formatHarga";
 
 function inisial(nama) {
@@ -80,6 +81,16 @@ export default function KartuProduk({
           <h3 className="kartu-produk__nama">{nama}</h3>
           <p className="kartu-produk__harga">{formatHarga(harga)}</p>
         </Tautan>
+
+        {href && (
+          <Link
+            className="kartu-produk__aksi"
+            href={href}
+            aria-label={`Lihat ${nama}`}
+          >
+            <FiArrowUpRight aria-hidden="true" />
+          </Link>
+        )}
 
         {namaToko &&
           (hrefToko ? (

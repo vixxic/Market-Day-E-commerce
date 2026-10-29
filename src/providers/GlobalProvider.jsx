@@ -5,6 +5,7 @@ import { PesananProvider } from "@/Context/PesananContext";
 import { ProdukProvider } from "@/Context/ProdukContext";
 import { GlobalProvider as GlobalUiProvider } from "@/Context/GlobalContext";
 import { AuthProvider } from "@/Context/AuthContext";
+import NavigasiAtas from "@/components/NavigasiAtas/NavigasiAtas";
 
 export default function GlobalProvider({ children }) {
   return (
@@ -12,7 +13,10 @@ export default function GlobalProvider({ children }) {
       <GlobalUiProvider>
         <ProdukProvider>
           <KeranjangProvider>
-            <PesananProvider>{children}</PesananProvider>
+            <PesananProvider>
+              <NavigasiAtas />
+              {children}
+            </PesananProvider>
           </KeranjangProvider>
         </ProdukProvider>
       </GlobalUiProvider>
