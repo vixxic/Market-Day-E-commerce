@@ -16,7 +16,6 @@ import {
 // components
 import GaleriProduk from "@/components/GaleriProduk/GaleriProduk";
 import PanelBeli from "@/components/Panelbeli/Panelbeli";
-import KartuProduk from "@/components/KartuProduk/KartuProduk";
 
 // utils
 import { formatHarga } from "@/lib/formatHarga";
@@ -120,33 +119,6 @@ function IsiDetailProduk() {
     () => (produk ? normalisasiPilihan(produk.ukuran) : []),
     [produk],
   );
-
-  const produkTerkait = useMemo(() => {
-    if (!produk) return [];
-
-    const dariToko = daftarProduk.filter(
-      (item) =>
-        String(item.id) !== String(produk.id) &&
-        String(item.id_toko) === String(produk.id_toko),
-    );
-    const kategoriProduk = daftarKategori(produk).map((item) =>
-      item.toLocaleLowerCase(),
-    );
-    const serupa = daftarProduk.filter(
-      (item) =>
-        String(item.id) !== String(produk.id) &&
-        String(item.id_toko) !== String(produk.id_toko) &&
-        daftarKategori(item).some((kategoriItem) =>
-          kategoriProduk.includes(kategoriItem.toLocaleLowerCase()),
-        ),
-    );
-
-    const unik = new Map();
-    for (const item of [...dariToko, ...serupa]) {
-      unik.set(String(item.id), item);
-    }
-    return [...unik.values()].slice(0, 4);
-  }, [daftarProduk, produk]);
 
   // Catat kunjungan sekali per sesi per produk untuk analitik toko.
   useEffect(() => {
@@ -430,56 +402,6 @@ function IsiDetailProduk() {
                 </div>
               </div>
             </div>
-
-            {produkTerkait.length > 0 && (
-              <section
-                className="detail-produk__terkait"
-                aria-labelledby="judul-produk-terkait"
-              >
-                <div className="detail-produk__terkait-heading">
-                  <div>
-                    <p>Lanjut jelajah</p>
-                    <h2 id="judul-produk-terkait">
-                      {produkTerkait.some(
-                        (item) =>
-                          String(item.id_toko) === String(produk.id_toko),
-                      )
-                        ? "Produk lain dari toko ini"
-                        : "Produk serupa"}
-                    </h2>
-                  </div>
-                  {toko && (
-                    <Link href={`/toko/${toko.id}`}>
-                      Lihat toko <FiChevronRight aria-hidden="true" />
-                    </Link>
-                  )}
-                </div>
-
-                <div className="detail-produk__terkait-grid">
-                  {produkTerkait.map((item) => {
-                    const tokoItem = daftarToko.find(
-                      (tokoData) =>
-                        String(tokoData.id) === String(item.id_toko),
-                    );
-                    return (
-                      <KartuProduk
-                        key={item.id}
-                        href={`/detailproduk/${item.id}`}
-                        nama={item.nama}
-                        harga={item.harga}
-                        gambar={item.gambar}
-                        kategori={item.kategori}
-                        namaToko={tokoItem?.namaToko}
-                        fotoToko={tokoItem?.fotoProfil}
-                        hrefToko={
-                          tokoItem ? `/toko/${tokoItem.id}` : undefined
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              </section>
-            )}
           </main>
 
           <PanelBeli
