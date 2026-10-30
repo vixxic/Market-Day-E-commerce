@@ -1,5 +1,6 @@
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
 import { unggahFoto } from "@/lib/server/fotoStorage";
+import { responsGagal } from "@/lib/server/tokoApi";
 
 const JENIS_FOTO = new Set(["avatar", "banner"]);
 
@@ -33,9 +34,6 @@ export async function POST(request) {
     });
     return Response.json({ url }, { status: 201 });
   } catch (error) {
-    return Response.json(
-      { error: error.message },
-      { status: error.status ?? 500 },
-    );
+    return responsGagal(error);
   }
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuthContext } from "@/Context/AuthContext";
 import DashboardToko from "@/components/KelolaToko/DashboardToko";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
+import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 
 export default function MasukToko() {
   const [namaToko, setNamaToko] = useState("");
@@ -13,6 +14,7 @@ export default function MasukToko() {
   const [galat, setGalat] = useState({});
   const [sedangMasuk, setSedangMasuk] = useState(false);
   const { masuk: autentikasiMasuk, toko, memuatSesi } = useAuthContext();
+  const notifikasi = useNotifikasi();
 
   async function masuk(e) {
     e.preventDefault();
@@ -28,10 +30,7 @@ export default function MasukToko() {
       await autentikasiMasuk(namaToko.trim(), password);
     } catch (error) {
       setPassword("");
-      setGalat((sebelumnya) => ({
-        ...sebelumnya,
-        umum: error.message,
-      }));
+      notifikasi.galat(error.message, { judul: "Gagal masuk" });
     } finally {
       setSedangMasuk(false);
     }
@@ -49,11 +48,6 @@ export default function MasukToko() {
     <div className="masuk-toko">
       <form className="masuk-toko__isi" onSubmit={masuk} noValidate>
         <h1 className="masuk-toko__judul">Masuk ke Toko</h1>
-        {galat.umum && (
-          <p className="masuk-toko__galat" role="alert">
-            {galat.umum}
-          </p>
-        )}
 
         <div className="masuk-toko__bidang">
           <label className="masuk-toko__label" htmlFor="nama-toko">

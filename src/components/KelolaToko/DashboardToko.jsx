@@ -27,6 +27,7 @@ import { MdStorefront } from "react-icons/md";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 import PopupKonfirmasi from "@/components/PopupKonfirmasi/PopupKonfirmasi";
+import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 import { useAuthContext } from "@/Context/AuthContext";
 import { formatHarga } from "@/lib/formatHarga";
 import {
@@ -371,6 +372,7 @@ function KerangkaGrafik() {
 export default function DashboardToko() {
   const { toko, keluar } = useAuthContext();
   const router = useRouter();
+  const notifikasi = useNotifikasi();
 
   const [produk, setProduk] = useState([]);
   const [pesanan, setPesanan] = useState([]);
@@ -379,7 +381,6 @@ export default function DashboardToko() {
   const [memuatAnalitik, setMemuatAnalitik] = useState(true);
   const [error, setError] = useState("");
   const [errorAnalitik, setErrorAnalitik] = useState("");
-  const [errorKeluar, setErrorKeluar] = useState("");
   const [mengeluarkan, setMengeluarkan] = useState(false);
   const [hapusId, setHapusId] = useState(null);
   const [sedangHapus, setSedangHapus] = useState(false);
@@ -441,8 +442,11 @@ export default function DashboardToko() {
       setProduk((sebelumnya) =>
         sebelumnya.filter((item) => item.id !== hapusId),
       );
+      notifikasi.sukses("Produk sudah dihapus dari toko.", {
+        judul: "Produk dihapus",
+      });
     } catch {
-      alert(PESAN_GALAT_HAPUS);
+      notifikasi.galat(PESAN_GALAT_HAPUS, { judul: "Gagal menghapus" });
     } finally {
       setSedangHapus(false);
       setHapusId(null);
@@ -450,13 +454,12 @@ export default function DashboardToko() {
   }
 
   async function logout() {
-    setErrorKeluar("");
     setMengeluarkan(true);
     try {
       await keluar();
       router.replace("/masuktoko");
     } catch (galat) {
-      setErrorKeluar(galat.message);
+      notifikasi.galat(pesanGalat(galat), { judul: "Gagal keluar" });
       setMengeluarkan(false);
     }
   }
@@ -737,9 +740,9 @@ export default function DashboardToko() {
             </div>
           </header>
 
-          {(error || errorKeluar || errorAnalitik) && (
+          {(error || errorAnalitik) && (
             <p className="kelola-toko__galat" role="alert">
-              {error || errorKeluar || errorAnalitik || PESAN_GALAT}
+              {error || errorAnalitik || PESAN_GALAT}
             </p>
           )}
 

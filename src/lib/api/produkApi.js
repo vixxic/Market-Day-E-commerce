@@ -18,25 +18,16 @@ function normalisasiProduk(produk) {
   };
 }
 
+import { ambilJsonAman, galatRamah } from "@/lib/galatRamah";
+
 async function ambilJson(url, { signal } = {}) {
-  const respons = await fetch(url, { signal, cache: "no-store" });
-  const data = await respons.json().catch(() => null);
-
-  if (!respons.ok) {
-    const error = new Error(
-      data?.error ?? `Permintaan produk gagal (${respons.status}).`,
-    );
-    error.status = respons.status;
-    throw error;
-  }
-
-  return data;
+  return ambilJsonAman(url, { signal, cache: "no-store" });
 }
 
 export async function ambilDaftarProduk({ signal } = {}) {
   const produk = await ambilJson("/api/produk", { signal });
   if (!Array.isArray(produk)) {
-    throw new Error("Format daftar produk dari API tidak valid.");
+    throw galatRamah();
   }
 
   return produk.map(normalisasiProduk);
