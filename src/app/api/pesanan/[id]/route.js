@@ -104,7 +104,22 @@ export async function PATCH(request, { params }) {
           p_status: status,
         },
       );
-      if (statusError) throw statusError;
+      if (statusError) {
+        if (["PGRST202", "42883"].includes(statusError.code)) {
+          console.error(
+            "Fungsi tolak_atau_batalkan_pesanan belum tersedia. Terapkan migration 20261030120000_restore_stock_on_order_rejection.sql.",
+            statusError,
+          );
+          return Response.json(
+            {
+              error:
+                "Fitur ini belum aktif di database. Terapkan migration 20261030120000_restore_stock_on_order_rejection.sql di Supabase, lalu coba lagi.",
+            },
+            { status: 503 },
+          );
+        }
+        throw statusError;
+      }
       if (!berhasil) {
         return Response.json(
           { error: "Status pesanan berubah. Muat ulang lalu coba lagi." },
