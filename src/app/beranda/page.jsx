@@ -3,6 +3,8 @@
 import "./Beranda.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   FiArrowRight,
   FiFilter,
@@ -80,6 +82,7 @@ function Beranda() {
   const [halamanAktifToko, setHalamanAktifToko] = useState(0);
   const [jumlahHalamanToko, setJumlahHalamanToko] = useState(1);
   const jalurTokoRef = useRef(null);
+  const animasiRef = useRef(null);
 
   function togglePencarian() {
     if (pencarianTerbuka) {
@@ -244,9 +247,100 @@ function Beranda() {
 
   const filterAktif = filterBeranda !== "All" && filterBeranda !== "Semua";
   const tampilkanToko = tokoTampil.length > 0;
+  const tampilkanProduk = !loading && !error && produkTampil.length > 0;
+
+  useEffect(() => {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !animasiRef.current
+    ) {
+      return undefined;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const konteks = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: "power2.out" } })
+        .from(".beranda__hero-isi > *", {
+          autoAlpha: 0,
+          y: 18,
+          duration: 0.55,
+          stagger: 0.1,
+        });
+
+      gsap.from(".beranda__katalog-heading, .urutkan_filterBar", {
+        autoAlpha: 0,
+        y: 16,
+        duration: 0.55,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".beranda__katalog",
+          start: "top 85%",
+          once: true,
+        },
+      });
+    }, animasiRef);
+
+    return () => konteks.revert();
+  }, []);
+
+  useEffect(() => {
+    if (
+      !tampilkanProduk ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !animasiRef.current
+    ) {
+      return undefined;
+    }
+
+    const konteks = gsap.context(() => {
+      gsap.from(".list-produk-dijual > *", {
+        autoAlpha: 0,
+        y: 14,
+        duration: 0.45,
+        stagger: 0.06,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".list-produk-dijual",
+          start: "top 90%",
+          once: true,
+        },
+      });
+    }, animasiRef);
+
+    return () => konteks.revert();
+  }, [tampilkanProduk]);
+
+  useEffect(() => {
+    if (
+      !tampilkanToko ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !animasiRef.current
+    ) {
+      return undefined;
+    }
+
+    const konteks = gsap.context(() => {
+      gsap.from(".beranda__toko", {
+        autoAlpha: 0,
+        y: 16,
+        duration: 0.55,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".beranda__toko",
+          start: "top 88%",
+          once: true,
+        },
+      });
+    }, animasiRef);
+
+    return () => konteks.revert();
+  }, [tampilkanToko]);
 
   return (
-    <section className="beranda">
+    <section className="beranda" ref={animasiRef}>
       <HeaderToko
         pencarianTerbuka={pencarianTerbuka}
         nilaiCari={kueriCari}
