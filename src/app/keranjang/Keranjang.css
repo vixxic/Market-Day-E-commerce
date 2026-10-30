@@ -90,3 +90,9 @@
     gap: 32px;
   }
 }
+
+@media (min-width: 900px) {
+  .keranjang__header {
+    position: static;
+  }
+}

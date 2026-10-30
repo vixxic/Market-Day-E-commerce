@@ -1,10 +1,10 @@
 /* ===== Halaman Profil Pesanan (mobile first) ===== */
 
 .pesanan {
-  min-height: 100dvh;
   background-color: #ffffff;
+  height: 100vh;
+  margin: auto;
   /* ruang untuk navigasi bawah */
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }
 
 .pesanan__header {
@@ -341,6 +341,17 @@
   .pesanan__daftar {
     gap: 32px;
     padding: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .pesanan {
+    height: auto;
+    min-height: calc(100dvh - 120px);
+  }
+
+  .pesanan__header {
+    position: static;
   }
 }
 

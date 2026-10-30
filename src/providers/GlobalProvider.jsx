@@ -17,7 +17,7 @@ export default function GlobalProvider({ children }) {
             <PesananProvider>
               <SmoothScroll />
               <NavigasiAtas />
-              {children}
+              <div className="konten-situs">{children}</div>
             </PesananProvider>
           </KeranjangProvider>
         </ProdukProvider>

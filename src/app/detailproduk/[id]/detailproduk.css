@@ -528,6 +528,12 @@
   }
 }
 
+@media (min-width: 900px) {
+  .detail-produk__header {
+    position: static;
+  }
+}
+
 @media (min-width: 1100px) {
   .detail-produk__isi {
     padding-bottom: 8px;

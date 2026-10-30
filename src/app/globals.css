@@ -23,6 +23,16 @@ body {
   --warna-merah-utama: #800020;
 }
 
+.konten-situs {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .konten-situs {
+    padding-top: 40px;
+  }
+}
+
 .daftar-produk {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
