@@ -9,7 +9,11 @@ import { useAuthContext } from "@/Context/AuthContext";
 import { MdLogout } from "react-icons/md";
 import { FiUser } from "react-icons/fi";
 
-export default function KelolaLayout({ children }) {
+export default function KelolaLayout({
+  children,
+  tanpaHeader = false,
+  lebarPenuh = false,
+}) {
   const { toko, memuatSesi, keluar } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
@@ -33,9 +37,17 @@ export default function KelolaLayout({ children }) {
     return <main className="kelola-toko__memuat">Memeriksa sesi toko...</main>;
   }
 
+  const tampilkanHeader =
+    !tanpaHeader &&
+    (pathname === "/kelolatoko" || pathname === "/masuktoko");
+
   return (
-    <div className="kelola-toko">
-      {(pathname === "/kelolatoko" || pathname === "/masuktoko") && (
+    <div
+      className={
+        "kelola-toko" + (lebarPenuh ? " kelola-toko--lebar" : "")
+      }
+    >
+      {tampilkanHeader && (
         <>
           <header className="kelola-toko__header">
             <Link className="kelola-toko__brand" href="/kelolatoko">

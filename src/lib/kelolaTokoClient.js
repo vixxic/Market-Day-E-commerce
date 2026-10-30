@@ -1,10 +1,51 @@
+export const PESAN_GALAT =
+  "Terjadi kesalahan. Silakan coba lagi, atau hubungi operator situs bila masalah ini berlanjut.";
+
+export const PESAN_GALAT_HAPUS =
+  "Produk gagal dihapus. Silakan coba lagi, atau hubungi operator situs bila masalah ini berlanjut.";
+
+function galatAman(pesan, penyebab) {
+  const galat = new Error(pesan);
+  galat.name = "GalatKelolaToko";
+  if (penyebab) galat.penyebab = penyebab;
+  return galat;
+}
+
 export async function permintaanKelolaToko(url, options) {
-  const respons = await fetch(url, options);
-  const data = respons.status === 204 ? null : await respons.json();
-  if (!respons.ok) {
-    throw new Error(data?.error ?? "Permintaan gagal. Coba lagi.");
+  let respons;
+  try {
+    respons = await fetch(url, options);
+  } catch (galat) {
+    // Koneksi putus, diblokir, atau server tidak merespons.
+    throw galatAman(PESAN_GALAT, galat);
   }
+
+  let data = null;
+  if (respons.status !== 204) {
+    try {
+      data = await respons.json();
+    } catch (galat) {
+      // Balasan bukan JSON (mis. halaman galat server).
+      if (respons.ok) throw galatAman(PESAN_GALAT, galat);
+      data = null;
+    }
+  }
+
+  if (!respons.ok) {
+    // Pesan mentah dari server tidak pernah ditampilkan ke pengguna.
+    throw galatAman(PESAN_GALAT, data?.error ?? respons.statusText);
+  }
+
   return data;
+}
+
+export function pesanGalat(galat) {
+  return galat?.message || PESAN_GALAT;
+}
+
+export async function ambilPesananToko() {
+  const daftar = await permintaanKelolaToko("/api/toko/pesanan");
+  return daftar.map(normalisasiPesananToko);
 }
 
 export function gambarProduk(produk) {
