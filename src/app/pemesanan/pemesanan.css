@@ -5,6 +5,56 @@
   background-color: #ffffff;
 }
 
+.pemesanan__modal-lapisan {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(24, 12, 14, 0.62);
+}
+
+.pemesanan__modal {
+  width: min(100%, 440px);
+  box-sizing: border-box;
+  padding: 28px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+}
+
+.pemesanan__modal-judul {
+  margin: 0;
+  color: var(--warna-merah-utama);
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.5rem);
+  line-height: 1.3;
+}
+
+.pemesanan__modal-teks {
+  margin: 14px 0 24px;
+  color: #493b3b;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.pemesanan__modal-tombol {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pemesanan__modal-tombol:focus-visible {
+  outline: 3px solid #d59ba9;
+  outline-offset: 3px;
+}
+
 .pemesanan__header {
   position: sticky;
   top: 0;

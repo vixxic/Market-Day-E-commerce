@@ -39,10 +39,49 @@ export default function PagePemesanan() {
   const [sedangKirimOtp, setSedangKirimOtp] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [infoOtp, setInfoOtp] = useState("");
+  const [idPesananDisetujui, setIdPesananDisetujui] = useState(null);
 
   const judulSelesaiRef = useRef(null);
+  const tombolSetujuRef = useRef(null);
 
   const menungguKonfirmasi = pemesanan?.status === "menunggu_konfirmasi";
+  const jumlahProduk =
+    pemesanan?.item?.reduce(
+      (total, baris) => total + (Number(baris.jumlah) || 0),
+      0,
+    ) ?? 0;
+  const peringatanJumlahBanyak = Boolean(
+    pemesanan?.idPesanan &&
+      pemesanan.status === "draft" &&
+      !tahapOtp &&
+      jumlahProduk > 5 &&
+      idPesananDisetujui !== pemesanan.idPesanan,
+  );
+
+  useEffect(() => {
+    if (!peringatanJumlahBanyak) return undefined;
+
+    const fokusSebelumnya = document.activeElement;
+    const overflowSebelumnya = document.body.style.overflow;
+    const tombolSetuju = tombolSetujuRef.current;
+
+    document.body.style.overflow = "hidden";
+    tombolSetuju?.focus();
+
+    function cegahTutup(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+      }
+    }
+
+    document.addEventListener("keydown", cegahTutup);
+
+    return () => {
+      document.body.style.overflow = overflowSebelumnya;
+      document.removeEventListener("keydown", cegahTutup);
+      if (fokusSebelumnya instanceof HTMLElement) fokusSebelumnya.focus();
+    };
+  }, [peringatanJumlahBanyak]);
 
   useEffect(() => {
     if (!menungguKonfirmasi) return;
@@ -181,6 +220,45 @@ export default function PagePemesanan() {
 
   return (
     <div className="pemesanan">
+      {peringatanJumlahBanyak && (
+        <div className="pemesanan__modal-lapisan">
+          <section
+            className="pemesanan__modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="judul-peringatan-jumlah"
+            aria-describedby="isi-peringatan-jumlah"
+            onKeyDown={(event) => {
+              if (event.key === "Tab") {
+                event.preventDefault();
+                tombolSetujuRef.current?.focus();
+              }
+            }}
+          >
+            <h2
+              className="pemesanan__modal-judul"
+              id="judul-peringatan-jumlah"
+            >
+              Konfirmasi pesanan dalam jumlah banyak
+            </h2>
+            <p className="pemesanan__modal-teks" id="isi-peringatan-jumlah">
+              Pesanan Anda berjumlah {jumlahProduk} produk. Untuk pesanan di
+              atas 5 produk, pembayaran dilakukan langsung melalui transfer
+              kepada penjual. Penjual juga dapat menghubungi Anda sebelum
+              pesanan diterima atau dikonfirmasi.
+            </p>
+            <button
+              ref={tombolSetujuRef}
+              type="button"
+              className="pemesanan__modal-tombol"
+              onClick={() => setIdPesananDisetujui(pemesanan.idPesanan)}
+            >
+              Saya setuju
+            </button>
+          </section>
+        </div>
+      )}
+
       <header className="pemesanan__header">
         <div className="pemesanan__header-isi">
           <button
