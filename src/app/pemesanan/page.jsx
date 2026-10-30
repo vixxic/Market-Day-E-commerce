@@ -9,6 +9,7 @@ import { simpanPesananLokal as perbaruiPesananLokal } from "@/lib/pesanan";
 import { simpanPemesanan } from "@/lib/pemesanan";
 import { formatHarga } from "@/lib/formatHarga";
 import { ambilJsonAman, pesanGalat } from "@/lib/galatRamah";
+import TombolUnduhPesanan from "@/components/TombolUnduhPesanan/TombolUnduhPesanan";
 import OtpInput from "./OtpInput";
 
 function formatHitungMundur(detik) {
@@ -140,8 +141,13 @@ export default function PagePemesanan() {
       });
       const pesananTerverifikasi = {
         ...pemesanan,
-        namaPemesan: namaPemesan || pemesanan.namaPemesan,
-        nomorPemesan: nomorPemesan || pemesanan.nomorPemesan,
+        namaPemesan: namaPemesan.trim() || pemesanan.namaPemesan,
+        // Halaman pesanan membaca namaPenerima, jadi isi keduanya.
+        namaPenerima:
+          namaPemesan.trim() ||
+          pemesanan.namaPenerima ||
+          pemesanan.namaPemesan,
+        nomorPemesan: nomorPemesan.trim() || pemesanan.nomorPemesan,
         status: "menunggu_konfirmasi",
       };
       simpanPemesanan(pesananTerverifikasi);
@@ -442,9 +448,12 @@ export default function PagePemesanan() {
             Tunjukkan kode klaim ini kepada penjual saat mengambil pesanan.
           </p>
           <p className="pemesanan__kode-selesai">{pemesanan.kodeKlaim}</p>
+
+          <TombolUnduhPesanan pesanan={pemesanan} varian="isi" />
+
           <button
             type="button"
-            className="pemesanan__tombol-kecil"
+            className="pemesanan__tombol-kecil pemesanan__tombol-kecil--garis"
             onClick={() => router.push("/pesanan")}
           >
             Lihat pesanan
