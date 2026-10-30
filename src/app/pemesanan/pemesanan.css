@@ -131,7 +131,7 @@
 .pemesanan__peringatan,
 .pemesanan__galat,
 .pemesanan__catatan {
-  margin: 0;
+  /* margin-top: 16px; */
   padding: 12px 14px;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -141,7 +141,6 @@
 .pemesanan__peringatan {
   background-color: #fff4d6;
   color: #684b00;
-  margin-top: auto;
   margin-bottom: 16px;
 }
 
