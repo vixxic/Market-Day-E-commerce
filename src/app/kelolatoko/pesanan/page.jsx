@@ -171,6 +171,19 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
                         ? terimaPesanan
                         : undefined
                     }
+                    onTolak={
+                      statusHalaman === "permintaan"
+                        ? (itemPesanan) =>
+                            ubahStatusPesanan(itemPesanan, "ditolak")
+                        : undefined
+                    }
+                    onBatalkan={
+                      statusHalaman === "diterima" &&
+                      item.status === "diproses"
+                        ? (itemPesanan) =>
+                            ubahStatusPesanan(itemPesanan, "dibatalkan")
+                        : undefined
+                    }
                     onSelesaikan={
                       statusHalaman === "diterima" &&
                       item.status === "diproses"

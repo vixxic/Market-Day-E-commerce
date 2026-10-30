@@ -1,15 +1,14 @@
 .kelola-toko {
-  --kelola-merah: #832828;
-  --kelola-gelap: #521014;
+  --kelola-merah: #800020;
+  --kelola-gelap: #650019;
   --kelola-muda: #fff6f5;
-  --kelola-tombol: #c04040;
-  --kelola-fab: #78121a;
+  --kelola-tombol: #800020;
+  --kelola-fab: #800020;
 
   box-sizing: border-box;
   max-width: 760px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 28px 28px 120px;
   color: #000000;
 }
 
@@ -157,7 +156,6 @@
   color: var(--warna-merah-utama);
 }
 
-
 .kelola-toko__produk-heading {
   display: flex;
   align-items: center;
@@ -261,27 +259,6 @@
   padding: 6px 18px;
   font-size: 0.8rem;
   line-height: 1.3;
-}
-
-.kelola-toko__tambah {
-  position: fixed;
-  bottom: max(85px, env(safe-area-inset-bottom, 0px));
-  right: max(calc((100vw - 760px) / 2 + 28px), 28px);
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--kelola-fab);
-  color: #ffffff;
-  font-size: 2.1rem;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.kelola-toko__tambah svg {
-  width: 1em;
-  height: 1em;
 }
 
 .kelola-toko__bar {
@@ -388,13 +365,30 @@
   line-height: 1.3;
 }
 
+.kelola-toko__order-aksi {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.kelola-toko__terima--sekunder {
+  border: 1px solid var(--kelola-merah);
+  background: #ffffff;
+  color: var(--kelola-merah);
+}
+
+.kelola-toko__terima--sekunder:hover {
+  background: var(--kelola-muda);
+}
+
 .kelola-toko__terima:disabled {
   opacity: 0.6;
   cursor: progress;
 }
 
 .kelola-toko__selesaikan {
-  background: #2f6b45;
+  background: var(--kelola-tombol);
 }
 
 .kelola-toko__tautan-riwayat {
@@ -553,12 +547,7 @@
   display: block;
   flex: 0 0 auto;
   border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    #f6e8e7 25%,
-    #fdf4f3 42%,
-    #f6e8e7 60%
-  );
+  background: linear-gradient(90deg, #f6e8e7 25%, #fdf4f3 42%, #f6e8e7 60%);
   background-size: 240% 100%;
   animation: kelola-skel-kilau 1.5s ease-in-out infinite;
 }
@@ -746,6 +735,21 @@
     padding: 24px 0;
   }
 
+  .kelola-toko__order-header {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .kelola-toko__order-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .kelola-toko__order-aksi {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
   .kelola-toko__statistik {
     gap: 18px;
   }
@@ -757,10 +761,6 @@
 
   .kelola-toko__stat {
     padding: 12px 16px;
-  }
-
-  .kelola-toko__tambah {
-    right: 22px;
   }
 
   .kelola-toko__terima {

@@ -42,10 +42,10 @@ import "./dashboardToko.css";
 
 const STATUS_DITERIMA = new Set(["diproses", "selesai", "terverifikasi"]);
 const WARNA_STATUS = {
-  menunggu_konfirmasi: "#c04040",
-  diproses: "#832828",
-  selesai: "#521014",
-  ditolak: "#d9b3b3",
+  menunggu_konfirmasi: "#9b1d30",
+  diproses: "#800020",
+  selesai: "#650019",
+  ditolak: "#d17b86",
 };
 
 function inisial(nama) {
@@ -189,9 +189,7 @@ function GrafikPendapatan({ grafik }) {
   );
   const hariTerbaik = grafik.reduce(
     (terbaik, hari, posisi) =>
-      nilai[posisi] > terbaik.nilai
-        ? { hari, nilai: nilai[posisi] }
-        : terbaik,
+      nilai[posisi] > terbaik.nilai ? { hari, nilai: nilai[posisi] } : terbaik,
     { hari: grafik[0], nilai: nilai[0] ?? 0 },
   );
 
@@ -221,77 +219,80 @@ function GrafikPendapatan({ grafik }) {
           </div>
         )}
 
-      <svg
-        className="dasbor-grafik__svg"
-        viewBox={`0 0 ${lebarSvg} ${tinggiSvg}`}
-        role="img"
-        aria-label="Grafik pendapatan tujuh hari terakhir"
-        onMouseMove={pilihDariPosisi}
-        onMouseLeave={() => setAktif(null)}
-      >
-        <defs>
-          <linearGradient id="dasbor-gradien-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#832828" stopOpacity="0.26" />
-            <stop offset="100%" stopColor="#832828" stopOpacity="0.01" />
-          </linearGradient>
-        </defs>
+        <svg
+          className="dasbor-grafik__svg"
+          viewBox={`0 0 ${lebarSvg} ${tinggiSvg}`}
+          role="img"
+          aria-label="Grafik pendapatan tujuh hari terakhir"
+          onMouseMove={pilihDariPosisi}
+          onMouseLeave={() => setAktif(null)}
+        >
+          <defs>
+            <linearGradient
+              id="dasbor-gradien-area"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="#800020" stopOpacity="0.26" />
+              <stop offset="100%" stopColor="#800020" stopOpacity="0.01" />
+            </linearGradient>
+          </defs>
 
-        {[0, 0.5, 1].map((bagian) => {
-          const posisiY = pad.atas + tinggiPlot * (1 - bagian);
-          return (
-            <line
-              key={bagian}
-              className="dasbor-grafik__garis-grid"
-              x1={pad.kiri}
-              x2={lebarSvg - pad.kanan}
-              y1={posisiY}
-              y2={posisiY}
-            />
-          );
-        })}
+          {[0, 0.5, 1].map((bagian) => {
+            const posisiY = pad.atas + tinggiPlot * (1 - bagian);
+            return (
+              <line
+                key={bagian}
+                className="dasbor-grafik__garis-grid"
+                x1={pad.kiri}
+                x2={lebarSvg - pad.kanan}
+                y1={posisiY}
+                y2={posisiY}
+              />
+            );
+          })}
 
-        <path d={area} fill="url(#dasbor-gradien-area)" />
-        <path className="dasbor-grafik__garis" d={garis} fill="none" />
+          <path d={area} fill="url(#dasbor-gradien-area)" />
+          <path className="dasbor-grafik__garis" d={garis} fill="none" />
 
-        <line
-          className="dasbor-grafik__penunjuk"
-          x1={terpilih.x}
-          x2={terpilih.x}
-          y1={terpilih.y}
-          y2={pad.atas + tinggiPlot}
-        />
-
-        {titik.map((t, posisi) => (
-          <circle
-            key={posisi}
-            className={
-              "dasbor-grafik__titik" +
-              (posisi === indeks ? " dasbor-grafik__titik--aktif" : "")
-            }
-            cx={t.x}
-            cy={t.y}
-            r={posisi === indeks ? 4.6 : 3}
+          <line
+            className="dasbor-grafik__penunjuk"
+            x1={terpilih.x}
+            x2={terpilih.x}
+            y1={terpilih.y}
+            y2={pad.atas + tinggiPlot}
           />
-        ))}
-      </svg>
 
-      <div
-        className="dasbor-grafik__sumbu-y"
-        aria-hidden="true"
-        style={{
-          top: `${(pad.atas / tinggiSvg) * 100}%`,
-          height: `${(tinggiPlot / tinggiSvg) * 100}%`,
-        }}
-      >
-        {[1, 0.5, 0].map((bagian) => (
-          <span
-            key={bagian}
-            style={{ top: `${(1 - bagian) * 100}%` }}
-          >
-            {rupiahRingkas(maks * bagian)}
-          </span>
-        ))}
-      </div>
+          {titik.map((t, posisi) => (
+            <circle
+              key={posisi}
+              className={
+                "dasbor-grafik__titik" +
+                (posisi === indeks ? " dasbor-grafik__titik--aktif" : "")
+              }
+              cx={t.x}
+              cy={t.y}
+              r={posisi === indeks ? 4.6 : 3}
+            />
+          ))}
+        </svg>
+
+        <div
+          className="dasbor-grafik__sumbu-y"
+          aria-hidden="true"
+          style={{
+            top: `${(pad.atas / tinggiSvg) * 100}%`,
+            height: `${(tinggiPlot / tinggiSvg) * 100}%`,
+          }}
+        >
+          {[1, 0.5, 0].map((bagian) => (
+            <span key={bagian} style={{ top: `${(1 - bagian) * 100}%` }}>
+              {rupiahRingkas(maks * bagian)}
+            </span>
+          ))}
+        </div>
 
         <div className="dasbor-grafik__sumbu-x" aria-hidden="true">
           {titik.map((t, posisi) => (
@@ -472,10 +473,7 @@ export default function DashboardToko() {
     (total, hari) => total + (Number(hari.pendapatan) || 0),
     0,
   );
-  const konversi = Math.min(
-    100,
-    Math.max(0, Number(ringkasan.konversi) || 0),
-  );
+  const konversi = Math.min(100, Math.max(0, Number(ringkasan.konversi) || 0));
 
   const jumlahStatus = useMemo(() => {
     const hasil = {
@@ -486,6 +484,7 @@ export default function DashboardToko() {
     };
     for (const item of pesanan) {
       if (item.status === "terverifikasi") hasil.selesai += 1;
+      else if (item.status === "dibatalkan") hasil.ditolak += 1;
       else if (item.status in hasil) hasil[item.status] += 1;
     }
     return hasil;
@@ -518,7 +517,7 @@ export default function DashboardToko() {
     },
     {
       kunci: "ditolak",
-      label: "Ditolak",
+      label: "Ditolak / dibatalkan",
       jumlah: ditolak,
       warna: WARNA_STATUS.ditolak,
     },
@@ -625,10 +624,7 @@ export default function DashboardToko() {
                   <span className="dasbor__nav-badge">{produk.length}</span>
                 )}
               </a>
-              <Link
-                className="dasbor__nav-item"
-                href="/kelolatoko/profil"
-              >
+              <Link className="dasbor__nav-item" href="/kelolatoko/profil">
                 <span className="dasbor__nav-ikon" aria-hidden="true">
                   <FiUser />
                 </span>
@@ -647,18 +643,6 @@ export default function DashboardToko() {
               </Link>
             </div>
           </nav>
-
-          <div className="dasbor__promo">
-            <span className="dasbor__promo-ikon" aria-hidden="true">
-              <MdStorefront />
-            </span>
-            <strong>Toko siap dilihat pembeli</strong>
-            <p>Atur foto, banner, dan deskripsi yang tampil di halaman tokomu.</p>
-            <Link className="dasbor__promo-tombol" href="/kelolatoko/profil">
-              Atur profil
-              <FiArrowUpRight aria-hidden="true" />
-            </Link>
-          </div>
 
           <div className="dasbor__sidebar-kaki">
             <button
@@ -705,40 +689,6 @@ export default function DashboardToko() {
               </button>
             </div>
           </div>
-
-          <header className="dasbor__topbar">
-            <div className="dasbor__sapaan">
-              <p className="dasbor__eyebrow">Dashboard toko</p>
-              <h1>Halo, {namaToko}</h1>
-              <p className="dasbor__sub">
-                Ringkasan performa tokomu dan pesanan yang perlu ditangani.
-              </p>
-            </div>
-
-            <div className="dasbor__alat">
-              <label className="dasbor__cari">
-                <FiSearch aria-hidden="true" />
-                <input
-                  type="search"
-                  value={cari}
-                  onChange={(peristiwa) => setCari(peristiwa.target.value)}
-                  placeholder="Cari produk..."
-                  aria-label="Cari produk"
-                />
-              </label>
-              <span className="dasbor__chip">
-                <FiCalendar aria-hidden="true" />
-                7 hari terakhir
-              </span>
-              <Link
-                className="dasbor__tambah-produk"
-                href="/kelolatoko/produk/tambah"
-              >
-                <FiPlus aria-hidden="true" />
-                Tambah produk
-              </Link>
-            </div>
-          </header>
 
           {(error || errorAnalitik) && (
             <p className="kelola-toko__galat" role="alert">
@@ -793,7 +743,7 @@ export default function DashboardToko() {
 
             <article className="dasbor-kartu dasbor-kpi">
               <div className="dasbor-kpi__atas">
-                <span className="dasbor-kpi__label">Pesanan diterima</span>
+                <span className="dasbor-kpi__label">Permintaan pesanan</span>
                 <span className="dasbor-kpi__ikon" aria-hidden="true">
                   <FiPackage />
                 </span>
@@ -801,7 +751,7 @@ export default function DashboardToko() {
               {memuatKpi ? (
                 <Kerangka className="dasbor-skel--nilai" />
               ) : (
-                <strong>{angka(ringkasan.pesananDiterima)}</strong>
+                <strong>{angka(menunggu)}</strong>
               )}
               <div className="dasbor-kpi__bawah">
                 {memuatKpi ? (
@@ -814,16 +764,54 @@ export default function DashboardToko() {
                         (menunggu > 0 ? " dasbor-kpi__tren--perhatian" : "")
                       }
                     >
-                      {menunggu > 0 ? `${menunggu} baru` : "Beres"}
+                      {menunggu > 0 ? `${menunggu} menunggu` : "Tidak ada"}
                     </span>
-                    <span className="dasbor-kpi__ket">
-                      {menunggu > 0
-                        ? "menunggu konfirmasi"
-                        : "tidak ada antrean"}
-                    </span>
+                    <span className="dasbor-kpi__ket">perlu ditinjau</span>
                   </>
                 )}
               </div>
+              <Link
+                className="dasbor-kpi__tautan"
+                href="/kelolatoko/pesanan"
+                aria-label="Lihat permintaan pesanan"
+              >
+                Lihat permintaan
+                <FiArrowUpRight aria-hidden="true" />
+              </Link>
+            </article>
+
+            <article className="dasbor-kartu dasbor-kpi">
+              <div className="dasbor-kpi__atas">
+                <span className="dasbor-kpi__label">Pesanan diterima</span>
+                <span className="dasbor-kpi__ikon" aria-hidden="true">
+                  <FiPackage />
+                </span>
+              </div>
+              {memuatKpi ? (
+                <Kerangka className="dasbor-skel--nilai" />
+              ) : (
+                <strong>{angka(diterima)}</strong>
+              )}
+              <div className="dasbor-kpi__bawah">
+                {memuatKpi ? (
+                  <Kerangka className="dasbor-skel--pil" />
+                ) : (
+                  <>
+                    <span className="dasbor-kpi__tren dasbor-kpi__tren--netral">
+                      {diterima > 0 ? `${diterima} diproses` : "Belum ada"}
+                    </span>
+                    <span className="dasbor-kpi__ket">diterima toko</span>
+                  </>
+                )}
+              </div>
+              <Link
+                className="dasbor-kpi__tautan"
+                href="/kelolatoko/pesanan-diterima"
+                aria-label="Lihat pesanan yang diterima"
+              >
+                Lihat pesanan
+                <FiArrowUpRight aria-hidden="true" />
+              </Link>
             </article>
 
             <article className="dasbor-kartu dasbor-kpi">
@@ -851,175 +839,34 @@ export default function DashboardToko() {
                 )}
               </div>
             </article>
-
-            <article className="dasbor-kartu dasbor-kpi">
-              <div className="dasbor-kpi__atas">
-                <span className="dasbor-kpi__label">Produk dilihat</span>
-                <span className="dasbor-kpi__ikon" aria-hidden="true">
-                  <FiEye />
-                </span>
-              </div>
-              {memuatKpi ? (
-                <Kerangka className="dasbor-skel--nilai" />
-              ) : (
-                <strong>{angka(ringkasan.totalDilihat)}</strong>
-              )}
-              <div className="dasbor-kpi__bawah">
-                {memuatKpi ? (
-                  <Kerangka className="dasbor-skel--pil" />
-                ) : (
-                  <>
-                    <span className="dasbor-kpi__tren dasbor-kpi__tren--netral">
-                      {konversi.toFixed(1)}% konversi
-                    </span>
-                    <span className="dasbor-kpi__ket">kunjungan 30 hari</span>
-                  </>
-                )}
-              </div>
-            </article>
           </div>
 
-          <div className="dasbor__grid-utama">
-            <article className="dasbor-kartu dasbor-grafik">
-              <div className="dasbor-kartu__kepala">
-                <div>
-                  <h3>Pendapatan</h3>
-                  <p>Tujuh hari terakhir</p>
-                </div>
-                {memuatAnalitik ? (
-                  <Kerangka className="dasbor-skel--pil" />
-                ) : (
-                  <div className="dasbor-grafik__ringkas">
-                    <strong title={formatHarga(totalGrafik)}>
-                      {rupiahRingkas(totalGrafik)}
-                    </strong>
-                    <span className="dasbor-grafik__lencana">7 hari</span>
-                  </div>
-                )}
+          <article className="dasbor-kartu dasbor-grafik">
+            <div className="dasbor-kartu__kepala">
+              <div>
+                <h3>Pendapatan</h3>
+                <p>Tujuh hari terakhir</p>
               </div>
-
               {memuatAnalitik ? (
-                <KerangkaGrafik />
-              ) : grafik.length === 0 ? (
-                <p className="dasbor-kosong">Belum ada data pendapatan.</p>
+                <Kerangka className="dasbor-skel--pil" />
               ) : (
-                <GrafikPendapatan grafik={grafik} />
+                <div className="dasbor-grafik__ringkas">
+                  <strong title={formatHarga(totalGrafik)}>
+                    {rupiahRingkas(totalGrafik)}
+                  </strong>
+                  <span className="dasbor-grafik__lencana">7 hari</span>
+                </div>
               )}
-            </article>
+            </div>
 
-            <article className="dasbor-kartu dasbor-konversi">
-                <div className="dasbor-kartu__kepala">
-                  <div>
-                    <h3>Tingkat konversi</h3>
-                    <p>Kunjungan menjadi pesanan</p>
-                  </div>
-                </div>
-
-                {memuatAnalitik ? (
-                  <div className="dasbor-skel-konversi" aria-hidden="true">
-                    <Kerangka className="dasbor-skel--cincin" />
-                    <Kerangka className="dasbor-skel--garis" />
-                    <Kerangka className="dasbor-skel--garis dasbor-skel--pendek" />
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      className="dasbor-konversi__cincin"
-                      style={{ "--nilai": `${konversi}%` }}
-                      role="img"
-                      aria-label={`Tingkat konversi ${konversi.toFixed(1)} persen`}
-                    >
-                      <div className="dasbor-konversi__inti">
-                        <strong>{konversi.toFixed(1)}%</strong>
-                        <span>konversi</span>
-                      </div>
-                    </div>
-
-                    <p className="dasbor-konversi__catatan">
-                      {angka(ringkasan.pesananDiterima)} pesanan diterima dari{" "}
-                      {angka(ringkasan.totalDilihat)} kunjungan produk.
-                    </p>
-
-                    {analitik && !analitik.viewsTersedia && (
-                      <p className="dasbor-konversi__info">
-                        Statistik kunjungan belum aktif. Jalankan migrasi{" "}
-                        <code>
-                          20261028120000_add_store_profiles_and_analytics.sql
-                        </code>{" "}
-                        untuk mencatat kunjungan.
-                      </p>
-                    )}
-                  </>
-                )}
-              </article>
-
-              <article className="dasbor-kartu dasbor-status">
-                <div className="dasbor-kartu__kepala">
-                  <div>
-                    <h3>Status pesanan</h3>
-                    <p>Seluruh pesanan tokomu</p>
-                  </div>
-                  {!loading && (
-                    <span className="dasbor-status__total">
-                      {angka(totalPesanan)}
-                    </span>
-                  )}
-                </div>
-
-                {loading ? (
-                  <div className="dasbor-skel-status" aria-hidden="true">
-                    <Kerangka
-                      className="dasbor-skel--bar"
-                      style={{ height: "10px" }}
-                    />
-                    <KerangkaDaftar jumlah={4} thumb={false} />
-                  </div>
-                ) : totalPesanan === 0 ? (
-                  <p className="dasbor-kosong">Belum ada pesanan masuk.</p>
-                ) : (
-                  <>
-                    <div
-                      className="dasbor-status__bar"
-                      aria-hidden="true"
-                    >
-                      {barisStatus
-                        .filter((baris) => baris.jumlah > 0)
-                        .map((baris) => (
-                          <span
-                            key={baris.kunci}
-                            style={{
-                              flexGrow: baris.jumlah,
-                              background: baris.warna,
-                            }}
-                          />
-                        ))}
-                    </div>
-
-                    <ul className="dasbor-status__daftar">
-                      {barisStatus.map((baris) => (
-                        <li key={baris.kunci}>
-                          <span
-                            className="dasbor-status__titik"
-                            style={{ background: baris.warna }}
-                            aria-hidden="true"
-                          />
-                          <span>{baris.label}</span>
-                          <strong>{angka(baris.jumlah)}</strong>
-                          <span className="dasbor-status__persen">
-                            {Math.round((baris.jumlah / totalPesanan) * 100)}%
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-
-                <Link className="dasbor-status__tautan" href="/kelolatoko/pesanan">
-                  Kelola pesanan
-                  <FiArrowUpRight aria-hidden="true" />
-                </Link>
-              </article>
-          </div>
+            {memuatAnalitik ? (
+              <KerangkaGrafik />
+            ) : grafik.length === 0 ? (
+              <p className="dasbor-kosong">Belum ada data pendapatan.</p>
+            ) : (
+              <GrafikPendapatan grafik={grafik} />
+            )}
+          </article>
 
           <div className="dasbor__grid-bawah">
             <article className="dasbor-kartu dasbor-terlaris">
@@ -1059,7 +906,11 @@ export default function DashboardToko() {
                               </span>
                               <span className="dasbor-tabel__thumb">
                                 {item.gambar ? (
-                                  <img src={item.gambar} alt="" loading="lazy" />
+                                  <img
+                                    src={item.gambar}
+                                    alt=""
+                                    loading="lazy"
+                                  />
                                 ) : (
                                   <FiShoppingBag aria-hidden="true" />
                                 )}
@@ -1134,7 +985,7 @@ export default function DashboardToko() {
             </article>
           </div>
 
-          <section className="dasbor__bagian" id="produk">
+          <header className="dasbor__topbar">
             <div className="dasbor__bagian-kepala">
               <div>
                 <h2>
@@ -1149,15 +1000,31 @@ export default function DashboardToko() {
                   Kelola stok, harga, dan pesanan tiap produk dalam satu tempat.
                 </p>
               </div>
+            </div>
+
+            <div className="dasbor__alat">
+              <label className="dasbor__cari">
+                <FiSearch aria-hidden="true" />
+                <input
+                  type="search"
+                  value={cari}
+                  onChange={(peristiwa) => setCari(peristiwa.target.value)}
+                  placeholder="Cari produk..."
+                  aria-label="Cari produk"
+                />
+              </label>
+
               <Link
-                className="dasbor__tautan-ringan"
+                className="dasbor__tambah-produk"
                 href="/kelolatoko/produk/tambah"
               >
                 <FiPlus aria-hidden="true" />
-                Produk baru
+                Tambah produk
               </Link>
             </div>
+          </header>
 
+          <section className="dasbor__bagian" id="produk">
             {loading ? (
               <div className="dasbor-produk-grid" aria-hidden="true">
                 {Array.from({ length: 5 }, (_, posisi) => (
@@ -1261,13 +1128,6 @@ export default function DashboardToko() {
         </div>
       </div>
 
-      <Link
-        href="/kelolatoko/produk/tambah"
-        className="kelola-toko__tambah dasbor__fab"
-        aria-label="Tambah produk baru"
-      >
-        <FiPlus aria-hidden="true" strokeWidth={1.6} />
-      </Link>
       <NavigasiBawah halamanAktif="masuktoko" />
 
       <PopupKonfirmasi

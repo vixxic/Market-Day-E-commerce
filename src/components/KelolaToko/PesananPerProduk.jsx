@@ -151,6 +151,16 @@ export default function PesananPerProduk({ id }) {
                   ? terimaPesanan
                   : undefined
               }
+              onTolak={
+                order.status === "menunggu_konfirmasi"
+                  ? (item) => ubahStatusPesanan(item, "ditolak")
+                  : undefined
+              }
+              onBatalkan={
+                order.status === "diproses"
+                  ? (item) => ubahStatusPesanan(item, "dibatalkan")
+                  : undefined
+              }
               onSelesaikan={
                 order.status === "diproses" ? selesaikanPesanan : undefined
               }

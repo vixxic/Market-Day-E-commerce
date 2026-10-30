@@ -56,7 +56,7 @@ export default function PagePemesanan() {
     pemesanan?.idPesanan &&
       pemesanan.status === "draft" &&
       !tahapOtp &&
-      jumlahProduk > 5 &&
+    jumlahProduk > 3 &&
       idPesananDisetujui !== pemesanan.idPesanan,
   );
 
@@ -237,7 +237,7 @@ export default function PagePemesanan() {
             </h2>
             <p className="pemesanan__modal-teks" id="isi-peringatan-jumlah">
               Pesanan Anda berjumlah {jumlahProduk} produk. Untuk pesanan di
-              atas 5 produk, pembayaran dilakukan langsung melalui transfer
+              atas 3 produk, pembayaran dilakukan langsung melalui transfer
               kepada penjual. Penjual juga dapat menghubungi Anda sebelum
               pesanan diterima atau dikonfirmasi.
             </p>

@@ -84,7 +84,9 @@ export async function PATCH(request, { params }) {
     const { status } = await dataJson(request);
     const transisiValid =
       (status === "diproses" && order.status === "menunggu_konfirmasi") ||
-      (status === "selesai" && order.status === "diproses");
+      (status === "selesai" && order.status === "diproses") ||
+      (status === "ditolak" && order.status === "menunggu_konfirmasi") ||
+      (status === "dibatalkan" && order.status === "diproses");
 
     if (!transisiValid) {
       return Response.json(
@@ -93,14 +95,47 @@ export async function PATCH(request, { params }) {
       );
     }
 
+    if (status === "ditolak" || status === "dibatalkan") {
+      const { data: berhasil, error: statusError } = await supabaseServer.rpc(
+        "tolak_atau_batalkan_pesanan",
+        {
+          p_order_id: order.id,
+          p_id_toko: toko.id,
+          p_status: status,
+        },
+      );
+      if (statusError) throw statusError;
+      if (!berhasil) {
+        return Response.json(
+          { error: "Status pesanan berubah. Muat ulang lalu coba lagi." },
+          { status: 409 },
+        );
+      }
+
+      const { data: updated, error: updateError } = await supabaseServer
+        .from("orders")
+        .select(KOLOM_PESANAN_AMAN)
+        .eq("id_pesanan", id)
+        .single();
+      if (updateError) throw updateError;
+      return Response.json(updated);
+    }
+
     const { data: updated, error: updateError } = await supabaseServer
       .from("orders")
       .update({ status })
       .eq("id_pesanan", id)
+      .eq("status", order.status)
       .select(KOLOM_PESANAN_AMAN)
-      .single();
+      .maybeSingle();
 
     if (updateError) throw updateError;
+    if (!updated) {
+      return Response.json(
+        { error: "Status pesanan berubah. Muat ulang lalu coba lagi." },
+        { status: 409 },
+      );
+    }
     return Response.json(updated);
   } catch (error) {
     return responsGagal(error);

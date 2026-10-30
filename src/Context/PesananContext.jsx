@@ -178,10 +178,12 @@ export function PesananProvider({ children }) {
               );
               if (
                 aktif &&
-                statusServer.status === "diproses" &&
+                ["diproses", "ditolak", "dibatalkan"].includes(
+                  statusServer.status,
+                ) &&
                 String(statusServer.idPesanan) === String(pesanan.idPesanan)
               ) {
-                ubahStatusPesananLokal(pesanan.idPesanan, "diproses");
+                ubahStatusPesananLokal(pesanan.idPesanan, statusServer.status);
               }
             } catch (galat) {
               if (aktif && galat.status !== 404) {

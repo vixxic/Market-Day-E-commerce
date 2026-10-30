@@ -67,6 +67,7 @@ export function formatStatusPesanan(status) {
     diproses: "Diterima",
     selesai: "Selesai",
     ditolak: "Ditolak",
+    dibatalkan: "Dibatalkan",
   };
   return label[status] ?? status;
 }

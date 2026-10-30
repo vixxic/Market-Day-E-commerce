@@ -1,20 +1,19 @@
-/* Dashboard toko — tata letak lebar dengan sidebar, mengikuti palet maroon. */
+/* Dashboard toko — tata letak lebar dengan sidebar, mengikuti palet merah. */
 
 .kelola-toko.kelola-toko--lebar {
   box-sizing: border-box;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1200px;
   min-height: calc(100dvh - 16px);
   margin: 0 auto;
-  padding: 14px;
   border-radius: 26px;
-  background:
+  /* background:
     radial-gradient(
       900px 420px at 12% -8%,
       rgba(192, 64, 64, 0.07),
       transparent 62%
     ),
-    #fbf6f5;
+    #fbf6f5; */
   color: #2a1616;
 }
 
@@ -25,29 +24,31 @@
   --d-ink: #2a1616;
   --d-ink-lembut: #8a7070;
   --d-ink-samar: #b39d9d;
-  --d-maroon: #832828;
-  --d-maroon-tua: #521014;
+  --d-maroon: #800020;
+  --d-maroon-tua: #650019;
   --d-maroon-muda: #fff6f5;
-  --d-aksen: #c04040;
-  --d-positif: #2f6b45;
+  --d-aksen: #9b1d30;
+  --d-positif: #800020;
 
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr);
   align-items: start;
   gap: 22px;
-  padding: 12px;
 }
 
 /* ---------------------------------------------------------------- sidebar */
 
 .dasbor__sidebar {
-  position: sticky;
-  top: 22px;
+  position: fixed;
+  z-index: 20;
+
+  top: 105px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   box-sizing: border-box;
-  height: calc(100dvh - 44px);
+  width: 250px;
+
   padding: 18px 14px 14px;
   border: 1px solid var(--d-garis);
   border-radius: 22px;
@@ -77,7 +78,7 @@
   width: 38px;
   height: 38px;
   border-radius: 11px;
-  background: linear-gradient(140deg, #a23333, #521014);
+  background: linear-gradient(140deg, #9b1d30, #650019);
   color: #ffffff;
   font-size: 0.78rem;
   font-weight: 800;
@@ -184,7 +185,7 @@
 }
 
 .dasbor__nav-item--aktif .dasbor__nav-ikon {
-  background: linear-gradient(140deg, #832828, #521014);
+  background: linear-gradient(140deg, #9b1d30, #650019);
   color: #ffffff;
 }
 
@@ -202,77 +203,6 @@
   font-size: 0.61rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-}
-
-.dasbor__promo {
-  position: relative;
-  margin-top: auto;
-  padding: 16px;
-  border-radius: 16px;
-  background:
-    radial-gradient(
-      140px 90px at 110% -20%,
-      rgba(255, 255, 255, 0.22),
-      transparent 70%
-    ),
-    linear-gradient(150deg, #8d2f2f, #521014);
-  color: #ffffff;
-  overflow: hidden;
-}
-
-.dasbor__promo::after {
-  position: absolute;
-  right: -34px;
-  bottom: -52px;
-  width: 108px;
-  height: 108px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  content: "";
-}
-
-.dasbor__promo-ikon {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 10px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  font-size: 0.95rem;
-}
-
-.dasbor__promo strong {
-  display: block;
-  font-size: 0.81rem;
-  font-weight: 800;
-  line-height: 1.3;
-}
-
-.dasbor__promo p {
-  margin: 5px 0 0;
-  color: rgba(255, 255, 255, 0.74);
-  font-size: 0.67rem;
-  line-height: 1.45;
-}
-
-.dasbor__promo-tombol {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 12px;
-  padding: 7px 11px;
-  border-radius: 8px;
-  background: #ffffff;
-  color: var(--d-maroon-tua);
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.dasbor__promo-tombol:hover {
-  background: #fff2f1;
 }
 
 .dasbor__sidebar-kaki {
@@ -296,6 +226,7 @@
 /* ---------------------------------------------------------------- konten */
 
 .dasbor__utama {
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -451,7 +382,7 @@
   padding: 0 15px;
   border: 0;
   border-radius: 11px;
-  background: linear-gradient(140deg, #9a3232, #521014);
+  background: var(--d-aksen);
   color: #ffffff;
   font: inherit;
   font-size: 0.75rem;
@@ -570,7 +501,7 @@
   gap: 2px;
   padding: 2px 7px;
   border-radius: 999px;
-  background: #edf5f0;
+  background: #fdf0ef;
   color: var(--d-positif);
   font-size: 0.61rem;
   font-weight: 800;
@@ -599,6 +530,10 @@
   line-height: 1.3;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.dasbor-kpi__tautan {
+  display: none;
 }
 
 /* ------------------------------------------------------------------ grafik */
@@ -810,9 +745,9 @@
   border-radius: 50%;
   background: conic-gradient(
     from -90deg,
-    #c04040 0%,
-    #832828 calc(var(--nilai) * 0.55),
-    #521014 var(--nilai),
+    #9b1d30 0%,
+    #800020 calc(var(--nilai) * 0.55),
+    #650019 var(--nilai),
     #f6e7e6 var(--nilai),
     #f6e7e6 100%
   );
@@ -1208,28 +1143,6 @@
   font-size: 0.7rem;
 }
 
-.dasbor__tautan-ringan {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 12px;
-  border: 1px solid var(--d-garis);
-  border-radius: 9px;
-  background: #ffffff;
-  color: var(--d-maroon-tua);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.dasbor__tautan-ringan:hover {
-  border-color: var(--d-garis-kuat);
-  background: var(--d-maroon-muda);
-}
-
 .dasbor-produk-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(198px, 1fr));
@@ -1421,11 +1334,6 @@
   font-size: 0.72rem;
 }
 
-.kelola-toko__tambah.dasbor__fab {
-  right: 24px;
-  bottom: max(92px, env(safe-area-inset-bottom, 0px));
-}
-
 /* ------------------------------------------------------------- skeleton */
 
 @keyframes dasbor-skel-kilau {
@@ -1454,12 +1362,7 @@
   display: block;
   flex: 0 0 auto;
   border-radius: 7px;
-  background: linear-gradient(
-    90deg,
-    #f6e8e7 25%,
-    #fdf4f3 42%,
-    #f6e8e7 60%
-  );
+  background: linear-gradient(90deg, #f6e8e7 25%, #fdf4f3 42%, #f6e8e7 60%);
   background-size: 240% 100%;
   animation: dasbor-skel-kilau 1.5s ease-in-out infinite;
 }
@@ -1624,7 +1527,6 @@
 
 @media (max-width: 1024px) {
   .kelola-toko.kelola-toko--lebar {
-    padding: 16px 14px 110px;
     border-radius: 22px;
   }
 
@@ -1643,6 +1545,7 @@
   }
 
   .dasbor__utama {
+    grid-column: auto;
     padding: 0;
   }
 
@@ -1650,14 +1553,27 @@
     padding-top: 0;
   }
 
-  .kelola-toko__tambah.dasbor__fab {
-    right: 22px;
+  .dasbor-kpi__tautan {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 4px;
+    margin-top: 2px;
+    color: var(--d-maroon);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-decoration: none;
   }
-}
 
-@media (min-width: 1025px) {
-  .kelola-toko__tambah.dasbor__fab {
-    display: none;
+  .dasbor-kpi__tautan:hover {
+    color: var(--d-maroon-tua);
+    text-decoration: underline;
+  }
+
+  .dasbor-kpi__tautan:focus-visible {
+    border-radius: 3px;
+    outline: 2px solid var(--d-maroon);
+    outline-offset: 3px;
   }
 }
 
@@ -1678,7 +1594,6 @@
 
 @media (max-width: 640px) {
   .kelola-toko.kelola-toko--lebar {
-    padding: 14px 10px 108px;
     border-radius: 20px;
   }
 
@@ -1774,7 +1689,6 @@
   .dasbor-produk,
   .dasbor-produk__foto img,
   .dasbor-tabel tbody tr,
-  .dasbor__tautan-ringan,
   .dasbor-produk__tombol {
     transition: none;
   }

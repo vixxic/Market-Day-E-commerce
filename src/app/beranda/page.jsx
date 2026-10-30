@@ -472,11 +472,6 @@ function Beranda() {
                 Jelajahi Toko Market Day
               </p>
             </div>
-            <div className="beranda__toko-kontrol">
-              <span className="beranda__hitung-toko">
-                {daftarToko.length} toko aktif
-              </span>
-            </div>
           </div>
 
           <div
