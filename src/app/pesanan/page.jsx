@@ -9,6 +9,7 @@ import { formatHarga } from "@/lib/formatHarga";
 
 // components
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
+import TombolUnduhPesanan from "@/components/TombolUnduhPesanan/TombolUnduhPesanan";
 
 // status pesanan -> teks & warna label
 const STATUS = {
@@ -113,6 +114,10 @@ function KartuPesanan({ pesanan }) {
                   {pesanan.kodeKlaim ?? "-"}
                 </span>
               </p>
+
+              {pesanan.status !== "menunggu_otp" && (
+                <TombolUnduhPesanan pesanan={pesanan} />
+              )}
             </div>
           </div>
         </div>

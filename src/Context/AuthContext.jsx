@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { ambilDaftarToko } from "@/lib/api/tokoApi";
+import { ambilJsonAman, galatRamah } from "@/lib/galatRamah";
 
 const AuthContext = createContext(null);
 
@@ -24,19 +25,16 @@ export function AuthProvider({ children }) {
 
     Promise.all([
       ambilDaftarToko({ signal: pengendali.signal }),
-      fetch("/api/toko/session", { signal: pengendali.signal }),
+      ambilJsonAman("/api/toko/session", {
+        signal: pengendali.signal,
+      }).catch((galat) => {
+        if (galat?.status === 401) return { toko: null };
+        throw galat;
+      }),
     ])
-      .then(async ([daftar, responsSesi]) => {
+      .then(([daftar, dataSesi]) => {
         setDaftarToko(daftar.filter((item) => item.aktif !== false));
-
-        if (responsSesi.ok) {
-          const dataSesi = await responsSesi.json();
-          setToko(dataSesi.toko ?? null);
-        } else if (responsSesi.status === 401) {
-          setToko(null);
-        } else {
-          throw new Error("Gagal memeriksa sesi toko.");
-        }
+        setToko(dataSesi?.toko ?? null);
       })
       .catch((galat) => {
         if (galat.name === "AbortError") return;
@@ -54,38 +52,32 @@ export function AuthProvider({ children }) {
   }, []);
 
   const masuk = useCallback(async (namaToko, password) => {
-    const respons = await fetch("/api/toko/login", {
+    const data = await ambilJsonAman("/api/toko/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ namaToko, password }),
     });
 
-    const data = await respons.json();
-
-    if (!respons.ok) {
-      throw new Error(data.error ?? "Gagal masuk ke toko.");
-    }
+    if (!data?.toko) throw galatRamah();
 
     setToko(data.toko);
     return data.toko;
   }, []);
 
   const keluar = useCallback(async () => {
-    const respons = await fetch("/api/toko/logout", { method: "POST" });
-    if (!respons.ok) throw new Error("Gagal keluar dari toko.");
+    await ambilJsonAman("/api/toko/logout", { method: "POST" });
     setToko(null);
   }, []);
 
   const daftar = useCallback(async (namaToko, password, whatsappNumber) => {
-    const respons = await fetch("/api/toko/register", {
+    const data = await ambilJsonAman("/api/toko/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ namaToko, password, whatsappNumber }),
     });
-    const data = await respons.json();
-    if (!respons.ok) {
-      throw new Error(data.error ?? "Gagal mendaftarkan toko.");
-    }
+
+    if (!data?.toko) throw galatRamah();
+
     setToko(data.toko);
     return data.toko;
   }, []);

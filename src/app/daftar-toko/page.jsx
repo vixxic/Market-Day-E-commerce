@@ -81,6 +81,7 @@ import { FiCamera, FiImage } from "react-icons/fi";
 import { useAuthContext } from "@/Context/AuthContext";
 // Sesuaikan path import ini dengan yang dipakai di halaman masuk toko
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
+import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProfil } from "@/lib/supabaseStorage";
 
@@ -89,13 +90,13 @@ const BATAS_FOTO = 5 * 1024 * 1024;
 
 export default function DaftarTokoPage() {
   const { daftar } = useAuthContext();
+  const notifikasi = useNotifikasi();
   const router = useRouter();
   const [namaToko, setNamaToko] = useState("");
   const [password, setPassword] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [fotoProfil, setFotoProfil] = useState(null);
   const [banner, setBanner] = useState(null);
-  const [error, setError] = useState("");
   const [gagalProfil, setGagalProfil] = useState(false);
   const [sedangMendaftar, setSedangMendaftar] = useState(false);
 
@@ -119,15 +120,18 @@ export default function DaftarTokoPage() {
     if (!file) return;
 
     if (!FORMAT_FOTO.includes(file.type)) {
-      setError("Foto harus berformat JPG, PNG, WebP, atau AVIF.");
+      notifikasi.galat("Foto harus berformat JPG, PNG, WebP, atau AVIF.", {
+        judul: "Format foto tidak didukung",
+      });
       return;
     }
     if (file.size > BATAS_FOTO) {
-      setError("Ukuran foto maksimal 5 MB.");
+      notifikasi.galat("Ukuran foto maksimal 5 MB.", {
+        judul: "Foto terlalu besar",
+      });
       return;
     }
 
-    setError("");
     const nilai = { file, preview: URL.createObjectURL(file) };
     if (jenis === "banner") setBanner(nilai);
     else setFotoProfil(nilai);
@@ -136,19 +140,46 @@ export default function DaftarTokoPage() {
   async function submit(event) {
     event.preventDefault();
 
+    const nama = namaToko.trim();
+
+    if (!nama) {
+      notifikasi.galat("Nama toko wajib diisi.", {
+        judul: "Nama toko kosong",
+      });
+      return;
+    }
+    if (nama.length < 2) {
+      notifikasi.galat("Nama toko minimal 2 karakter.", {
+        judul: "Nama toko terlalu pendek",
+      });
+      return;
+    }
+    if (!password) {
+      notifikasi.galat("Password toko wajib diisi.", {
+        judul: "Password kosong",
+      });
+      return;
+    }
+    if (password.length < 8) {
+      notifikasi.galat("Password toko minimal 8 karakter.", {
+        judul: "Password terlalu pendek",
+      });
+      return;
+    }
     if (!fotoProfil || !banner) {
-      setError("Foto profil dan banner toko wajib diunggah.");
+      notifikasi.galat("Foto profil dan banner toko wajib diunggah.", {
+        judul: "Foto toko belum lengkap",
+      });
       return;
     }
 
-    setError("");
     setGagalProfil(false);
     setSedangMendaftar(true);
 
     try {
-      await daftar(namaToko.trim(), password, whatsappNumber.trim() || null);
+      await daftar(nama, password, whatsappNumber.trim() || null);
     } catch (galat) {
-      setError(galat.message);
+      notifikasi.galat(galat.message, { judul: "Pendaftaran gagal" });
       setSedangMendaftar(false);
       return;
     }
@@ -168,9 +199,10 @@ export default function DaftarTokoPage() {
       router.replace("/kelolatoko");
     } catch (galat) {
       setGagalProfil(true);
-      setError(
-        `Toko berhasil dibuat, tetapi foto gagal disimpan: ${galat.message}`,
-      );
+      notifikasi.galat(galat.message, {
+        judul: "Toko terdaftar, foto gagal disimpan",
+        durasi: 12000,
+      });
     } finally {
       setSedangMendaftar(false);
     }
@@ -178,14 +210,8 @@ export default function DaftarTokoPage() {
 
   return (
     <div className="daftar-toko">
-      <form className="daftar-toko__isi" onSubmit={submit}>
+      <form className="daftar-toko__isi" onSubmit={submit} noValidate>
         <h1 className="daftar-toko__judul">Daftarkan Toko</h1>
-
-        {error && (
-          <p className="daftar-toko__galat" role="alert">
-            {error}
-          </p>
-        )}
 
         {gagalProfil && (
           <p className="daftar-toko__lengkapi">

@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
+import { SkeletonPesanan } from "@/components/KelolaToko/SkeletonPesananToko";
 import {
-  normalisasiPesananToko,
+  ambilPesananToko,
   permintaanKelolaToko,
+  pesanGalat,
 } from "@/lib/kelolaTokoClient";
 
 export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
@@ -20,14 +22,14 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
 
   useEffect(() => {
     let aktif = true;
-    permintaanKelolaToko("/api/toko/pesanan")
+    ambilPesananToko()
       .then((daftar) => {
         if (!aktif) return;
-        setPesanan(daftar.map(normalisasiPesananToko));
+        setPesanan(daftar);
         setError("");
       })
       .catch((galat) => {
-        if (aktif) setError(galat.message);
+        if (aktif) setError(pesanGalat(galat));
       })
       .finally(() => {
         if (aktif) setLoading(false);
@@ -38,9 +40,19 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
   }, []);
 
   async function muatPesanan() {
-    const daftar = await permintaanKelolaToko("/api/toko/pesanan");
-    setPesanan(daftar.map(normalisasiPesananToko));
+    setPesanan(await ambilPesananToko());
     setError("");
+  }
+
+  async function cobaMuatUlang() {
+    setLoading(true);
+    try {
+      await muatPesanan();
+    } catch (galat) {
+      setError(pesanGalat(galat));
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function terimaPesanan(item) {
@@ -73,7 +85,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
       setError("");
       return true;
     } catch (galat) {
-      setError(galat.message);
+      setError(pesanGalat(galat));
       return false;
     } finally {
       setIdMemproses(null);
@@ -91,7 +103,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
       await muatPesanan();
       return true;
     } catch (galat) {
-      setError(galat.message);
+      setError(pesanGalat(galat));
       return false;
     } finally {
       setIdMemproses(null);
@@ -124,36 +136,54 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
         </header>
 
         {error && (
-          <p className="kelola-toko__galat" role="alert">
-            {error}
-          </p>
+          <div className="kelola-toko__galat" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="kelola-toko__galat-ulang"
+              onClick={cobaMuatUlang}
+              disabled={loading}
+            >
+              {loading ? "Mencoba..." : "Coba lagi"}
+            </button>
+          </div>
         )}
-        {loading && <p>Memuat pesanan...</p>}
-        {!loading && !error && ditampilkan.length === 0 && (
-          <p className="kelola-toko__kosong">
-            {statusHalaman === "permintaan"
-              ? "Belum ada permintaan pesanan."
-              : "Belum ada pesanan yang diterima."}
-          </p>
+
+        {loading ? (
+          <SkeletonPesanan jumlah={3} />
+        ) : (
+          !error && (
+            <>
+              {ditampilkan.length === 0 && (
+                <p className="kelola-toko__kosong">
+                  {statusHalaman === "permintaan"
+                    ? "Belum ada permintaan pesanan."
+                    : "Belum ada pesanan yang diterima."}
+                </p>
+              )}
+              <div className="kelola-toko__order-list">
+                {ditampilkan.map((item) => (
+                  <KartuPesananToko
+                    key={item.id}
+                    pesanan={item}
+                    onTerima={
+                      statusHalaman === "permintaan"
+                        ? terimaPesanan
+                        : undefined
+                    }
+                    onSelesaikan={
+                      statusHalaman === "diterima" &&
+                      item.status === "diproses"
+                        ? selesaikanPesanan
+                        : undefined
+                    }
+                    sedangMenerima={String(idMemproses) === String(item.id)}
+                  />
+                ))}
+              </div>
+            </>
+          )
         )}
-        <div className="kelola-toko__order-list">
-          {ditampilkan.map((item) => (
-            <KartuPesananToko
-              key={item.id}
-              pesanan={item}
-              onTerima={
-                statusHalaman === "permintaan" ? terimaPesanan : undefined
-              }
-              onSelesaikan={
-                statusHalaman === "diterima" &&
-                item.status === "diproses"
-                  ? selesaikanPesanan
-                  : undefined
-              }
-              sedangMenerima={String(idMemproses) === String(item.id)}
-            />
-          ))}
-        </div>
 
         {statusHalaman === "diterima" && (
           <p className="kelola-toko__tautan-riwayat">

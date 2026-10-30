@@ -28,6 +28,7 @@ import {
   simpanPemesanan,
 } from "@/lib/pemesanan";
 import { getServerStorageSnapshot } from "@/lib/localStorageStore";
+import { ambilJsonAman } from "@/lib/galatRamah";
 
 const PesananContext = createContext(null);
 
@@ -130,14 +131,7 @@ export function PesananProvider({ children }) {
 
     const pengendali = new AbortController();
 
-    fetch("/api/toko/pesanan", { signal: pengendali.signal })
-      .then(async (respons) => {
-        const data = await respons.json();
-        if (!respons.ok) {
-          throw new Error(data.error ?? "Gagal mengambil daftar pesanan.");
-        }
-        return data;
-      })
+    ambilJsonAman("/api/toko/pesanan", { signal: pengendali.signal })
       .then((daftar) => {
         setPesananToko(daftar.map(normalisasiPesananApi));
         setStatusPesananToko({
@@ -301,7 +295,7 @@ export function PesananProvider({ children }) {
         if (String(pesananLokal.id_toko) !== String(idTokoAktif)) {
           throw new Error("Toko ini tidak berwenang mengubah pesanan tersebut.");
         }
-        const respons = await fetch(
+        const pesanan = await ambilJsonAman(
           `/api/toko/pesanan/${encodeURIComponent(pesananLokal.id)}`,
           {
             method: "PATCH",
@@ -309,11 +303,6 @@ export function PesananProvider({ children }) {
             body: JSON.stringify({ status }),
           },
         );
-        const data = await respons.json();
-        if (!respons.ok) {
-          throw new Error(data.error ?? "Gagal memperbarui status pesanan.");
-        }
-        const pesanan = data;
         setPesananToko((daftar) =>
           daftar.map((item) =>
             String(item.id) === String(id) ||

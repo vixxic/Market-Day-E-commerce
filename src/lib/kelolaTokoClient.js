@@ -1,10 +1,21 @@
+import { ambilJsonAman, PESAN_GALAT } from "@/lib/galatRamah";
+
+export { PESAN_GALAT };
+
+export const PESAN_GALAT_HAPUS =
+  "Produk gagal dihapus. Silakan coba lagi, atau hubungi operator situs bila masalah ini berlanjut.";
+
 export async function permintaanKelolaToko(url, options) {
-  const respons = await fetch(url, options);
-  const data = respons.status === 204 ? null : await respons.json();
-  if (!respons.ok) {
-    throw new Error(data?.error ?? "Permintaan gagal. Coba lagi.");
-  }
-  return data;
+  return ambilJsonAman(url, options);
+}
+
+export function pesanGalat(galat) {
+  return galat?.pesanAman || galat?.message || PESAN_GALAT;
+}
+
+export async function ambilPesananToko() {
+  const daftar = await permintaanKelolaToko("/api/toko/pesanan");
+  return daftar.map(normalisasiPesananToko);
 }
 
 export function gambarProduk(produk) {

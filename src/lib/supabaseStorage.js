@@ -1,3 +1,5 @@
+import { ambilJsonAman, galatRamah } from "@/lib/galatRamah";
+
 async function unggahFoto(urlEndpoint, file, fieldTambahan = {}) {
   const formData = new FormData();
   formData.append("file", file);
@@ -5,17 +7,13 @@ async function unggahFoto(urlEndpoint, file, fieldTambahan = {}) {
     formData.append(nama, nilai);
   }
 
-  const response = await fetch(urlEndpoint, {
+  const data = await ambilJsonAman(urlEndpoint, {
     method: "POST",
     body: formData,
   });
-  const data = await response.json().catch(() => null);
 
-  if (!response.ok) {
-    throw new Error(data?.error ?? "Gagal mengunggah foto.");
-  }
   if (typeof data?.url !== "string" || !data.url) {
-    throw new Error("Supabase tidak mengembalikan URL foto yang valid.");
+    throw galatRamah();
   }
 
   return data.url;

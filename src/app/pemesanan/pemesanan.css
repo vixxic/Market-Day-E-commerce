@@ -238,6 +238,26 @@
   padding: 0 24px;
 }
 
+/* tombol sekunder di layar "Pesanan berhasil dibuat" */
+.pemesanan__tombol-kecil--garis {
+  width: 100%;
+  border: 1px solid var(--warna-merah-utama);
+  background-color: #ffffff;
+  color: var(--warna-merah-utama);
+}
+
+.pemesanan__tombol-kecil--garis:hover {
+  background-color: #fff6f5;
+}
+
+/* Tombol unduh mengikuti bentuk tombol utama di layar ini */
+.pemesanan__selesai .tombol-unduh-pesanan {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
 .pemesanan__kosong {
   display: flex;
   flex-direction: column;

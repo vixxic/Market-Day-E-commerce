@@ -1,0 +1,137 @@
+.notifikasi {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  right: 16px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.notifikasi__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid #edd6d4;
+  border-radius: 14px;
+  background: #ffffff;
+  pointer-events: auto;
+  animation: notifikasi-muncul 0.24s ease-out;
+}
+
+.notifikasi__item--galat {
+  border-color: #f0cfcc;
+  background: #fff6f5;
+}
+
+.notifikasi__item--sukses {
+  border-color: #cfe8da;
+  background: #f4fbf6;
+}
+
+.notifikasi__item--info {
+  border-color: #efd9d7;
+  background: #fdf6f5;
+}
+
+.notifikasi__ikon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.notifikasi__item--galat .notifikasi__ikon {
+  background: #fbe4e2;
+  color: #9d1d1d;
+}
+
+.notifikasi__item--sukses .notifikasi__ikon {
+  background: #e2f4ea;
+  color: #1f6b45;
+}
+
+.notifikasi__item--info .notifikasi__ikon {
+  background: #f7e5e4;
+  color: #832828;
+}
+
+.notifikasi__teks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notifikasi__teks strong {
+  color: #521014;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.notifikasi__teks p {
+  margin: 0;
+  color: #6d5252;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.notifikasi__item--galat .notifikasi__teks p {
+  color: #8c3a34;
+}
+
+.notifikasi__tutup {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #a98d8d;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.notifikasi__tutup:hover {
+  background: rgba(131, 40, 40, 0.08);
+  color: #521014;
+}
+
+@keyframes notifikasi-muncul {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .notifikasi {
+    top: max(10px, env(safe-area-inset-top, 0px));
+    right: 10px;
+    left: 10px;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notifikasi__item {
+    animation: none;
+  }
+}

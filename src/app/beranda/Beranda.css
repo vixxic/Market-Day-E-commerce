@@ -19,11 +19,11 @@
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 0 0 0 45%;
+  inset: 0 0 0 15%;
 
   background:
     linear-gradient(rgba(128, 0, 32, 0.35), rgba(101, 0, 25, 0.35)),
-    url("/foto-sekolah-triratna.jpeg") center 45% / cover no-repeat;
+    url("/banner-market-day.jpg") center 25% / cover no-repeat;
 }
 
 /* Gradient merah untuk menyatukan foto dan background */
@@ -36,9 +36,9 @@
   background: linear-gradient(
     90deg,
     #9b1d30 0%,
-    #800020 43%,
-    rgba(128, 0, 32, 0.95) 52%,
-    rgba(128, 0, 32, 0.55) 67%,
+    #800020 23%,
+    rgba(128, 0, 32, 0.95) 12%,
+    rgba(128, 0, 32, 0.55) 47%,
     rgba(101, 0, 25, 0.08) 100%
   );
 }

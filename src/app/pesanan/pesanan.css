@@ -333,6 +333,15 @@
   letter-spacing: 0.02em;
 }
 
+/* tombol unduh di dalam kotak rincian */
+.kartu-pesanan__kotak .tombol-unduh-pesanan {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 6px;
+  padding: 0 16px;
+  font-size: 0.875rem;
+}
+
 @media (min-width: 768px) {
   .pesanan__isi {
     padding: 24px 32px;

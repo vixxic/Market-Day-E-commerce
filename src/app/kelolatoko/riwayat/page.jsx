@@ -6,9 +6,10 @@ import { FiArrowLeft, FiCalendar, FiClock, FiX } from "react-icons/fi";
 import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import KartuPesananToko from "@/components/KelolaToko/KartuPesananToko";
 import {
-  normalisasiPesananToko,
-  permintaanKelolaToko,
-} from "@/lib/kelolaTokoClient";
+  SkeletonPesanan,
+  SkeletonRingkasanRiwayat,
+} from "@/components/KelolaToko/SkeletonPesananToko";
+import { ambilPesananToko, pesanGalat } from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
 import { formatBulan, formatTanggal, kunciTanggal } from "@/lib/tanggal";
 import "./riwayat.css";
@@ -46,14 +47,14 @@ export default function RiwayatPesananPage() {
 
   useEffect(() => {
     let aktif = true;
-    permintaanKelolaToko("/api/toko/pesanan")
+    ambilPesananToko()
       .then((daftar) => {
         if (!aktif) return;
-        setPesanan(daftar.map(normalisasiPesananToko));
+        setPesanan(daftar);
         setError("");
       })
       .catch((galat) => {
-        if (aktif) setError(galat.message);
+        if (aktif) setError(pesanGalat(galat));
       })
       .finally(() => {
         if (aktif) setLoading(false);
@@ -62,6 +63,18 @@ export default function RiwayatPesananPage() {
       aktif = false;
     };
   }, []);
+
+  async function cobaMuatUlang() {
+    setLoading(true);
+    try {
+      setPesanan(await ambilPesananToko());
+      setError("");
+    } catch (galat) {
+      setError(pesanGalat(galat));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const riwayat = useMemo(
     () =>
@@ -157,9 +170,17 @@ export default function RiwayatPesananPage() {
         </header>
 
         {error && (
-          <p className="kelola-toko__galat" role="alert">
-            {error}
-          </p>
+          <div className="kelola-toko__galat" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="kelola-toko__galat-ulang"
+              onClick={cobaMuatUlang}
+              disabled={loading}
+            >
+              {loading ? "Mencoba..." : "Coba lagi"}
+            </button>
+          </div>
         )}
 
         <section className="riwayat__filter" aria-label="Filter riwayat">
@@ -202,7 +223,12 @@ export default function RiwayatPesananPage() {
           )}
         </section>
 
-        {loading && <p>Memuat riwayat pesanan...</p>}
+        {loading && (
+          <div aria-hidden="true">
+            <SkeletonRingkasanRiwayat />
+            <SkeletonPesanan jumlah={2} tombol={false} />
+          </div>
+        )}
 
         {!loading && !error && riwayat.length === 0 && (
           <p className="kelola-toko__kosong">
