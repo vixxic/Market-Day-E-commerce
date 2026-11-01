@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiShoppingBag } from "react-icons/fi";
+import { FiEdit2, FiShoppingBag } from "react-icons/fi";
 import {
   formatStatusPesanan,
   gambarProduk,
@@ -18,11 +18,17 @@ export default function KartuPesananToko({
   onTolak,
   onBatalkan,
   onSelesaikan,
+  onUbahPembayaran,
   sedangMenerima,
 }) {
   const [terbuka, setTerbuka] = useState(false);
   const [aksiKonfirmasi, setAksiKonfirmasi] = useState(null);
   const itemUtama = itemTampil[0] ?? {};
+  const jumlahProdukPesanan = (pesanan.item ?? []).reduce(
+    (total, item) => total + (Number(item.jumlah) || 0),
+    0,
+  );
+  const statusPembayaran = pesanan.status_pembayaran ?? "belum_dibayar";
   const gambar = gambarProduk({
     ...itemUtama,
     gambar: itemUtama.gambar ?? gambarFallback,
@@ -75,6 +81,33 @@ export default function KartuPesananToko({
         <div className="kelola-toko__order-info">
           <h2>{itemTampil.length > 1 ? `${itemUtama.nama} +${itemTampil.length - 1} produk` : itemUtama.nama}</h2>
           <p>{formatHarga(itemTampil.reduce((total, item) => total + Number(item.subtotal ?? Number(item.harga) * Number(item.jumlah)), 0))}</p>
+          {jumlahProdukPesanan > 3 && (
+            <div className="kelola-toko__order-pembayaran">
+              <span className="kelola-toko__order-tag">Pesanan &gt; 3</span>
+              {onUbahPembayaran ? (
+                <button
+                  type="button"
+                  className={`kelola-toko__order-status-bayar kelola-toko__order-status-bayar--${statusPembayaran}`}
+                  disabled={sedangMenerima}
+                  onClick={() => onUbahPembayaran(pesanan)}
+                  aria-label={`Ubah status pembayaran, saat ini ${statusPembayaran === "sudah_dibayar" ? "sudah dibayar" : "belum bayar"}`}
+                >
+                  {statusPembayaran === "sudah_dibayar"
+                    ? "Sudah dibayar"
+                    : "Belum bayar"}
+                  <FiEdit2 aria-hidden="true" />
+                </button>
+              ) : (
+                <span
+                  className={`kelola-toko__order-status-bayar kelola-toko__order-status-bayar--${statusPembayaran}`}
+                >
+                  {statusPembayaran === "sudah_dibayar"
+                    ? "Sudah dibayar"
+                    : "Belum bayar"}
+                </span>
+              )}
+            </div>
+          )}
           <button
             type="button"
             className="kelola-toko__tombol"

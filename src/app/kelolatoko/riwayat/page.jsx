@@ -9,7 +9,11 @@ import {
   SkeletonPesanan,
   SkeletonRingkasanRiwayat,
 } from "@/components/KelolaToko/SkeletonPesananToko";
-import { ambilPesananToko, pesanGalat } from "@/lib/kelolaTokoClient";
+import {
+  ambilPesananToko,
+  pesanGalat,
+  ubahStatusPembayaranPesanan,
+} from "@/lib/kelolaTokoClient";
 import { formatHarga } from "@/lib/formatHarga";
 import { formatBulan, formatTanggal, kunciTanggal } from "@/lib/tanggal";
 import "./riwayat.css";
@@ -44,6 +48,7 @@ export default function RiwayatPesananPage() {
   const [error, setError] = useState("");
   const [bulan, setBulan] = useState("");
   const [tanggal, setTanggal] = useState("");
+  const [idMemproses, setIdMemproses] = useState(null);
 
   useEffect(() => {
     let aktif = true;
@@ -73,6 +78,37 @@ export default function RiwayatPesananPage() {
       setError(pesanGalat(galat));
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function ubahPembayaranPesanan(item) {
+    const statusPembayaran =
+      item.status_pembayaran === "sudah_dibayar"
+        ? "belum_dibayar"
+        : "sudah_dibayar";
+    setIdMemproses(item.id);
+    try {
+      const diperbarui = await ubahStatusPembayaranPesanan(
+        item.id,
+        statusPembayaran,
+      );
+      setPesanan((daftar) =>
+        daftar.map((pesananTersimpan) =>
+          String(pesananTersimpan.id) === String(item.id)
+            ? {
+                ...pesananTersimpan,
+                status_pembayaran: diperbarui.status_pembayaran,
+              }
+            : pesananTersimpan,
+        ),
+      );
+      setError("");
+      return true;
+    } catch (galat) {
+      setError(pesanGalat(galat));
+      return false;
+    } finally {
+      setIdMemproses(null);
     }
   }
 
@@ -272,7 +308,14 @@ export default function RiwayatPesananPage() {
                     </div>
                     <div className="kelola-toko__order-list">
                       {grup.pesanan.map((item) => (
-                        <KartuPesananToko key={item.id} pesanan={item} />
+                        <KartuPesananToko
+                          key={item.id}
+                          pesanan={item}
+                          onUbahPembayaran={ubahPembayaranPesanan}
+                          sedangMenerima={
+                            String(idMemproses) === String(item.id)
+                          }
+                        />
                       ))}
                     </div>
                   </section>

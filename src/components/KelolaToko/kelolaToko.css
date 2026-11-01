@@ -357,6 +357,60 @@
   font-size: 0.85rem;
 }
 
+.kelola-toko__order-pembayaran {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.kelola-toko__order-tag,
+.kelola-toko__order-status-bayar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 3px 9px;
+  border: 1px solid #e8caca;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.kelola-toko__order-tag {
+  background: #fff6f5;
+  color: var(--kelola-gelap);
+}
+
+.kelola-toko__order-status-bayar {
+  background: #fff0ef;
+  color: #8d2525;
+}
+
+.kelola-toko__order-status-bayar--sudah_dibayar {
+  border-color: #b9ddc0;
+  background: #effaf1;
+  color: #276336;
+}
+
+button.kelola-toko__order-status-bayar {
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.kelola-toko__order-status-bayar:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.kelola-toko__order-status-bayar:focus-visible {
+  outline: 2px solid var(--kelola-gelap);
+  outline-offset: 2px;
+}
+
 .kelola-toko__terima {
   align-self: start;
   min-height: 0;

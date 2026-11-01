@@ -18,6 +18,14 @@ export async function ambilPesananToko() {
   return daftar.map(normalisasiPesananToko);
 }
 
+export async function ubahStatusPembayaranPesanan(id, statusPembayaran) {
+  return permintaanKelolaToko(`/api/toko/pesanan/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status_pembayaran: statusPembayaran }),
+  });
+}
+
 export function gambarProduk(produk) {
   const gambar = produk.image ?? produk.gambar;
   if (Array.isArray(gambar)) return gambar[0] ?? "";

@@ -9,6 +9,7 @@ import {
   gambarProduk,
   normalisasiPesananToko,
   permintaanKelolaToko,
+  ubahStatusPembayaranPesanan,
 } from "@/lib/kelolaTokoClient";
 
 export default function PesananPerProduk({ id }) {
@@ -106,6 +107,37 @@ export default function PesananPerProduk({ id }) {
     }
   }
 
+  async function ubahPembayaranPesanan(item) {
+    const statusPembayaran =
+      item.status_pembayaran === "sudah_dibayar"
+        ? "belum_dibayar"
+        : "sudah_dibayar";
+    setIdMemproses(item.id);
+    try {
+      const diperbarui = await ubahStatusPembayaranPesanan(
+        item.id,
+        statusPembayaran,
+      );
+      setPesanan((daftar) =>
+        daftar.map((pesananTersimpan) =>
+          String(pesananTersimpan.id) === String(item.id)
+            ? {
+                ...pesananTersimpan,
+                status_pembayaran: diperbarui.status_pembayaran,
+              }
+            : pesananTersimpan,
+        ),
+      );
+      setError("");
+      return true;
+    } catch (galat) {
+      setError(galat.message);
+      return false;
+    } finally {
+      setIdMemproses(null);
+    }
+  }
+
   const pesananProduk = pesanan.flatMap((order) => {
     const itemTampil = (order.item ?? []).filter(
       (item) => String(item.id_produk) === String(id),
@@ -164,6 +196,7 @@ export default function PesananPerProduk({ id }) {
               onSelesaikan={
                 order.status === "diproses" ? selesaikanPesanan : undefined
               }
+              onUbahPembayaran={ubahPembayaranPesanan}
               sedangMenerima={String(idMemproses) === String(order.id)}
             />
           ))}

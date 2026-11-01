@@ -14,7 +14,7 @@ export async function PATCH(request, { params }) {
     // Verify ownership and current status
     const { data: order, error: checkError } = await supabaseServer
       .from('orders')
-      .select('id, status, id_toko')
+      .select('id, status, status_pembayaran, items, id_toko')
       .eq('id', id)
       .single();
 
@@ -26,7 +26,63 @@ export async function PATCH(request, { params }) {
       return Response.json({ error: "Pesanan tidak ditemukan." }, { status: 404 });
     }
 
-    const { status } = await dataJson(request);
+    const body = await dataJson(request);
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return Response.json(
+        { error: "Isi permintaan harus berupa objek JSON." },
+        { status: 400 },
+      );
+    }
+
+    if (Object.hasOwn(body, "status_pembayaran")) {
+      const statusPembayaran = body.status_pembayaran;
+      if (
+        !["belum_dibayar", "sudah_dibayar"].includes(statusPembayaran) ||
+        Object.hasOwn(body, "status")
+      ) {
+        return Response.json(
+          { error: "Status pembayaran tidak valid." },
+          { status: 400 },
+        );
+      }
+
+      const jumlahProduk = Array.isArray(order.items)
+        ? order.items.reduce(
+            (total, item) => total + (Number(item.jumlah) || 0),
+            0,
+          )
+        : 0;
+      if (jumlahProduk <= 3) {
+        return Response.json(
+          {
+            error:
+              "Status pembayaran hanya tersedia untuk pesanan lebih dari 3 produk.",
+          },
+          { status: 400 },
+        );
+      }
+
+      const { data: updated, error: updateError } = await supabaseServer
+        .from("orders")
+        .update({ status_pembayaran: statusPembayaran })
+        .eq("id", id)
+        .eq("status_pembayaran", order.status_pembayaran)
+        .select(
+          "id, id_pesanan, kode_klaim, id_toko, total, status, status_pembayaran, nama_penerima, nomor_pemesan, created_at, updated_at, items",
+        )
+        .maybeSingle();
+
+      if (updateError) throw updateError;
+      if (!updated) {
+        return Response.json(
+          { error: "Status pembayaran berubah. Muat ulang lalu coba lagi." },
+          { status: 409 },
+        );
+      }
+      return Response.json(updated);
+    }
+
+    const { status } = body;
     const transisiValid =
       (status === "diproses" && order.status === "menunggu_konfirmasi") ||
       (status === "selesai" && order.status === "diproses") ||
@@ -75,7 +131,7 @@ export async function PATCH(request, { params }) {
       const { data: updated, error: updateError } = await supabaseServer
         .from("orders")
         .select(
-          "id, id_pesanan, kode_klaim, id_toko, total, status, nama_penerima, nomor_pemesan, created_at, updated_at, items",
+          "id, id_pesanan, kode_klaim, id_toko, total, status, status_pembayaran, nama_penerima, nomor_pemesan, created_at, updated_at, items",
         )
         .eq("id", id)
         .single();
@@ -88,7 +144,7 @@ export async function PATCH(request, { params }) {
       .update({ status })
       .eq('id', id)
       .eq("status", order.status)
-      .select('id, id_pesanan, kode_klaim, id_toko, total, status, nama_penerima, nomor_pemesan, created_at, updated_at, items')
+      .select('id, id_pesanan, kode_klaim, id_toko, total, status, status_pembayaran, nama_penerima, nomor_pemesan, created_at, updated_at, items')
       .maybeSingle();
 
     if (updateError) throw updateError;

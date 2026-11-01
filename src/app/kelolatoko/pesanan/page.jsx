@@ -11,6 +11,7 @@ import {
   ambilPesananToko,
   permintaanKelolaToko,
   pesanGalat,
+  ubahStatusPembayaranPesanan,
 } from "@/lib/kelolaTokoClient";
 
 export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
@@ -110,6 +111,37 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
     }
   }
 
+  async function ubahPembayaranPesanan(item) {
+    const statusPembayaran =
+      item.status_pembayaran === "sudah_dibayar"
+        ? "belum_dibayar"
+        : "sudah_dibayar";
+    setIdMemproses(item.id);
+    try {
+      const diperbarui = await ubahStatusPembayaranPesanan(
+        item.id,
+        statusPembayaran,
+      );
+      setPesanan((daftar) =>
+        daftar.map((pesananTersimpan) =>
+          String(pesananTersimpan.id) === String(item.id)
+            ? {
+                ...pesananTersimpan,
+                status_pembayaran: diperbarui.status_pembayaran,
+              }
+            : pesananTersimpan,
+        ),
+      );
+      setError("");
+      return true;
+    } catch (galat) {
+      setError(pesanGalat(galat));
+      return false;
+    } finally {
+      setIdMemproses(null);
+    }
+  }
+
   const ditampilkan = pesanan.filter((item) =>
     statusHalaman === "permintaan"
       ? item.status === "menunggu_konfirmasi"
@@ -190,6 +222,7 @@ export default function PesananTokoPage({ statusHalaman = "permintaan" }) {
                         ? selesaikanPesanan
                         : undefined
                     }
+                    onUbahPembayaran={ubahPembayaranPesanan}
                     sedangMenerima={String(idMemproses) === String(item.id)}
                   />
                 ))}
