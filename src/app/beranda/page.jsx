@@ -23,6 +23,11 @@ import { useAuthContext } from "@/Context/AuthContext";
 import HeaderToko from "@/components/HeaderToko/HeaderToko";
 import FilterBar from "@/components/FilterBar/FilterBar";
 import KartuProduk from "@/components/KartuProduk/KartuProduk";
+import {
+  SkeletonGridProduk,
+  SkeletonKartuToko,
+  StatusMemuat,
+} from "@/components/SkeletonBeranda/SkeletonBeranda";
 
 // utils
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
@@ -75,7 +80,7 @@ function Beranda() {
     setKueriBeranda,
   } = useGlobalContext();
   const { daftarProduk, loading, error } = useProdukContext();
-  const { daftarToko, errorToko } = useAuthContext();
+  const { daftarToko, errorToko, memuatToko } = useAuthContext();
   const [pencarianTerbuka, setPencarianTerbuka] = useState(false);
   const [urutan, setUrutan] = useState("terbaru");
   const [jedaSliderToko, setJedaSliderToko] = useState(false);
@@ -246,7 +251,8 @@ function Beranda() {
   }, [geserToko, jedaSliderToko, jumlahHalamanToko]);
 
   const filterAktif = filterBeranda !== "All" && filterBeranda !== "Semua";
-  const tampilkanToko = tokoTampil.length > 0;
+  const adaToko = tokoTampil.length > 0;
+  const tampilkanToko = memuatToko || adaToko;
   const tampilkanProduk = !loading && !error && produkTampil.length > 0;
 
   useEffect(() => {
@@ -315,7 +321,7 @@ function Beranda() {
 
   useEffect(() => {
     if (
-      !tampilkanToko ||
+      !adaToko ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
       !animasiRef.current
     ) {
@@ -337,7 +343,7 @@ function Beranda() {
     }, animasiRef);
 
     return () => konteks.revert();
-  }, [tampilkanToko]);
+  }, [adaToko]);
 
   return (
     <section className="beranda" ref={animasiRef}>
@@ -361,10 +367,10 @@ function Beranda() {
 
           <div className="beranda__hero-statistik">
             <span>
-              <strong>{daftarProduk.length}</strong> produk
+              <strong>{loading ? "…" : daftarProduk.length}</strong> produk
             </span>
             <span>
-              <strong>{daftarToko.length}</strong> toko
+              <strong>{memuatToko ? "…" : daftarToko.length}</strong> toko
             </span>
             <span>
               <strong>{KATEGORI_PRODUK.length}</strong> kategori
@@ -386,7 +392,7 @@ function Beranda() {
         </div>
 
         <div className="urutkan_filterBar">
-          <FilterBar hitungan={hitunganKategori} />
+          <FilterBar hitungan={loading ? undefined : hitunganKategori} />
           <label className="beranda__urutan">
             <span>Urutkan</span>
             <select
@@ -402,7 +408,12 @@ function Beranda() {
           </label>
         </div>
 
-        {loading && <p className="beranda__status">Memuat produk...</p>}
+        {loading && (
+          <>
+            <StatusMemuat>Memuat produk...</StatusMemuat>
+            <SkeletonGridProduk jumlah={8} />
+          </>
+        )}
 
         {error && (
           <p className="beranda__status beranda__status--galat" role="alert">
@@ -504,68 +515,75 @@ function Beranda() {
               }
             }}
           >
-            {tokoTampil.map((toko) => (
-              <Link
-                key={toko.id}
-                className="beranda__toko-kartu"
-                href={`/toko/${toko.id}`}
-                aria-label={`Kunjungi toko ${toko.namaToko}, ${toko.jumlahProduk} produk`}
-              >
-                <span
-                  className={`beranda__toko-banner${
-                    toko.banner ? "" : " beranda__toko-banner--bawaan"
-                  }`}
-                >
-                  <Image
-                    src={toko.banner || "/banner-store-default.png"}
-                    alt=""
-                    fill
-                    sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 264px"
-                    loading="lazy"
-                  />
-                  <span className="beranda__toko-jumlah">
-                    <FiShoppingBag aria-hidden="true" />
-                    {toko.jumlahProduk} produk
-                  </span>
-                </span>
-
-                <span className="beranda__toko-isi">
-                  <span className="beranda__toko-avatar" aria-hidden="true">
-                    {toko.fotoProfil ? (
+            {memuatToko
+              ? Array.from({ length: 4 }, (_, posisi) => (
+                  <SkeletonKartuToko key={posisi} />
+                ))
+              : tokoTampil.map((toko) => (
+                  <Link
+                    key={toko.id}
+                    className="beranda__toko-kartu"
+                    href={`/toko/${toko.id}`}
+                    aria-label={`Kunjungi toko ${toko.namaToko}, ${toko.jumlahProduk} produk`}
+                  >
+                    <span
+                      className={`beranda__toko-banner${
+                        toko.banner ? "" : " beranda__toko-banner--bawaan"
+                      }`}
+                    >
                       <Image
-                        src={toko.fotoProfil}
+                        src={toko.banner || "/banner-store-default.png"}
                         alt=""
-                        width={40}
-                        height={40}
+                        fill
+                        sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 264px"
                         loading="lazy"
                       />
-                    ) : (
-                      inisial(toko.namaToko)
-                    )}
-                  </span>
-                  <span className="beranda__toko-teks">
-                    <strong>{toko.namaToko}</strong>
-                    {toko.lokasi?.trim() && (
-                      <span className="beranda__toko-lokasi">
-                        <FiMapPin aria-hidden="true" />
-                        {toko.lokasi.trim()}
+                      <span className="beranda__toko-jumlah">
+                        <FiShoppingBag aria-hidden="true" />
+                        {toko.jumlahProduk} produk
                       </span>
-                    )}
-                  </span>
-                </span>
+                    </span>
 
-                <span className="beranda__toko-deskripsi">
-                  {toko.deskripsi?.trim() || "Jelajahi produk toko ini."}
-                </span>
+                    <span className="beranda__toko-isi">
+                      <span className="beranda__toko-avatar" aria-hidden="true">
+                        {toko.fotoProfil ? (
+                          <Image
+                            src={toko.fotoProfil}
+                            alt=""
+                            width={40}
+                            height={40}
+                            loading="lazy"
+                          />
+                        ) : (
+                          inisial(toko.namaToko)
+                        )}
+                      </span>
+                      <span className="beranda__toko-teks">
+                        <strong>{toko.namaToko}</strong>
+                        {toko.lokasi?.trim() && (
+                          <span className="beranda__toko-lokasi">
+                            <FiMapPin aria-hidden="true" />
+                            {toko.lokasi.trim()}
+                          </span>
+                        )}
+                      </span>
+                    </span>
 
-                <span className="beranda__toko-kaki">
-                  Kunjungi toko
-                  <FiArrowRight aria-hidden="true" />
-                </span>
-              </Link>
-            ))}
+                    <span className="beranda__toko-deskripsi">
+                      {toko.deskripsi?.trim() || "Jelajahi produk toko ini."}
+                    </span>
+
+                    <span className="beranda__toko-kaki">
+                      Kunjungi toko
+                      <FiArrowRight aria-hidden="true" />
+                    </span>
+                  </Link>
+                ))}
           </div>
-          {jumlahHalamanToko > 1 && (
+          {memuatToko && (
+            <StatusMemuat>Memuat daftar toko...</StatusMemuat>
+          )}
+          {!memuatToko && jumlahHalamanToko > 1 && (
             <nav className="beranda__toko-pagination" aria-label="Halaman toko">
               {Array.from({ length: jumlahHalamanToko }, (_, indeks) => (
                 <button
