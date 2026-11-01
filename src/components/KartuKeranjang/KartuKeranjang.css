@@ -119,6 +119,13 @@
   line-height: 1.3;
 }
 
+.kartu-keranjang__harga-varian {
+  margin-left: 2px;
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
 .kartu-keranjang__pengatur-jumlah {
   display: flex;
   align-items: center;

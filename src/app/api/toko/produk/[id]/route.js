@@ -3,6 +3,7 @@ import { bacaSesiToko } from "@/lib/server/tokoAuth";
 import { dataJson, responsGagal } from "@/lib/server/tokoApi";
 import {
   daftarTeks,
+  daftarUkuran,
   daftarUrlGambar,
   hargaValid,
   stokValid,
@@ -30,9 +31,6 @@ export async function PATCH(request, { params }) {
         max: 100,
       });
     }
-    if ("harga" in data) {
-      perubahan.harga = hargaValid(data.harga);
-    }
     if ("stok" in data) {
       perubahan.stok = stokValid(data.stok);
     }
@@ -52,12 +50,6 @@ export async function PATCH(request, { params }) {
         maksPanjang: 40,
       });
     }
-    if ("ukuran" in data) {
-      perubahan.ukuran = daftarTeks(data.ukuran, "Ukuran", {
-        maksItem: 10,
-        maksPanjang: 40,
-      });
-    }
 
     const image = data.image ?? data.gambar;
     if (image !== undefined) {
@@ -66,14 +58,10 @@ export async function PATCH(request, { params }) {
       perubahan.gambar_list = imageList;
     }
 
-    if (Object.keys(perubahan).length === 0) {
-      return Response.json({ error: "Tidak ada perubahan produk." }, { status: 400 });
-    }
-
     // Security Check: Ensure the product belongs to the logged-in store owner
     const { data: product, error: checkError } = await supabaseServer
       .from('products')
-      .select('id_toko')
+      .select('id_toko, harga')
       .eq('id', id)
       .single();
 
@@ -83,6 +71,27 @@ export async function PATCH(request, { params }) {
 
     if (String(product.id_toko) !== String(toko.id)) {
       return Response.json({ error: "Anda tidak memiliki izin untuk mengubah produk ini." }, { status: 403 });
+    }
+
+    if ("ukuran" in data) {
+      const ukuran = daftarUkuran(data.ukuran, "Ukuran", {
+        maksItem: 10,
+        maksPanjang: 40,
+        hargaDasar: "harga" in data ? data.harga : product.harga,
+      });
+
+      perubahan.ukuran = ukuran;
+      // Samakan harga produk dengan ukuran termurah, sama seperti POST.
+      perubahan.harga =
+        ukuran.length > 0
+          ? Math.min(...ukuran.map((item) => item.harga))
+          : hargaValid("harga" in data ? data.harga : product.harga);
+    } else if ("harga" in data) {
+      perubahan.harga = hargaValid(data.harga);
+    }
+
+    if (Object.keys(perubahan).length === 0) {
+      return Response.json({ error: "Tidak ada perubahan produk." }, { status: 400 });
     }
 
     const { data: updatedProduct, error: updateError } = await supabaseServer

@@ -6,6 +6,7 @@ import {
 } from "@/lib/server/tokoApi";
 import {
   daftarTeks,
+  daftarUkuran,
   daftarUrlGambar,
   hargaValid,
   stokValid,
@@ -62,7 +63,17 @@ export async function POST(request) {
 
     const data = await dataJson(request);
     const nama = teksWajib(data.nama, "Nama produk", { min: 1, max: 100 });
-    const harga = hargaValid(data.harga);
+    const ukuran = daftarUkuran(data.ukuran, "Ukuran", {
+      maksItem: 10,
+      maksPanjang: 40,
+      hargaDasar: data.harga,
+    });
+    // Harga produk mengikuti ukuran termurah agar kartu, urutan, dan fallback
+    // pesanan selalu konsisten dengan harga yang dipilih pembeli.
+    const harga =
+      ukuran.length > 0
+        ? Math.min(...ukuran.map((item) => item.harga))
+        : hargaValid(data.harga);
     const stok = stokValid(data.stok);
     const imageList = daftarUrlGambar(data.image, "Foto produk");
 
@@ -84,10 +95,7 @@ export async function POST(request) {
         maksItem: 10,
         maksPanjang: 40,
       }),
-      ukuran: daftarTeks(data.ukuran, "Ukuran", {
-        maksItem: 10,
-        maksPanjang: 40,
-      }),
+      ukuran,
     };
 
     const { data: result, error } = await supabaseServer

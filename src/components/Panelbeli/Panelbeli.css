@@ -164,6 +164,13 @@
   color: #000000;
 }
 
+.panel-beli__harga-satuan {
+  display: block;
+  margin-top: 2px;
+  color: #8a7070;
+  font-size: 0.72rem;
+}
+
 /* --- ukuran --- */
 .panel-beli__ukuran {
   display: flex;
@@ -173,10 +180,15 @@
 }
 
 .panel-beli__ukuran-pil {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
   min-height: 32px;
-  padding: 0 14px;
-  border: 1px solid transparent;
-  border-radius: 999px;
+  padding: 5px 12px;
+  border: 1px solid #eadada;
+  border-radius: 10px;
   background-color: #ffffff;
   color: #000000;
   font: inherit;
@@ -185,8 +197,23 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.panel-beli__ukuran-nama {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.panel-beli__ukuran-harga {
+  color: #8a7070;
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
 .panel-beli__ukuran-pil--aktif {
   border-color: var(--warna-merah-utama);
+  color: var(--warna-merah-utama);
+}
+
+.panel-beli__ukuran-pil--aktif .panel-beli__ukuran-harga {
   color: var(--warna-merah-utama);
 }
 

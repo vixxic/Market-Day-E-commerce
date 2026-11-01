@@ -121,6 +121,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+.kartu-produk__harga-mulai {
+  color: #8a7070;
+  font-size: 0.62em;
+  font-weight: 500;
+}
+
 .kartu-produk__aksi {
   grid-area: aksi;
   display: grid;

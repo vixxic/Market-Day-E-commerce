@@ -2,6 +2,11 @@
 
 import "./Panelbeli.css";
 import { useEffect, useId, useRef, useState } from "react";
+import { formatHarga } from "@/lib/formatHarga";
+import {
+  hargaUntukUkuran,
+  normalisasiUkuran,
+} from "@/lib/ukuranProduk";
 
 const KUNCI_TUNGGAL = "__produk__"; // dipakai kalau produk tidak punya "rasa"
 const JUMLAH_MAKS = 99;
@@ -66,9 +71,10 @@ export default function PanelBeli({
   // "rasa" di API ditampilkan sebagai "Jenis Produk"
   const jenisProduk = normalisasiPilihan(produk.rasa);
   const daftarJenis = jenisProduk.length > 0 ? jenisProduk : null;
-  const daftarUkuran = normalisasiPilihan(produk.ukuran);
+  const daftarUkuran = normalisasiUkuran(produk.ukuran, produk.harga);
+  const daftarNamaUkuran = daftarUkuran.map((item) => item.nama);
   const ukuranAwal =
-    daftarUkuran.length > 0 ? ambilUkuranAwal(daftarUkuran) : "";
+    daftarNamaUkuran.length > 0 ? ambilUkuranAwal(daftarNamaUkuran) : "";
   const daftarKunci = daftarJenis ?? [KUNCI_TUNGGAL];
   const stok = Number.isSafeInteger(Number(produk.stok))
     ? Math.max(0, Number(produk.stok))
@@ -183,7 +189,7 @@ export default function PanelBeli({
         idProduk: produk.id,
         id_toko: produk.id_toko,
         nama: produk.nama,
-        harga: produk.harga,
+        harga: hargaUntukUkuran(daftarUkuran, ukuran, produk.harga),
         gambar: Array.isArray(produk.image) 
           ? produk.image[0] 
           : (produk.gambar ?? produk.image ?? null),
@@ -281,32 +287,36 @@ export default function PanelBeli({
                       role="group"
                       aria-label={`Ukuran ${label}`}
                     >
-                      {daftarUkuran.map((u) => (
-                        <button
-                          key={u}
-                          type="button"
-                          aria-pressed={u in ukuranTerpilih}
-                          aria-disabled={
-                            daftarUkuran.length === 1 ||
-                            (!(u in ukuranTerpilih) &&
-                              jumlahPesanan(pesanan) >= stok)
-                          }
-                          disabled={
-                            daftarUkuran.length === 1 ||
-                            (!(u in ukuranTerpilih) &&
-                              jumlahPesanan(pesanan) >= stok)
-                          }
-                          className={
-                            "panel-beli__ukuran-pil" +
-                            (u in ukuranTerpilih
-                              ? " panel-beli__ukuran-pil--aktif"
-                              : "")
-                          }
-                          onClick={() => pilihUkuran(kunci, u)}
-                        >
-                          {u}
-                        </button>
-                      ))}
+                      {daftarUkuran.map((u) => {
+                        const dipilih = u.nama in ukuranTerpilih;
+                        const terkunci =
+                          daftarUkuran.length === 1 ||
+                          (!dipilih && jumlahPesanan(pesanan) >= stok);
+
+                        return (
+                          <button
+                            key={u.nama}
+                            type="button"
+                            aria-pressed={dipilih}
+                            aria-disabled={terkunci}
+                            disabled={terkunci}
+                            className={
+                              "panel-beli__ukuran-pil" +
+                              (dipilih
+                                ? " panel-beli__ukuran-pil--aktif"
+                                : "")
+                            }
+                            onClick={() => pilihUkuran(kunci, u.nama)}
+                          >
+                            <span className="panel-beli__ukuran-nama">
+                              {u.nama}
+                            </span>
+                            <span className="panel-beli__ukuran-harga">
+                              {formatHarga(u.harga)}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -315,6 +325,12 @@ export default function PanelBeli({
                   <div className="panel-beli__baris" key={ukuran}>
                     <span className="panel-beli__label">
                       {ukuran ? `Jumlah ukuran ${ukuran}:` : "Jumlah:"}
+                      <small className="panel-beli__harga-satuan">
+                        {formatHarga(
+                          hargaUntukUkuran(daftarUkuran, ukuran, produk.harga),
+                        )}{" "}
+                        / item
+                      </small>
                     </span>
                     <div className="panel-beli__jumlah">
                       <button

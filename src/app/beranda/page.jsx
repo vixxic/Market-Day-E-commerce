@@ -31,6 +31,7 @@ import {
 
 // utils
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
+import { normalisasiUkuran } from "@/lib/ukuranProduk";
 import Image from "next/image";
 
 const OPSI_URUTAN = [
@@ -143,7 +144,9 @@ function Beranda() {
           namaToko,
           ...kategoriProduk,
           ...(Array.isArray(produk.rasa) ? produk.rasa : []),
-          ...(Array.isArray(produk.ukuran) ? produk.ukuran : []),
+          ...normalisasiUkuran(produk.ukuran, produk.harga).map(
+            (item) => item.nama,
+          ),
         ]
           .filter((teks) => typeof teks === "string")
           .join(" ")
@@ -463,6 +466,7 @@ function Beranda() {
                   href={`/detailproduk/${produk.id}`}
                   nama={produk.nama}
                   harga={produk.harga}
+                  ukuran={produk.ukuran}
                   gambar={produk.gambar}
                   kategori={produk.kategori}
                   namaToko={toko?.namaToko}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useKeranjangContext } from "@/Context/KeranjangContext";
 import { usePesananContext } from "@/Context/PesananContext";
 import { useProdukContext } from "@/Context/ProdukContext";
+import { hargaBaris } from "@/lib/keranjang";
 
 // components
 import KartuKeranjang from "@/components/KartuKeranjang/KartuKeranjang";
@@ -36,7 +37,7 @@ export default function Keranjang() {
       idProduk: item.idProduk,
       id_toko: item.id_toko ?? produk?.id_toko,
       nama: item.nama,
-      harga: item.harga,
+      harga: hargaBaris(item, v),
       gambar: item.gambar,
       jenis: v.jenis,
       ukuran: v.ukuran,

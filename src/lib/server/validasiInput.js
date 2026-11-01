@@ -73,6 +73,87 @@ export function daftarTeks(
   return hasil;
 }
 
+/**
+ * Daftar ukuran produk. Menerima format baru { nama, harga } maupun format
+ * lama berupa teks (harga memakai hargaDasar). Mengembalikan bentuk baku
+ * [{ nama, harga }] tanpa duplikat.
+ */
+export function daftarUkuran(
+  nilai,
+  label,
+  { maksItem = 10, maksPanjang = 40, hargaDasar } = {},
+) {
+  if (nilai === null || nilai === undefined) return [];
+
+  if (!Array.isArray(nilai)) {
+    throw galatValidasi(`${label} harus berupa daftar.`);
+  }
+
+  if (nilai.length > maksItem) {
+    throw galatValidasi(`${label} maksimal ${maksItem} item.`);
+  }
+
+  let hargaCadangan = null;
+  let cadanganDihitung = false;
+  const ambilHargaCadangan = () => {
+    if (!cadanganDihitung) {
+      cadanganDihitung = true;
+      hargaCadangan =
+        hargaDasar === null || hargaDasar === undefined || hargaDasar === ""
+          ? null
+          : hargaValid(hargaDasar, "Harga produk");
+    }
+    return hargaCadangan;
+  };
+
+  const hasil = [];
+  const namaTerpakai = new Set();
+
+  for (const item of nilai) {
+    let nama = "";
+    let harga = null;
+
+    if (typeof item === "string") {
+      nama = item.trim();
+      harga = ambilHargaCadangan();
+    } else if (item && typeof item === "object" && !Array.isArray(item)) {
+      if (typeof item.nama !== "string") {
+        throw galatValidasi(`${label} hanya boleh berisi nama ukuran.`);
+      }
+
+      nama = item.nama.trim();
+      harga =
+        item.harga === null || item.harga === undefined || item.harga === ""
+          ? ambilHargaCadangan()
+          : hargaValid(item.harga, `Harga ukuran "${nama}"`);
+    } else {
+      throw galatValidasi(`${label} hanya boleh berisi nama ukuran.`);
+    }
+
+    if (!nama) continue;
+
+    if (nama.length > maksPanjang) {
+      throw galatValidasi(
+        `${label} maksimal ${maksPanjang} karakter per item.`,
+      );
+    }
+
+    const kunci = nama.toLocaleLowerCase("id");
+    if (namaTerpakai.has(kunci)) {
+      throw galatValidasi(`Ukuran "${nama}" ditulis lebih dari sekali.`);
+    }
+    namaTerpakai.add(kunci);
+
+    if (!harga) {
+      throw galatValidasi(`Harga ukuran "${nama}" wajib diisi.`);
+    }
+
+    hasil.push({ nama, harga });
+  }
+
+  return hasil;
+}
+
 export function hargaValid(nilai, label = "Harga") {
   const harga = Number(nilai);
   if (!Number.isFinite(harga) || harga <= 0 || harga > 100_000_000) {

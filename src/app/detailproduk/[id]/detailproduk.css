@@ -166,6 +166,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+.detail-produk__harga-mulai {
+  display: block;
+  margin-bottom: 2px;
+  color: #9a8080;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 /* --- kartu toko --- */
 .detail-produk__toko {
   display: flex;
@@ -317,6 +327,14 @@
   background: #fffafa;
   color: #5b3f3f;
   font-size: 0.76rem;
+}
+
+.detail-produk__varian-chip small {
+  display: block;
+  margin-top: 1px;
+  color: #9a8080;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- jaminan --- */

@@ -66,12 +66,23 @@ export function tambahKeKeranjang(pesanan) {
     }
 
     if (!item.id_toko && p.id_toko) item.id_toko = p.id_toko;
+
+    const harga = Number(p.harga);
+    const hargaVarian = Number.isFinite(harga) && harga > 0 ? harga : null;
     const sama = item.varian.find(
       (v) => v.jenis === p.jenis && v.ukuran === p.ukuran,
     );
-    if (sama) sama.jumlah += p.jumlah;
-    else
-      item.varian.push({ jenis: p.jenis, ukuran: p.ukuran, jumlah: p.jumlah });
+    if (sama) {
+      sama.jumlah += p.jumlah;
+      if (hargaVarian !== null) sama.harga = hargaVarian;
+    } else {
+      item.varian.push({
+        jenis: p.jenis,
+        ukuran: p.ukuran,
+        jumlah: p.jumlah,
+        harga: hargaVarian,
+      });
+    }
   }
 
   return simpan(keranjang);
@@ -113,12 +124,23 @@ export function kosongkanKeranjang() {
   return simpan([]);
 }
 
+/** Harga satu baris varian: harga ukuran, atau harga produk untuk data lama. */
+export function hargaBaris(item, varian) {
+  const hargaVarian = Number(varian?.harga);
+  if (Number.isFinite(hargaVarian) && hargaVarian > 0) return hargaVarian;
+
+  const hargaItem = Number(item?.harga);
+  return Number.isFinite(hargaItem) && hargaItem > 0 ? hargaItem : 0;
+}
+
 export function hitungTotal(keranjang = ambilKeranjang()) {
   return keranjang.reduce(
     (total, item) =>
       total +
-      item.harga *
-        item.varian.reduce((jumlah, varian) => jumlah + varian.jumlah, 0),
+      item.varian.reduce(
+        (jumlah, varian) => jumlah + hargaBaris(item, varian) * varian.jumlah,
+        0,
+      ),
     0,
   );
 }
