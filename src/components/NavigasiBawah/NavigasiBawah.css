@@ -75,7 +75,7 @@
   border-radius: 12px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 555px) {
   .navigasi-bawah {
     left: 0;
     right: 0;
