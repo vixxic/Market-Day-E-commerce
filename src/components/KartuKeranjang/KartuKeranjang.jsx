@@ -2,13 +2,14 @@
 
 import "./KartuKeranjang.css";
 import { formatHarga } from "@/lib/formatHarga";
-import { hargaBaris } from "@/lib/keranjang";
+import { hargaBaris, totalBaris } from "@/lib/keranjang";
+import { adaPromo, labelPromo } from "@/lib/promoProduk";
 
 /**
  * Satu produk di halaman keranjang.
  *
  * Props:
- * - item     : { idProduk, nama, harga, gambar, varian: [{ jenis, ukuran, jumlah }] }
+ * - item     : { idProduk, nama, harga, gambar, promo, varian: [{ jenis, ukuran, jumlah }] }
  * - onHapus       : dipanggil saat ikon tempat sampah ditekan
  * - onUbahJumlah  : dipanggil saat jumlah varian diubah
  * - onPesan       : dipanggil saat tombol Pesan ditekan
@@ -20,10 +21,10 @@ export default function KartuKeranjang({
   onPesan,
 }) {
   const totalJumlah = item.varian.reduce((jumlah, v) => jumlah + v.jumlah, 0);
-  const totalHarga = item.varian.reduce(
-    (total, v) => total + hargaBaris(item, v) * v.jumlah,
-    0,
-  );
+  const rincian = item.varian.map((v) => totalBaris(item, v));
+  const totalHarga = rincian.reduce((total, r) => total + r.subtotal, 0);
+  const totalHemat = rincian.reduce((total, r) => total + r.diskon, 0);
+  const labelPromoItem = adaPromo(item.promo) ? labelPromo(item.promo) : "";
 
   const shownImage = Array.isArray(item.gambar)
     ? item.gambar[0] ?? ""
@@ -63,8 +64,12 @@ export default function KartuKeranjang({
 
         <p className="kartu-keranjang__jumlah">Jumlah: {totalJumlah}</p>
 
+        {labelPromoItem && (
+          <p className="kartu-keranjang__promo">{labelPromoItem}</p>
+        )}
+
         <ul className="kartu-keranjang__label-daftar">
-          {item.varian.map((v) => (
+          {item.varian.map((v, i) => (
             <li
               className="kartu-keranjang__varian"
               key={`${v.jenis ?? ""}-${v.ukuran}`}
@@ -77,12 +82,27 @@ export default function KartuKeranjang({
                   {formatHarga(hargaBaris(item, v))}
                 </small>
               </span>
+              {rincian[i].diskon > 0 && (
+                <span className="kartu-keranjang__hemat">
+                  Hemat {formatHarga(rincian[i].diskon)}
+                  {rincian[i].gratis > 0
+                    ? ` · ${rincian[i].gratis} gratis`
+                    : ""}
+                </span>
+              )}
             </li>
           ))}
         </ul>
 
         <div className="kartu-keranjang__bawah">
-          <p className="kartu-keranjang__harga">{formatHarga(totalHarga)}</p>
+          <p className="kartu-keranjang__harga">
+            {formatHarga(totalHarga)}
+            {totalHemat > 0 && (
+              <small className="kartu-keranjang__harga-hemat">
+                Hemat {formatHarga(totalHemat)}
+              </small>
+            )}
+          </p>
           <button
             type="button"
             className="kartu-keranjang__pesan"

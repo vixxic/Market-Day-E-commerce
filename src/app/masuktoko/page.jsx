@@ -1,20 +1,47 @@
 "use client";
 
 import "./masuktoko.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/Context/AuthContext";
 import DashboardToko from "@/components/KelolaToko/DashboardToko";
 import NavigasiBawah from "@/components/NavigasiBawah/NavigasiBawah";
 import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 
+/**
+ * Tujuan setelah login dari parameter ?next=. Hanya menerima jalur internal
+ * ("/..." tanpa "//") supaya tidak bisa dipakai mengarahkan ke situs lain.
+ */
+function tujuanSetelahMasuk() {
+  if (typeof window === "undefined") return "";
+
+  let next = "";
+  try {
+    next = new URLSearchParams(window.location.search).get("next") ?? "";
+  } catch {
+    return "";
+  }
+
+  if (!next.startsWith("/") || next.startsWith("//")) return "";
+  return next;
+}
+
 export default function MasukToko() {
+  const router = useRouter();
   const [namaToko, setNamaToko] = useState("");
   const [password, setPassword] = useState("");
   const [galat, setGalat] = useState({});
   const [sedangMasuk, setSedangMasuk] = useState(false);
   const { masuk: autentikasiMasuk, toko, memuatSesi } = useAuthContext();
   const notifikasi = useNotifikasi();
+
+  // Sesi sudah ada (mis. halaman ini dibuka ulang): langsung ke tujuan.
+  useEffect(() => {
+    if (!toko) return;
+    const next = tujuanSetelahMasuk();
+    if (next) router.replace(next);
+  }, [toko, router]);
 
   async function masuk(e) {
     e.preventDefault();
@@ -28,6 +55,8 @@ export default function MasukToko() {
     setSedangMasuk(true);
     try {
       await autentikasiMasuk(namaToko.trim(), password);
+      const next = tujuanSetelahMasuk();
+      if (next) router.replace(next);
     } catch (error) {
       setPassword("");
       notifikasi.galat(error.message, { judul: "Gagal masuk" });

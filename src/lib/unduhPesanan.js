@@ -3,11 +3,17 @@
 // supaya pembeli punya bukti pesanan yang bisa disimpan atau dibagikan.
 
 import { formatHarga } from "@/lib/formatHarga";
+import { gambarQr, matriksQr } from "@/lib/qrKanvas";
 
 const LEBAR = 820;
 const SKALA = 2;
 const PAD = 44;
 const TINGGI_HEADER = 128;
+
+// Kartu QR di bawah total: tinggi tetap supaya perhitungan tinggi gambar
+// tidak perlu menebak isi teksnya.
+const TINGGI_QR = 156;
+const UKURAN_QR = 112;
 
 const WARNA = {
   maroon: "#832828",
@@ -158,6 +164,22 @@ function potongSatuBaris(ctx, teks, maks) {
 
 /* ---------- isi gambar ---------- */
 
+/**
+ * Alamat halaman detail pesanan di dashboard toko. QR hanya bisa dipindai
+ * bila alamatnya absolut, jadi memakai origin halaman saat ini.
+ */
+function alamatPesanan(pesanan) {
+  const id = pesanan?.idPesanan ?? pesanan?.id_pesanan ?? "";
+  if (!id) return "";
+
+  const asal =
+    (typeof window !== "undefined" && window.location?.origin) ||
+    (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  if (!asal) return "";
+
+  return `${asal.replace(/\/+$/, "")}/kelolatoko/pesanan/${encodeURIComponent(id)}`;
+}
+
 function susunIsi(pesanan, ctx) {
   const maksNama = LEBAR - PAD * 2 - 210;
 
@@ -171,14 +193,24 @@ function susunIsi(pesanan, ctx) {
         .join(" · ");
       const jumlah = Math.max(1, Math.round(angka(baris.jumlah) || 1));
       const harga = angka(baris.harga);
+      const penuh = harga * jumlah;
+      // Pesanan baru sudah menyimpan subtotal setelah promo; data lama belum.
+      const subtotalTersimpan = Number(baris.subtotal);
+      const subtotal =
+        Number.isFinite(subtotalTersimpan) && subtotalTersimpan >= 0
+          ? subtotalTersimpan
+          : penuh;
+      const diskon = Math.min(penuh, Math.max(0, angka(baris.diskon)));
 
       return {
         nama,
         varian,
         jumlah,
         harga,
-        subtotal: harga * jumlah,
-        tinggi: nama.length * 23 + (varian ? 20 : 0) + 20,
+        subtotal,
+        diskon,
+        tinggi:
+          nama.length * 23 + (varian ? 20 : 0) + 20 + (diskon > 0 ? 20 : 0),
       };
     },
   );
@@ -193,7 +225,19 @@ function susunIsi(pesanan, ctx) {
     LEBAR - PAD * 2 - 40,
   );
 
-  return { produk, total, catatan };
+  // Pastikan teksnya bisa dijadikan QR sebelum menghitung tinggi gambar.
+  const tautan = alamatPesanan(pesanan);
+  let qrTeks = "";
+  if (tautan) {
+    try {
+      matriksQr(tautan);
+      qrTeks = tautan;
+    } catch {
+      qrTeks = "";
+    }
+  }
+
+  return { produk, total, catatan, qrTeks };
 }
 
 function tinggiGambar(isi) {
@@ -205,11 +249,67 @@ function tinggiGambar(isi) {
 
   for (const item of isi.produk) tinggi += item.tinggi;
 
-  tinggi += 22 + 46 + 26; // garis putus, total, jarak footer
+  tinggi += 22 + 46; // garis putus + total
+  tinggi += isi.qrTeks ? 22 + TINGGI_QR + 24 : 26; // kartu QR (bila ada)
   tinggi += isi.catatan.length * 20; // catatan
   tinggi += 22 + 18 + 36; // merek + waktu unduh + padding bawah
 
   return Math.ceil(tinggi);
+}
+
+/* ---------- kartu QR ---------- */
+
+function gambarKartuQr(ctx, teks, y) {
+  const kanan = LEBAR - PAD;
+  const kiri = PAD;
+  const lebar = kanan - kiri;
+
+  ctx.save();
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = WARNA.garis;
+  ctx.lineWidth = 1;
+  kotakBulat(ctx, kiri, y, lebar, TINGGI_QR, 18);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  // QR ditempatkan di kanan; teks menjelaskan gunanya di kiri.
+  const qrX = kanan - 24 - UKURAN_QR;
+  const qrY = y + (TINGGI_QR - UKURAN_QR) / 2;
+  gambarQr(ctx, teks, {
+    x: qrX,
+    y: qrY,
+    ukuran: UKURAN_QR,
+    tepi: 2,
+  });
+
+  const teksX = kiri + 24;
+  const maksTeks = qrX - teksX - 20;
+
+  tulisSpasi(ctx, "BUKA DI DASHBOARD TOKO", teksX, y + 42, {
+    huruf: font(700, 10.5),
+    warna: WARNA.maroon,
+    spasi: 1.6,
+  });
+
+  tulis(ctx, "Pindai QR untuk melihat pesanan", teksX, y + 70, {
+    huruf: font(700, 16),
+    warna: WARNA.maroonGelap,
+  });
+
+  ctx.font = font(500, 12);
+  const barisAlamat = potongTeks(ctx, teks, maksTeks).slice(0, 2);
+  barisAlamat.forEach((baris, i) => {
+    tulis(ctx, baris, teksX, y + 96 + i * 17, {
+      huruf: font(500, 12),
+      warna: WARNA.redup,
+    });
+  });
+
+  tulis(ctx, "Perlu login toko.", teksX, y + TINGGI_QR - 22, {
+    huruf: font(500, 11.5),
+    warna: WARNA.redupMuda,
+  });
 }
 
 function gambarIsi(ctx, pesanan, isi) {
@@ -340,6 +440,14 @@ function gambarIsi(ctx, pesanan, isi) {
       rata: "right",
     });
 
+    if (item.diskon > 0) {
+      tulis(ctx, `Hemat ${formatHarga(item.diskon)}`, kanan - 2, y + 58, {
+        huruf: font(600, 12),
+        warna: WARNA.merah,
+        rata: "right",
+      });
+    }
+
     let barisY = y + 17;
     for (const baris of item.nama) {
       tulis(ctx, baris, PAD, barisY, {
@@ -375,7 +483,16 @@ function gambarIsi(ctx, pesanan, isi) {
     rata: "right",
   });
 
-  y += 46 + 26;
+  y += 46;
+
+  /* --- kartu QR --- */
+  if (isi.qrTeks) {
+    y += 22;
+    gambarKartuQr(ctx, isi.qrTeks, y);
+    y += TINGGI_QR + 24;
+  } else {
+    y += 26;
+  }
 
   /* --- footer --- */
   garis(ctx, PAD, kanan, y, WARNA.garisTipis);

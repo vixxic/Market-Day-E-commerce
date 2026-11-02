@@ -7,6 +7,12 @@ import {
   hargaUntukUkuran,
   normalisasiUkuran,
 } from "@/lib/ukuranProduk";
+import {
+  adaPromo,
+  hitungPromo,
+  labelPromo,
+  normalisasiPromo,
+} from "@/lib/promoProduk";
 
 const KUNCI_TUNGGAL = "__produk__"; // dipakai kalau produk tidak punya "rasa"
 const JUMLAH_MAKS = 99;
@@ -79,6 +85,8 @@ export default function PanelBeli({
   const stok = Number.isSafeInteger(Number(produk.stok))
     ? Math.max(0, Number(produk.stok))
     : 0;
+  const promo = normalisasiPromo(produk.promo);
+  const promoAktif = adaPromo(promo);
 
   // pesanan = { [jenis]: { [ukuran]: jumlah } }
   // Tanpa variasi jenis, opsi produk langsung siap dipesan.
@@ -196,6 +204,7 @@ export default function PanelBeli({
         jenis: daftarJenis ? kunci : null,
         ukuran,
         jumlah,
+        promo: promo ?? null,
       })),
     );
   }
@@ -279,6 +288,10 @@ export default function PanelBeli({
                   {daftarJenis ? `Jenis Produk: ${label}` : label}
                 </p>
 
+                {promoAktif && (
+                  <p className="panel-beli__promo">{labelPromo(promo)}</p>
+                )}
+
                 {daftarUkuran.length > 0 && (
                   <div className="panel-beli__baris">
                     <span className="panel-beli__label">Pilih ukuran:</span>
@@ -321,44 +334,69 @@ export default function PanelBeli({
                   </div>
                 )}
 
-                {Object.entries(ukuranTerpilih).map(([ukuran, jumlah]) => (
-                  <div className="panel-beli__baris" key={ukuran}>
-                    <span className="panel-beli__label">
-                      {ukuran ? `Jumlah ukuran ${ukuran}:` : "Jumlah:"}
-                      <small className="panel-beli__harga-satuan">
-                        {formatHarga(
-                          hargaUntukUkuran(daftarUkuran, ukuran, produk.harga),
-                        )}{" "}
-                        / item
-                      </small>
-                    </span>
-                    <div className="panel-beli__jumlah">
-                      <button
-                        type="button"
-                        className="panel-beli__tombol-jumlah"
-                        aria-label={`Kurangi jumlah ${label} ukuran ${ukuran}`}
-                        onClick={() => ubahJumlah(kunci, ukuran, -1)}
-                      >
-                        −
-                      </button>
-                      <output className="panel-beli__angka" aria-live="polite">
-                        {jumlah}
-                      </output>
-                      <button
-                        type="button"
-                        className="panel-beli__tombol-jumlah"
-                        aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
-                        disabled={
-                          jumlah >= JUMLAH_MAKS ||
-                          jumlahPesanan(pesanan) >= stok
-                        }
-                        onClick={() => ubahJumlah(kunci, ukuran, 1)}
-                      >
-                        +
-                      </button>
+                {Object.entries(ukuranTerpilih).map(([ukuran, jumlah]) => {
+                  const hargaSatuan = hargaUntukUkuran(
+                    daftarUkuran,
+                    ukuran,
+                    produk.harga,
+                  );
+                  const hitungan = hitungPromo(promo, hargaSatuan, jumlah);
+
+                  return (
+                    <div className="panel-beli__baris-grup" key={ukuran}>
+                      <div className="panel-beli__baris">
+                        <span className="panel-beli__label">
+                          {ukuran ? `Jumlah ukuran ${ukuran}:` : "Jumlah:"}
+                          <small className="panel-beli__harga-satuan">
+                            {formatHarga(hargaSatuan)} / item
+                          </small>
+                        </span>
+                        <div className="panel-beli__jumlah">
+                          <button
+                            type="button"
+                            className="panel-beli__tombol-jumlah"
+                            aria-label={`Kurangi jumlah ${label} ukuran ${ukuran}`}
+                            onClick={() => ubahJumlah(kunci, ukuran, -1)}
+                          >
+                            −
+                          </button>
+                          <output
+                            className="panel-beli__angka"
+                            aria-live="polite"
+                          >
+                            {jumlah}
+                          </output>
+                          <button
+                            type="button"
+                            className="panel-beli__tombol-jumlah"
+                            aria-label={`Tambah jumlah ${label} ukuran ${ukuran}`}
+                            disabled={
+                              jumlah >= JUMLAH_MAKS ||
+                              jumlahPesanan(pesanan) >= stok
+                            }
+                            onClick={() => ubahJumlah(kunci, ukuran, 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {hitungan.diskon > 0 && (
+                        <p className="panel-beli__baris-total">
+                          <span>
+                            Total {formatHarga(hitungan.subtotal)}
+                          </span>
+                          <span className="panel-beli__hemat">
+                            Hemat {formatHarga(hitungan.diskon)}
+                            {hitungan.gratis > 0
+                              ? ` (${hitungan.gratis} gratis)`
+                              : ""}
+                          </span>
+                        </p>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {Object.keys(ukuranTerpilih).length === 0 && (
                   <p className="panel-beli__petunjuk">

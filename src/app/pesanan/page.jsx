@@ -97,7 +97,14 @@ function KartuPesanan({ pesanan }) {
                   <p>Jenis Produk: {b.jenis || "-"}</p>
                   <p>Ukuran: {b.ukuran || "-"}</p>
                   <p>Jumlah: {b.jumlah}</p>
-                  <p>Subtotal: {formatHarga(b.harga * b.jumlah)}</p>
+                  <p>
+                    Subtotal:{" "}
+                    {formatHarga(
+                      Number.isFinite(Number(b.subtotal))
+                        ? Number(b.subtotal)
+                        : b.harga * b.jumlah,
+                    )}
+                  </p>
                 </div>
               ))}
             </div>

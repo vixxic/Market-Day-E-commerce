@@ -1,6 +1,56 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { bacaSesiToko } from "@/lib/server/tokoAuth";
 import { dataJson, responsGagal } from "@/lib/server/tokoApi";
+import { POLA_UUID } from "@/lib/server/validasiInput";
+
+const KOLOM_PESANAN =
+  "id, id_checkout, id_pesanan, kode_klaim, id_toko, total, dari_keranjang, status, status_pembayaran, nama_penerima, nomor_pemesan, created_at, updated_at, items";
+
+/**
+ * Detail satu pesanan milik toko yang sedang login.
+ *
+ * `id` boleh berupa uuid pesanan atau `id_pesanan` (mis. ORD-2026-...),
+ * karena tautan pada QR di gambar pesanan memakai id_pesanan yang juga
+ * dipegang pembeli.
+ */
+export async function GET(request, { params }) {
+  try {
+    const toko = await bacaSesiToko(request);
+    if (!toko) {
+      return Response.json({ error: "Login toko diperlukan." }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const kunci = String(id ?? "").trim();
+    if (!kunci) {
+      return Response.json(
+        { error: "Pesanan tidak ditemukan." },
+        { status: 404 },
+      );
+    }
+
+    const kolom = POLA_UUID.test(kunci) ? "id" : "id_pesanan";
+    const { data, error } = await supabaseServer
+      .from("orders")
+      .select(KOLOM_PESANAN)
+      .eq(kolom, kunci)
+      .eq("id_toko", toko.id)
+      .neq("status", "menunggu_otp")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
+      return Response.json(
+        { error: "Pesanan tidak ditemukan." },
+        { status: 404 },
+      );
+    }
+
+    return Response.json(data);
+  } catch (error) {
+    return responsGagal(error);
+  }
+}
 
 export async function PATCH(request, { params }) {
   try {

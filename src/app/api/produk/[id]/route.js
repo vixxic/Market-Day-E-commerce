@@ -2,8 +2,9 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { responsGagal } from "@/lib/server/tokoApi";
 import { POLA_UUID } from "@/lib/server/validasiInput";
 
-const KOLOM_PRODUK =
-  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+// Bintang dipakai supaya kolom baru (mis. promo) tetap ikut terkirim tanpa
+// membuat query gagal saat migration-nya belum diterapkan.
+const KOLOM_PRODUK = "*";
 
 export async function GET(_request, { params }) {
   const { id } = await params;

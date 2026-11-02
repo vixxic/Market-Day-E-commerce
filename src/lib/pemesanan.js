@@ -4,7 +4,8 @@
 //   idCheckout: "CHK-2026-K7M3Q",
 //   idPesanan: "ORD-2026-K7M3Q",
 //   kodeKlaim: "8KX-92M",
-//   item: [{ idProduk, nama, harga, gambar, jenis, ukuran, jumlah }],
+//   item: [{ idProduk, nama, harga, gambar, jenis, ukuran, jumlah,
+//            promo, diskon, subtotal }],
 //   total: 50000,
 //   dariKeranjang: true,
 //   status: "draft" | "menunggu_konfirmasi",
@@ -18,6 +19,7 @@ import {
   subscribeLocalStorage,
   writeLocalStorage,
 } from "@/lib/localStorageStore";
+import { hitungPromo, labelPromo, normalisasiPromo } from "@/lib/promoProduk";
 
 const KUNCI = "pemesanan-marketday";
 const KUNCI_DAFTAR = "pesanan-marketday";
@@ -79,16 +81,32 @@ function simpan(pemesanan) {
 /**
  * Membuat kode klaim dan id pesanan baru, lalu menyimpannya.
  *
- * baris         : array { idProduk, nama, harga, gambar, jenis, ukuran, jumlah }
+ * baris         : array { idProduk, nama, harga, gambar, jenis, ukuran, jumlah, promo }
  * dariKeranjang : true kalau produknya berasal dari halaman keranjang
  */
 export function siapkanPemesanan(baris, { dariKeranjang = false } = {}) {
-  const total = baris.reduce((jumlah, b) => jumlah + b.harga * b.jumlah, 0);
+  // Promo dihitung di sini supaya total yang dilihat pembeli sama dengan
+  // yang nanti disimpan server.
+  const item = baris.map((b) => {
+    const promo = normalisasiPromo(b.promo);
+    const hitungan = hitungPromo(promo, b.harga, b.jumlah);
+
+    return {
+      ...b,
+      promo: promo
+        ? { jenis: promo.jenis, label: labelPromo(promo) }
+        : null,
+      diskon: hitungan.diskon,
+      subtotal: hitungan.subtotal,
+    };
+  });
+
+  const total = item.reduce((jumlah, b) => jumlah + b.subtotal, 0);
 
   return simpan({
     idPesanan: buatIdPesanan(),
     kodeKlaim: buatKodeKlaim(),
-    item: baris,
+    item,
     total,
     dariKeranjang,
     status: "draft",

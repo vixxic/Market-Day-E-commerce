@@ -20,7 +20,17 @@ export default function KelolaLayout({
   const [errorKeluar, setErrorKeluar] = useState("");
 
   useEffect(() => {
-    if (!memuatSesi && !toko) router.replace("/masuktoko");
+    if (memuatSesi || toko) return;
+
+    // Simpan halaman yang dituju supaya setelah login pembeli/penjual
+    // kembali ke pesanan yang dipindai lewat QR.
+    const tujuan = `${window.location.pathname}${window.location.search}`;
+    if (tujuan.startsWith("/masuktoko")) {
+      router.replace("/masuktoko");
+      return;
+    }
+
+    router.replace(`/masuktoko?next=${encodeURIComponent(tujuan)}`);
   }, [memuatSesi, toko, router]);
 
   async function logout() {

@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "crypto";
+import { normalisasiPromo } from "@/lib/promoProduk";
 
 export const POLA_UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -152,6 +153,27 @@ export function daftarUkuran(
   }
 
   return hasil;
+}
+
+/**
+ * Promo produk. null, objek kosong, atau { aktif: false } berarti tanpa promo.
+ * Isian yang tidak dikenali ditolak agar penjual tidak menyimpan promo diam-diam.
+ */
+export function promoValid(nilai) {
+  if (nilai === null || nilai === undefined) return null;
+  if (typeof nilai !== "object" || Array.isArray(nilai)) {
+    throw galatValidasi("Promo harus berupa objek.");
+  }
+  if (Object.keys(nilai).length === 0 || nilai.aktif === false) return null;
+
+  const promo = normalisasiPromo(nilai);
+  if (!promo) {
+    throw galatValidasi(
+      "Promo tidak valid. Periksa jumlah beli/gratis atau nilai diskonnya.",
+    );
+  }
+
+  return promo;
 }
 
 export function hargaValid(nilai, label = "Harga") {

@@ -6,13 +6,16 @@ import {
   daftarUkuran,
   daftarUrlGambar,
   hargaValid,
+  promoValid,
   stokValid,
   teksOpsional,
   teksWajib,
 } from "@/lib/server/validasiInput";
+import { kolomBelumAda } from "@/lib/server/kolomTabel";
 
-const KOLOM_PRODUK =
-  "id, nama, harga, stok, gambar, gambar_list, id_toko, created_at, updated_at, deskripsi, kategori, rasa, ukuran";
+// Bintang dipakai supaya kolom baru (mis. promo) tetap ikut terkirim tanpa
+// membuat query gagal saat migration-nya belum diterapkan.
+const KOLOM_PRODUK = "*";
 
 export async function PATCH(request, { params }) {
   try {
@@ -90,16 +93,43 @@ export async function PATCH(request, { params }) {
       perubahan.harga = hargaValid(data.harga);
     }
 
+    if ("promo" in data) {
+      perubahan.promo = promoValid(data.promo);
+    }
+
     if (Object.keys(perubahan).length === 0) {
       return Response.json({ error: "Tidak ada perubahan produk." }, { status: 400 });
     }
 
-    const { data: updatedProduct, error: updateError } = await supabaseServer
+    let { data: updatedProduct, error: updateError } = await supabaseServer
       .from('products')
       .update(perubahan)
       .eq('id', id)
       .select(KOLOM_PRODUK)
       .single();
+
+    // Migration promo belum diterapkan: perubahan lain tetap disimpan.
+    if (updateError && kolomBelumAda(updateError) && "promo" in perubahan) {
+      if (perubahan.promo) {
+        return Response.json(
+          {
+            error:
+              "Fitur promo belum aktif di database. Terapkan migration 20261102140000_add_promo_to_products.sql di Supabase, lalu coba lagi.",
+          },
+          { status: 503 },
+        );
+      }
+
+      const tanpaPromo = { ...perubahan };
+      delete tanpaPromo.promo;
+
+      ({ data: updatedProduct, error: updateError } = await supabaseServer
+        .from('products')
+        .update(tanpaPromo)
+        .eq('id', id)
+        .select(KOLOM_PRODUK)
+        .single());
+    }
 
     if (updateError) throw updateError;
 

@@ -55,6 +55,9 @@ function normalisasiPesananApi(pesanan) {
         ukuran: varian.ukuran ?? "",
         jumlah: varian.jumlah ?? produk.jumlah ?? 1,
         gambar: produk.gambar ?? null,
+        subtotal: produk.subtotal,
+        diskon: produk.diskon ?? 0,
+        promo: produk.promo ?? null,
       },
     ];
   });
@@ -250,6 +253,10 @@ export function PesananProvider({ children }) {
 
       const dataLokal = {
         ...data,
+        // Server menghitung ulang harga & promo; pakai item dari server agar
+        // rincian yang ditampilkan sama dengan yang tersimpan.
+        item:
+          pesananServer.item.length > 0 ? pesananServer.item : data.item,
         idCheckout: tersimpanDiServer.id_checkout ?? data.idCheckout,
         idPesanan: pesananServer.idPesanan,
         kodeKlaim: pesananServer.kodeKlaim,

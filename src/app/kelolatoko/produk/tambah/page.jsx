@@ -8,10 +8,16 @@ import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import UnggahFoto, {
   PratinjauFoto,
 } from "@/components/KelolaToko/UnggahFoto";
+import FormPromo, {
+  PROMO_FORM_AWAL,
+  promoDariForm,
+} from "@/components/KelolaToko/FormPromo";
+import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProduk } from "@/lib/supabaseStorage";
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 import { validasiUkuranForm } from "@/lib/ukuranProduk";
+import { validasiPromoForm } from "@/lib/promoProduk";
 
 const FORMAT_FOTO = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const MAKS_FOTO = 5;
@@ -19,6 +25,7 @@ const UKURAN_MAKS = 10;
 
 export default function TambahProdukPage() {
   const router = useRouter();
+  const notifikasi = useNotifikasi();
   const [foto, setFoto] = useState([]);
   const [form, setForm] = useState({
     nama: "",
@@ -29,7 +36,7 @@ export default function TambahProdukPage() {
     rasa: "",
     ukuran: [],
   });
-  const [error, setError] = useState("");
+  const [promoForm, setPromoForm] = useState({ ...PROMO_FORM_AWAL });
   const [sedangMenyimpan, setSedangMenyimpan] = useState(false);
   const [tahapSimpan, setTahapSimpan] = useState("");
 
@@ -58,7 +65,9 @@ export default function TambahProdukPage() {
     );
 
     if (foto.length + fotoBaru.length > MAKS_FOTO) {
-      setError(`Produk hanya boleh memiliki maksimal ${MAKS_FOTO} foto.`);
+      notifikasi.galat(
+        `Produk hanya boleh memiliki maksimal ${MAKS_FOTO} foto.`,
+      );
       return;
     }
 
@@ -67,14 +76,13 @@ export default function TambahProdukPage() {
         !FORMAT_FOTO.includes(file.type) || file.size > 5 * 1024 * 1024,
     );
     if (fotoTidakValid) {
-      setError(
+      notifikasi.galat(
         "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 5 MB per foto.",
       );
       return;
     }
 
     setFoto((sebelumnya) => [...sebelumnya, ...fotoBaru]);
-    setError("");
   }
 
   function tambahUkuran() {
@@ -119,24 +127,30 @@ export default function TambahProdukPage() {
 
   async function submit(event) {
     event.preventDefault();
-    setError("");
     if (foto.length === 0) {
-      setError("Pilih minimal satu foto produk.");
+      notifikasi.galat("Pilih minimal satu foto produk.");
       return;
     }
     if (form.kategori.length === 0) {
-      setError("Pilih minimal satu kategori produk.");
+      notifikasi.galat("Pilih minimal satu kategori produk.");
       return;
     }
 
     if (form.ukuran.length > 0) {
       const galatUkuran = validasiUkuranForm(form.ukuran);
       if (galatUkuran) {
-        setError(galatUkuran);
+        notifikasi.galat(galatUkuran);
         return;
       }
     } else if (!(Number(form.harga) > 0)) {
-      setError("Harga produk wajib diisi.");
+      notifikasi.galat("Harga produk wajib diisi.");
+      return;
+    }
+
+    const promo = promoDariForm(promoForm);
+    const galatPromo = validasiPromoForm(promo);
+    if (galatPromo) {
+      notifikasi.galat(galatPromo, { judul: "Promo belum valid" });
       return;
     }
 
@@ -165,6 +179,7 @@ export default function TambahProdukPage() {
           .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
+        promo,
       };
 
       setTahapSimpan("Menyimpan produk...");
@@ -173,9 +188,10 @@ export default function TambahProdukPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      notifikasi.sukses("Produk berhasil ditambahkan.");
       router.replace("/kelolatoko");
     } catch (galat) {
-      setError(galat.message);
+      notifikasi.galat(galat.message, { judul: "Produk gagal disimpan" });
     } finally {
       setSedangMenyimpan(false);
       setTahapSimpan("");
@@ -195,11 +211,6 @@ export default function TambahProdukPage() {
           </Link>
           <h1 className="kelola-toko__bar-judul">Tambah Produk</h1>
         </header>
-        {error && (
-          <p className="kelola-toko__galat" role="alert">
-            {error}
-          </p>
-        )}
         <form className="kelola-toko__form" onSubmit={submit}>
           <label className="kelola-toko__bidang">
             Nama produk *
@@ -288,6 +299,12 @@ export default function TambahProdukPage() {
               + Tambah ukuran
             </button>
           </fieldset>
+
+          <FormPromo
+            data={promoForm}
+            onUbah={setPromoForm}
+            nonaktif={sedangMenyimpan}
+          />
 
           <label className="kelola-toko__bidang">
             Stok *

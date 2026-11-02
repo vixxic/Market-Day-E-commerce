@@ -8,12 +8,19 @@ import KelolaLayout from "@/components/KelolaToko/KelolaLayout";
 import UnggahFoto, {
   PratinjauFoto,
 } from "@/components/KelolaToko/UnggahFoto";
+import FormPromo, {
+  PROMO_FORM_AWAL,
+  promoDariForm,
+  promoKeForm,
+} from "@/components/KelolaToko/FormPromo";
+import { useNotifikasi } from "@/components/Notifikasi/Notifikasi";
 import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProduk } from "@/lib/supabaseStorage";
 import { ambilProdukById } from "@/lib/api/produkApi";
 import { Suspense } from "react";
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
 import { normalisasiUkuran, validasiUkuranForm } from "@/lib/ukuranProduk";
+import { validasiPromoForm } from "@/lib/promoProduk";
 
 const FORMAT_FOTO = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const MAKS_FOTO = 5;
@@ -30,6 +37,7 @@ function daftarGambarProduk(produk) {
 
 function EditProdukContent({ params }) {
   const router = useRouter();
+  const notifikasi = useNotifikasi();
   const [foto, setFoto] = useState([]);
   const [gambarTersimpan, setGambarTersimpan] = useState([]);
   const [form, setForm] = useState({
@@ -41,7 +49,7 @@ function EditProdukContent({ params }) {
     rasa: "",
     ukuran: [],
   });
-  const [error, setError] = useState("");
+  const [promoForm, setPromoForm] = useState({ ...PROMO_FORM_AWAL });
   const [sedangMenyimpan, setSedangMenyimpan] = useState(false);
   const [tahapSimpan, setTahapSimpan] = useState("");
   const [memuat, setMemuat] = useState(true);
@@ -53,7 +61,7 @@ function EditProdukContent({ params }) {
         const id = resolvedParams.id;
         const produk = await ambilProdukById(id);
         if (!produk) {
-          setError("Produk tidak ditemukan.");
+          notifikasi.galat("Produk tidak ditemukan.");
           return;
         }
 
@@ -69,15 +77,16 @@ function EditProdukContent({ params }) {
             harga: String(item.harga),
           })),
         });
+        setPromoForm(promoKeForm(produk.promo));
         setGambarTersimpan(daftarGambarProduk(produk));
       } catch (galat) {
-        setError("Gagal memuat data produk: " + galat.message);
+        notifikasi.galat(`Gagal memuat data produk: ${galat.message}`);
       } finally {
         setMemuat(false);
       }
     }
     muatProduk();
-  }, [params]);
+  }, [params, notifikasi]);
 
   function ubah(field, value) {
     setForm((data) => ({ ...data, [field]: value }));
@@ -97,7 +106,9 @@ function EditProdukContent({ params }) {
       gambarTersimpan.length + foto.length + fileTerpilih.length >
       MAKS_FOTO
     ) {
-      setError(`Produk hanya boleh memiliki maksimal ${MAKS_FOTO} foto.`);
+      notifikasi.galat(
+        `Produk hanya boleh memiliki maksimal ${MAKS_FOTO} foto.`,
+      );
       return;
     }
 
@@ -106,14 +117,13 @@ function EditProdukContent({ params }) {
         !FORMAT_FOTO.includes(file.type) || file.size > 5 * 1024 * 1024,
     );
     if (fotoTidakValid) {
-      setError(
+      notifikasi.galat(
         "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 5 MB per foto.",
       );
       return;
     }
 
     setFoto((sebelumnya) => [...sebelumnya, ...fileTerpilih]);
-    setError("");
   }
 
   function tambahUkuran() {
@@ -158,25 +168,31 @@ function EditProdukContent({ params }) {
 
   async function submit(event) {
     event.preventDefault();
-    setError("");
 
     if (form.kategori.length === 0) {
-      setError("Pilih minimal satu kategori produk.");
+      notifikasi.galat("Pilih minimal satu kategori produk.");
       return;
     }
     if (gambarTersimpan.length + foto.length === 0) {
-      setError("Pilih minimal satu foto produk.");
+      notifikasi.galat("Pilih minimal satu foto produk.");
       return;
     }
 
     if (form.ukuran.length > 0) {
       const galatUkuran = validasiUkuranForm(form.ukuran);
       if (galatUkuran) {
-        setError(galatUkuran);
+        notifikasi.galat(galatUkuran);
         return;
       }
     } else if (!(Number(form.harga) > 0)) {
-      setError("Harga produk wajib diisi.");
+      notifikasi.galat("Harga produk wajib diisi.");
+      return;
+    }
+
+    const promo = promoDariForm(promoForm);
+    const galatPromo = validasiPromoForm(promo);
+    if (galatPromo) {
+      notifikasi.galat(galatPromo, { judul: "Promo belum valid" });
       return;
     }
 
@@ -212,6 +228,7 @@ function EditProdukContent({ params }) {
           .split(",")
           .map((item) => item.trim())
           .filter(Boolean),
+        promo,
       };
 
       setTahapSimpan("Menyimpan perubahan...");
@@ -220,9 +237,10 @@ function EditProdukContent({ params }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      notifikasi.sukses("Perubahan produk disimpan.");
       router.replace("/kelolatoko");
     } catch (galat) {
-      setError(galat.message);
+      notifikasi.galat(galat.message, { judul: "Produk gagal disimpan" });
     } finally {
       setSedangMenyimpan(false);
       setTahapSimpan("");
@@ -246,11 +264,6 @@ function EditProdukContent({ params }) {
           </Link>
           <h1 className="kelola-toko__bar-judul">Edit Produk</h1>
         </header>
-        {error && (
-          <p className="kelola-toko__galat" role="alert">
-            {error}
-          </p>
-        )}
         <form className="kelola-toko__form" onSubmit={submit}>
           <label className="kelola-toko__bidang">
             Nama produk *
@@ -339,6 +352,12 @@ function EditProdukContent({ params }) {
               + Tambah ukuran
             </button>
           </fieldset>
+
+          <FormPromo
+            data={promoForm}
+            onUbah={setPromoForm}
+            nonaktif={sedangMenyimpan}
+          />
 
           <label className="kelola-toko__bidang">
             Stok *

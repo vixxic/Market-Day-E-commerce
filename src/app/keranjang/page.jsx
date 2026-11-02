@@ -42,6 +42,9 @@ export default function Keranjang() {
       jenis: v.jenis,
       ukuran: v.ukuran,
       jumlah: v.jumlah,
+      // Simpan promo terbaru: bila penjual mengubah promo, keranjang ikut
+      // memakai aturan baru (server tetap menghitung ulang saat pesanan dibuat).
+      promo: item.promo ?? produk?.promo ?? null,
     }));
     siapkanPemesanan(baris, { dariKeranjang: true });
     router.push("/pemesanan");

@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   FiArrowLeft,
   FiChevronRight,
+  FiGift,
   FiMapPin,
   FiShare2,
   FiShoppingBag,
@@ -24,6 +25,11 @@ import {
   hargaTerendah,
   normalisasiUkuran,
 } from "@/lib/ukuranProduk";
+import {
+  adaPromo,
+  keteranganPromo,
+  labelPromo,
+} from "@/lib/promoProduk";
 import { useAuthContext } from "@/Context/AuthContext";
 import { useKeranjangContext } from "@/Context/KeranjangContext";
 import { usePesananContext } from "@/Context/PesananContext";
@@ -312,6 +318,18 @@ function IsiDetailProduk() {
                   )}
                   {formatHarga(hargaMulai)}
                 </p>
+
+                {adaPromo(produk.promo) && (
+                  <div className="detail-produk__promo">
+                    <span className="detail-produk__promo-ikon">
+                      <FiGift aria-hidden="true" />
+                    </span>
+                    <span className="detail-produk__promo-teks">
+                      <strong>{labelPromo(produk.promo)}</strong>
+                      <small>{keteranganPromo(produk.promo)}</small>
+                    </span>
+                  </div>
+                )}
 
                 {toko && (
                   <Link

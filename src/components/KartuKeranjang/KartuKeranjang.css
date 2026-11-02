@@ -92,6 +92,21 @@
   color: #7d7d7d;
 }
 
+/* --- promo --- */
+.kartu-keranjang__promo {
+  margin: 0;
+  color: var(--warna-merah-utama);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.kartu-keranjang__hemat {
+  margin-left: 2px;
+  color: var(--warna-merah-utama);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 /* --- label varian --- */
 .kartu-keranjang__label-daftar {
   display: flex;
@@ -170,6 +185,14 @@
   font-size: clamp(0.875rem, 0.8rem + 0.35vw, 1.0625rem);
   color: var(--warna-merah-utama);
   font-variant-numeric: tabular-nums;
+}
+
+.kartu-keranjang__harga-hemat {
+  display: block;
+  margin-top: 1px;
+  color: #7d7d7d;
+  font-size: 0.72rem;
+  font-weight: 500;
 }
 
 .kartu-keranjang__pesan {

@@ -418,6 +418,7 @@ function IsiHalamanToko() {
                     nama={produk.nama}
                     harga={produk.harga}
                     ukuran={produk.ukuran}
+                    promo={produk.promo}
                     gambar={produk.gambar}
                     kategori={produk.kategori}
                   />

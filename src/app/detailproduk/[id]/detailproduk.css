@@ -176,6 +176,50 @@
   text-transform: uppercase;
 }
 
+/* --- banner promo --- */
+.detail-produk__promo {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 14px;
+  border: 1px dashed #e8b7b7;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff6f4 0%, #fffafa 100%);
+}
+
+.detail-produk__promo-ikon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--warna-merah-utama);
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.detail-produk__promo-teks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detail-produk__promo-teks strong {
+  color: var(--warna-merah-utama);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.detail-produk__promo-teks small {
+  color: #7d6161;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 /* --- kartu toko --- */
 .detail-produk__toko {
   display: flex;

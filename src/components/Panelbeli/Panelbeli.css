@@ -152,6 +152,39 @@
   color: #000000;
 }
 
+.panel-beli__promo {
+  margin: -4px 0 0;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background-color: #fff1ef;
+  color: var(--warna-merah-utama);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.panel-beli__baris-grup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel-beli__baris-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+  margin: 0;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-beli__hemat {
+  color: var(--warna-merah-utama);
+  font-weight: 700;
+}
+
 .panel-beli__baris {
   display: flex;
   align-items: center;

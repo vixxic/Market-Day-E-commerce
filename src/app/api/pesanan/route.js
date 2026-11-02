@@ -10,6 +10,11 @@ import {
 } from "@/lib/server/validasiInput";
 import { cariUkuran, normalisasiUkuran } from "@/lib/ukuranProduk";
 import {
+  hitungPromo,
+  labelPromo,
+  normalisasiPromo,
+} from "@/lib/promoProduk";
+import {
   buatIdCheckout,
   buatIdPesanan,
   buatKodeKlaim,
@@ -99,7 +104,9 @@ export async function POST(request) {
 
     const { data: produkTersedia, error: produkError } = await supabaseServer
       .from("products")
-      .select("id, id_toko, nama, harga, gambar, gambar_list, ukuran")
+      // Bintang dipakai agar kolom promo ikut tanpa gagal saat migration belum
+      // diterapkan; promo yang tidak ada dianggap "tanpa promo".
+      .select("*")
       .in("id", idProdukUnik);
 
     if (produkError) throw produkError;
@@ -151,13 +158,20 @@ export async function POST(request) {
           )
         : [];
 
+      // Promo dihitung ulang di server dari harga satuan yang sah, supaya
+      // total tidak bisa diakali dari sisi pembeli.
+      const promo = normalisasiPromo(produk.promo);
+      const hitungan = hitungPromo(promo, harga, item.jumlah);
+
       return {
         id_produk: String(produk.id),
         nama: produk.nama,
         harga,
         gambar: gambarList[0] ?? produk.gambar ?? null,
         jumlah: item.jumlah,
-        subtotal: harga * item.jumlah,
+        subtotal: hitungan.subtotal,
+        diskon: hitungan.diskon,
+        promo: promo ? { jenis: promo.jenis, label: labelPromo(promo) } : null,
         varian: {
           rasa: item.rasa,
           ukuran: item.ukuran,

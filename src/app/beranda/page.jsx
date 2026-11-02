@@ -467,6 +467,7 @@ function Beranda() {
                   nama={produk.nama}
                   harga={produk.harga}
                   ukuran={produk.ukuran}
+                  promo={produk.promo}
                   gambar={produk.gambar}
                   kategori={produk.kategori}
                   namaToko={toko?.namaToko}

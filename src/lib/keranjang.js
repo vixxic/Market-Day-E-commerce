@@ -3,6 +3,7 @@
 // Bentuk data satu produk di keranjang:
 // {
 //   idProduk: "1", nama: "Cookies", harga: 15000, gambar: "https://...",
+//   promo: { jenis: "beli_gratis", beli: 1, gratis: 1 } | null,
 //   varian: [
 //     { jenis: "Cokelat", ukuran: "Medium", jumlah: 2 },
 //     { jenis: "Matcha",  ukuran: "Large",  jumlah: 1 },
@@ -14,6 +15,7 @@ import {
   subscribeLocalStorage,
   writeLocalStorage,
 } from "@/lib/localStorageStore";
+import { hitungPromo } from "@/lib/promoProduk";
 
 const KUNCI = "keranjang-marketday";
 
@@ -60,12 +62,15 @@ export function tambahKeKeranjang(pesanan) {
         nama: p.nama,
         harga: p.harga,
         gambar: p.gambar ?? null,
+        promo: p.promo ?? null,
         varian: [],
       };
       keranjang.push(item);
     }
 
     if (!item.id_toko && p.id_toko) item.id_toko = p.id_toko;
+    // Promo bisa berubah di toko; selalu pakai promo terbaru dari PanelBeli.
+    item.promo = p.promo ?? null;
 
     const harga = Number(p.harga);
     const hargaVarian = Number.isFinite(harga) && harga > 0 ? harga : null;
@@ -133,12 +138,24 @@ export function hargaBaris(item, varian) {
   return Number.isFinite(hargaItem) && hargaItem > 0 ? hargaItem : 0;
 }
 
+/**
+ * Rincian satu baris varian setelah promo produk:
+ * { jumlah, dibayar, gratis, diskon, subtotal }
+ */
+export function totalBaris(item, varian) {
+  return hitungPromo(
+    item?.promo,
+    hargaBaris(item, varian),
+    varian?.jumlah ?? 0,
+  );
+}
+
 export function hitungTotal(keranjang = ambilKeranjang()) {
   return keranjang.reduce(
     (total, item) =>
       total +
       item.varian.reduce(
-        (jumlah, varian) => jumlah + hargaBaris(item, varian) * varian.jumlah,
+        (jumlah, varian) => jumlah + totalBaris(item, varian).subtotal,
         0,
       ),
     0,

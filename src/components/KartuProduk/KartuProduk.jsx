@@ -9,6 +9,7 @@ import {
   hargaTerendah,
   normalisasiUkuran,
 } from "@/lib/ukuranProduk";
+import { adaPromo, labelPromo } from "@/lib/promoProduk";
 
 function inisial(nama) {
   return String(nama ?? "Toko")
@@ -37,6 +38,7 @@ function kategoriPertama(kategori) {
  * Props:
  * - nama, harga, gambar, deskripsiGambar, kategori
  * - ukuran   : daftar ukuran berharga; dipakai untuk label "Mulai dari"
+ * - promo    : promo produk; ditampilkan sebagai label bila aktif
  * - href     : alamat halaman detail produk
  * - hrefToko : alamat halaman toko (opsional)
  * - namaToko, fotoToko
@@ -45,6 +47,7 @@ export default function KartuProduk({
   nama,
   harga,
   ukuran,
+  promo,
   gambar,
   namaToko,
   fotoToko,
@@ -60,6 +63,7 @@ export default function KartuProduk({
   const daftarUkuran = normalisasiUkuran(ukuran, harga);
   const hargaMulai = hargaTerendah(daftarUkuran, harga);
   const tampilkanMulai = hargaBeragam(daftarUkuran);
+  const labelPromoProduk = adaPromo(promo) ? labelPromo(promo) : "";
 
   return (
     <article className="kartu-produk">
@@ -83,6 +87,10 @@ export default function KartuProduk({
 
         {labelKategori && (
           <span className="kartu-produk__kategori">{labelKategori}</span>
+        )}
+
+        {labelPromoProduk && (
+          <span className="kartu-produk__promo">{labelPromoProduk}</span>
         )}
       </Tautan>
 
