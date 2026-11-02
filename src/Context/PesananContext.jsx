@@ -57,6 +57,7 @@ function normalisasiPesananApi(pesanan) {
         gambar: produk.gambar ?? null,
         subtotal: produk.subtotal,
         diskon: produk.diskon ?? 0,
+        gratis: produk.gratis ?? 0,
         promo: produk.promo ?? null,
       },
     ];

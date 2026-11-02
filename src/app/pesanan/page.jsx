@@ -96,7 +96,13 @@ function KartuPesanan({ pesanan }) {
                   </strong>
                   <p>Jenis Produk: {b.jenis || "-"}</p>
                   <p>Ukuran: {b.ukuran || "-"}</p>
-                  <p>Jumlah: {b.jumlah}</p>
+                  <p>
+                    Jumlah: {b.jumlah}
+                    {Number(b.gratis) > 0 ? ` (${b.gratis} gratis)` : ""}
+                  </p>
+                  {b.promo?.label && (
+                    <p>Promo: {b.promo.label}</p>
+                  )}
                   <p>
                     Subtotal:{" "}
                     {formatHarga(
@@ -105,6 +111,9 @@ function KartuPesanan({ pesanan }) {
                         : b.harga * b.jumlah,
                     )}
                   </p>
+                  {Number(b.diskon) > 0 && (
+                    <p>Hemat: {formatHarga(Number(b.diskon))}</p>
+                  )}
                 </div>
               ))}
             </div>

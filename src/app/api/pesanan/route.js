@@ -171,6 +171,7 @@ export async function POST(request) {
         jumlah: item.jumlah,
         subtotal: hitungan.subtotal,
         diskon: hitungan.diskon,
+        gratis: hitungan.gratis ?? 0,
         promo: promo ? { jenis: promo.jenis, label: labelPromo(promo) } : null,
         varian: {
           rasa: item.rasa,
