@@ -56,6 +56,9 @@ export async function ambilJsonAman(url, opsi) {
     try {
       data = await respons.json();
     } catch (galat) {
+      // Permintaan yang dibatalkan di tengah pembacaan body bukan kegagalan
+      // server; teruskan AbortError apa adanya supaya pemanggil bisa diam.
+      if (galat?.name === "AbortError") throw galat;
       if (respons.ok) throw galatRamah(PESAN_GALAT, galat);
     }
   }

@@ -22,6 +22,7 @@ import { useAuthContext } from "@/Context/AuthContext";
 import { useProdukContext } from "@/Context/ProdukContext";
 import { ambilTokoById } from "@/lib/api/tokoApi";
 import { KATEGORI_PRODUK } from "@/lib/kategoriProduk";
+import { normalisasiUkuran } from "@/lib/ukuranProduk";
 
 function daftarKategori(produk) {
   if (Array.isArray(produk.kategori)) return produk.kategori;
@@ -133,7 +134,9 @@ function IsiHalamanToko() {
           produk.deskripsi,
           ...daftarKategori(produk),
           ...(Array.isArray(produk.rasa) ? produk.rasa : []),
-          ...(Array.isArray(produk.ukuran) ? produk.ukuran : []),
+          ...normalisasiUkuran(produk.ukuran, produk.harga).map(
+            (item) => item.nama,
+          ),
         ]
           .filter((item) => typeof item === "string")
           .join(" ")
@@ -414,6 +417,7 @@ function IsiHalamanToko() {
                     href={`/detailproduk/${produk.id}`}
                     nama={produk.nama}
                     harga={produk.harga}
+                    ukuran={produk.ukuran}
                     gambar={produk.gambar}
                     kategori={produk.kategori}
                   />

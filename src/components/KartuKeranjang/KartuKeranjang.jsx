@@ -2,6 +2,7 @@
 
 import "./KartuKeranjang.css";
 import { formatHarga } from "@/lib/formatHarga";
+import { hargaBaris } from "@/lib/keranjang";
 
 /**
  * Satu produk di halaman keranjang.
@@ -19,7 +20,10 @@ export default function KartuKeranjang({
   onPesan,
 }) {
   const totalJumlah = item.varian.reduce((jumlah, v) => jumlah + v.jumlah, 0);
-  const totalHarga = item.harga * totalJumlah;
+  const totalHarga = item.varian.reduce(
+    (total, v) => total + hargaBaris(item, v) * v.jumlah,
+    0,
+  );
 
   const shownImage = Array.isArray(item.gambar)
     ? item.gambar[0] ?? ""
@@ -68,7 +72,10 @@ export default function KartuKeranjang({
               <span className="kartu-keranjang__label">
                 {[v.jenis, v.ukuran, v.jumlah]
                   .filter((bagian) => bagian !== null && bagian !== undefined)
-                  .join(", ")}
+                  .join(", ")}{" "}
+                <small className="kartu-keranjang__harga-varian">
+                  {formatHarga(hargaBaris(item, v))}
+                </small>
               </span>
             </li>
           ))}

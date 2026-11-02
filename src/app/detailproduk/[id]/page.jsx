@@ -19,6 +19,11 @@ import PanelBeli from "@/components/Panelbeli/Panelbeli";
 
 // utils
 import { formatHarga } from "@/lib/formatHarga";
+import {
+  hargaBeragam,
+  hargaTerendah,
+  normalisasiUkuran,
+} from "@/lib/ukuranProduk";
 import { useAuthContext } from "@/Context/AuthContext";
 import { useKeranjangContext } from "@/Context/KeranjangContext";
 import { usePesananContext } from "@/Context/PesananContext";
@@ -116,9 +121,13 @@ function IsiDetailProduk() {
     [produk],
   );
   const daftarUkuran = useMemo(
-    () => (produk ? normalisasiPilihan(produk.ukuran) : []),
+    () => (produk ? normalisasiUkuran(produk.ukuran, produk.harga) : []),
     [produk],
   );
+  const hargaMulai = produk
+    ? hargaTerendah(daftarUkuran, produk.harga)
+    : 0;
+  const hargaBerbeda = hargaBeragam(daftarUkuran);
 
   // Catat kunjungan sekali per sesi per produk untuk analitik toko.
   useEffect(() => {
@@ -296,7 +305,12 @@ function IsiDetailProduk() {
 
                 <h2 className="detail-produk__nama">{produk.nama}</h2>
                 <p className="detail-produk__harga">
-                  {formatHarga(produk.harga)}
+                  {hargaBerbeda && (
+                    <span className="detail-produk__harga-mulai">
+                      Mulai dari
+                    </span>
+                  )}
+                  {formatHarga(hargaMulai)}
                 </p>
 
                 {toko && (
@@ -359,9 +373,10 @@ function IsiDetailProduk() {
                           {daftarUkuran.map((item) => (
                             <span
                               className="detail-produk__varian-chip"
-                              key={`ukuran-${item}`}
+                              key={`ukuran-${item.nama}`}
                             >
-                              {item}
+                              {item.nama}
+                              <small>{formatHarga(item.harga)}</small>
                             </span>
                           ))}
                         </div>
@@ -390,7 +405,7 @@ function IsiDetailProduk() {
                 <div className="detail-produk__aksi">
                   <div className="detail-produk__aksi-harga">
                     <span>Harga</span>
-                    <strong>{formatHarga(produk.harga)}</strong>
+                    <strong>{formatHarga(hargaMulai)}</strong>
                   </div>
                   <button
                     type="button"

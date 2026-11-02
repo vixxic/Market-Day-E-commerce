@@ -1,0 +1,274 @@
+/* ===== Skeleton loader Beranda ===== */
+
+@keyframes skeleton-beranda-kilau {
+  from {
+    background-position: 130% 0;
+  }
+
+  to {
+    background-position: -30% 0;
+  }
+}
+
+.skeleton-beranda__blok {
+  display: block;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f6e8e7 25%, #fdf4f3 42%, #f6e8e7 60%);
+  background-size: 240% 100%;
+  animation: skeleton-beranda-kilau 1.5s ease-in-out infinite;
+}
+
+.skeleton-beranda__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------- kartu produk */
+
+.skeleton-produk {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 10px 16px;
+  border-radius: 26px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.skeleton-produk__gambar {
+  aspect-ratio: 1 / 1;
+  border-radius: 21px;
+}
+
+.skeleton-produk__info {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  grid-template-areas:
+    "utama aksi"
+    "toko toko";
+  align-items: center;
+  gap: 8px 10px;
+  min-width: 0;
+  padding: 6px 6px 0;
+}
+
+.skeleton-produk__utama {
+  grid-area: utama;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.skeleton-produk__nama {
+  width: 88%;
+  height: 14px;
+  border-radius: 5px;
+}
+
+.skeleton-produk__harga {
+  width: 54%;
+  height: 13px;
+  border-radius: 5px;
+}
+
+.skeleton-produk__aksi {
+  grid-area: aksi;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+.skeleton-produk__toko {
+  grid-area: toko;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.skeleton-produk__avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.skeleton-produk__toko-nama {
+  width: 46%;
+  height: 9px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------- kartu toko */
+
+.skeleton-toko {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 clamp(232px, 72vw, 264px);
+  min-width: 0;
+  padding-bottom: 12px;
+  border: 1px solid #f0e2e2;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  scroll-snap-align: start;
+  box-shadow: 0 6px 18px rgba(82, 16, 20, 0.06);
+}
+
+.skeleton-toko__banner {
+  height: 88px;
+  border-radius: 0;
+}
+
+.skeleton-toko__isi {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 11px 13px 0;
+}
+
+.skeleton-toko__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-toko__teks {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.skeleton-toko__nama {
+  width: 74%;
+  height: 11px;
+  border-radius: 5px;
+}
+
+.skeleton-toko__lokasi {
+  width: 48%;
+  height: 9px;
+  border-radius: 4px;
+}
+
+.skeleton-toko__deskripsi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 13px 10px;
+}
+
+.skeleton-toko__baris {
+  width: 100%;
+  height: 9px;
+  border-radius: 4px;
+}
+
+.skeleton-toko__kaki {
+  margin-top: auto;
+  padding: 11px 13px 0;
+  border-top: 1px solid #f6ecec;
+}
+
+.skeleton-toko__tautan {
+  width: 52%;
+  height: 11px;
+  border-radius: 5px;
+}
+
+/* -------------------------------------------------------- breakpoints */
+
+@media (max-width: 560px) {
+  .skeleton-produk {
+    gap: 8px;
+    padding: 8px 8px 12px;
+    border-radius: 20px;
+  }
+
+  .skeleton-produk__gambar {
+    border-radius: 15px;
+  }
+
+  .skeleton-produk__info {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 6px 5px;
+    padding: 3px 2px 0;
+  }
+
+  .skeleton-produk__nama {
+    height: 10px;
+  }
+
+  .skeleton-produk__harga {
+    height: 9px;
+  }
+
+  .skeleton-produk__aksi {
+    width: 38px;
+    height: 38px;
+  }
+
+  .skeleton-produk__toko {
+    gap: 5px;
+  }
+
+  .skeleton-produk__avatar {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .skeleton-produk__info {
+    grid-template-columns: minmax(0, 1fr) 34px;
+    gap: 6px 4px;
+  }
+
+  .skeleton-produk__aksi {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (min-width: 640px) {
+  .skeleton-toko {
+    flex-basis: calc((100% - 14px) / 2);
+  }
+
+  .skeleton-toko__banner {
+    height: 104px;
+  }
+}
+
+@media (min-width: 768px) {
+  .skeleton-toko {
+    flex-basis: calc((100% - 28px) / 3);
+  }
+}
+
+@media (min-width: 1100px) {
+  .skeleton-toko {
+    flex-basis: calc((100% - 42px) / 4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-beranda__blok {
+    animation: none;
+  }
+}

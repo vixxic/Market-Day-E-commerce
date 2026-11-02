@@ -8,6 +8,7 @@ import {
   teksOpsional,
   teksWajib,
 } from "@/lib/server/validasiInput";
+import { cariUkuran, normalisasiUkuran } from "@/lib/ukuranProduk";
 import {
   buatIdCheckout,
   buatIdPesanan,
@@ -98,7 +99,7 @@ export async function POST(request) {
 
     const { data: produkTersedia, error: produkError } = await supabaseServer
       .from("products")
-      .select("id, id_toko, nama, harga, gambar, gambar_list")
+      .select("id, id_toko, nama, harga, gambar, gambar_list, ukuran")
       .in("id", idProdukUnik);
 
     if (produkError) throw produkError;
@@ -129,7 +130,21 @@ export async function POST(request) {
         );
       }
 
-      const harga = hargaValid(produk.harga, "Harga produk");
+      const daftarUkuran = normalisasiUkuran(produk.ukuran, produk.harga);
+      let harga = hargaValid(produk.harga, "Harga produk");
+
+      if (daftarUkuran.length > 0) {
+        const ukuranDipilih = cariUkuran(daftarUkuran, item.ukuran);
+
+        if (!ukuranDipilih) {
+          throw galatValidasi(
+            `Pilih ukuran yang tersedia untuk ${produk.nama}.`,
+          );
+        }
+
+        harga = hargaValid(ukuranDipilih.harga, "Harga produk");
+      }
+
       const gambarList = Array.isArray(produk.gambar_list)
         ? produk.gambar_list.filter(
             (gambar) => typeof gambar === "string" && gambar.trim(),

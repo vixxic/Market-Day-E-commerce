@@ -4,6 +4,11 @@ import "./KartuProduk.css";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 import { formatHarga } from "@/lib/formatHarga";
+import {
+  hargaBeragam,
+  hargaTerendah,
+  normalisasiUkuran,
+} from "@/lib/ukuranProduk";
 
 function inisial(nama) {
   return String(nama ?? "Toko")
@@ -31,6 +36,7 @@ function kategoriPertama(kategori) {
 /**
  * Props:
  * - nama, harga, gambar, deskripsiGambar, kategori
+ * - ukuran   : daftar ukuran berharga; dipakai untuk label "Mulai dari"
  * - href     : alamat halaman detail produk
  * - hrefToko : alamat halaman toko (opsional)
  * - namaToko, fotoToko
@@ -38,6 +44,7 @@ function kategoriPertama(kategori) {
 export default function KartuProduk({
   nama,
   harga,
+  ukuran,
   gambar,
   namaToko,
   fotoToko,
@@ -50,6 +57,9 @@ export default function KartuProduk({
   const Tautan = href ? Link : "div";
   const propsTautan = href ? { href } : {};
   const labelKategori = kategoriPertama(kategori);
+  const daftarUkuran = normalisasiUkuran(ukuran, harga);
+  const hargaMulai = hargaTerendah(daftarUkuran, harga);
+  const tampilkanMulai = hargaBeragam(daftarUkuran);
 
   return (
     <article className="kartu-produk">
@@ -79,7 +89,12 @@ export default function KartuProduk({
       <div className="kartu-produk__info">
         <Tautan {...propsTautan} className="kartu-produk__tautan-utama">
           <h3 className="kartu-produk__nama">{nama}</h3>
-          <p className="kartu-produk__harga">{formatHarga(harga)}</p>
+          <p className="kartu-produk__harga">
+            {tampilkanMulai && (
+              <small className="kartu-produk__harga-mulai">Mulai dari </small>
+            )}
+            {formatHarga(hargaMulai)}
+          </p>
         </Tautan>
 
         {href && (
