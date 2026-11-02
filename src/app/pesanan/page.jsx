@@ -4,7 +4,6 @@ import "./pesanan.css";
 import { useId, useState } from "react";
 import Link from "next/link";
 import { usePesananContext } from "@/Context/PesananContext";
-import { useAuthContext } from "@/Context/AuthContext";
 import { formatHarga } from "@/lib/formatHarga";
 
 // components
@@ -127,8 +126,10 @@ function KartuPesanan({ pesanan }) {
 }
 
 export default function Page() {
-  const { daftarPesanan: daftar, loading, error } = usePesananContext();
-  const { toko } = useAuthContext();
+  const {
+    daftarPesananPembeli: daftar,
+    loadingPesananPembeli: loading,
+  } = usePesananContext();
   const siap = !loading;
 
   return (
@@ -138,11 +139,6 @@ export default function Page() {
       </header>
 
       <main className="pesanan__isi">
-        {error && (
-          <p className="pesanan__galat" role="alert">
-            Gagal memproses pesanan: {error}
-          </p>
-        )}
         {loading && <p className="pesanan__status">Memuat pesanan...</p>}
         {siap && daftar.length === 0 && (
           <div className="pesanan__kosong">

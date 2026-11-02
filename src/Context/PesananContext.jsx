@@ -155,15 +155,19 @@ export function PesananProvider({ children }) {
     () => parseDaftarPesananSnapshot(snapshotLokal),
     [snapshotLokal],
   );
+  const daftarPesananPembeli = useMemo(
+    () => daftarLokal.filter((pesanan) => !pesanan.id),
+    [daftarLokal],
+  );
 
   useEffect(() => {
-    if (idTokoAktif || daftarLokal.length === 0) return undefined;
+    if (idTokoAktif || daftarPesananPembeli.length === 0) return undefined;
 
     let aktif = true;
     let timer;
 
     async function sinkronkanStatus() {
-      const menunggu = daftarLokal.filter(
+      const menunggu = daftarPesananPembeli.filter(
         (pesanan) => pesanan.status === "menunggu_konfirmasi",
       );
 
@@ -205,7 +209,7 @@ export function PesananProvider({ children }) {
       aktif = false;
       window.clearTimeout(timer);
     };
-  }, [idTokoAktif, daftarLokal]);
+  }, [idTokoAktif, daftarPesananPembeli]);
 
   const pesananAktif = useMemo(
     () => parsePemesanan(snapshotPemesanan),
@@ -225,6 +229,7 @@ export function PesananProvider({ children }) {
     snapshotLokal === null ||
     snapshotPemesanan === null ||
     memuatPesananToko;
+  const loadingPesananPembeli = snapshotLokal === null;
 
   const siapkanPemesanan = useCallback((items, options) => {
     try {
@@ -331,8 +336,10 @@ export function PesananProvider({ children }) {
   const value = useMemo(
     () => ({
       daftarPesanan,
+      daftarPesananPembeli,
       pesananAktif,
       loading,
+      loadingPesananPembeli,
       error,
       buatPesanan,
       siapkanPemesanan,
@@ -343,8 +350,10 @@ export function PesananProvider({ children }) {
     }),
     [
       daftarPesanan,
+      daftarPesananPembeli,
       pesananAktif,
       loading,
+      loadingPesananPembeli,
       error,
       buatPesanan,
       siapkanPemesanan,
