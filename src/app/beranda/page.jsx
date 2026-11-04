@@ -359,7 +359,7 @@ function Beranda() {
 
       <header className="beranda__hero" id="cara-pesan">
         <div className="beranda__hero-isi">
-          <p className="beranda__eyebrow">Tribiz Fest · Sekolah</p>
+          <p className="beranda__eyebrow">Tribiz Fest · SMK Tri Ratna</p>
           <h2 className="beranda__hero-judul">
             Dukung toko teman, temukan jajanan favorit.
           </h2>
@@ -585,9 +585,7 @@ function Beranda() {
                   </Link>
                 ))}
           </div>
-          {memuatToko && (
-            <StatusMemuat>Memuat daftar toko...</StatusMemuat>
-          )}
+          {memuatToko && <StatusMemuat>Memuat daftar toko...</StatusMemuat>}
           {!memuatToko && jumlahHalamanToko > 1 && (
             <nav className="beranda__toko-pagination" aria-label="Halaman toko">
               {Array.from({ length: jumlahHalamanToko }, (_, indeks) => (

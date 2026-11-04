@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MdStorefront } from "react-icons/md";
 import { FiSearch, FiShoppingCart } from "react-icons/fi";
@@ -31,9 +32,14 @@ export default function NavigasiAtas() {
         <Link className="header-toko__merek" href="/" aria-label="Tribiz Fest">
           <span className="header-toko__merek-teks">
             <span className="header-toko__baris-judul">
-              <span className="header-toko__judul">Tribiz Fest</span>
+              <Image
+                className="header-toko__logo-tribiz"
+                src="/logo_tribiz-removebg-preview.png"
+                width={3009}
+                height={2481}
+                alt="Tribiz Fest"
+              />
             </span>
-            <span className="header-toko__subjudul">SMK Tri Ratna Jakarta</span>
           </span>
         </Link>
 

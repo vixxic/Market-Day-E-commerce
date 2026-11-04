@@ -93,6 +93,13 @@
   text-overflow: ellipsis;
 }
 
+.header-toko__logo-tribiz {
+  display: block;
+  width: 100px;
+  height: auto;
+  object-position: center;
+}
+
 .header-toko--mobile .header-toko__judul,
 .header-toko--mobile .header-toko__tombol--cari,
 .header-toko--mobile .header-toko__tombol--toko {
@@ -291,6 +298,11 @@
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--ht-putih);
+  }
+
+  .header-toko__logo-tribiz {
+    width: 100px;
+    height: auto;
   }
 
   .header-toko__subjudul {

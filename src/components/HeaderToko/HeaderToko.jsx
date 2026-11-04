@@ -2,6 +2,7 @@
 
 import "./HeaderToko.css";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 export default function HeaderToko({
   judul = "Tribiz Fest",
@@ -38,7 +39,15 @@ export default function HeaderToko({
       }`}
     >
       <div className="header-toko__isi">
-        <h1 className="header-toko__judul">{judul}</h1>
+        <h1 className="header-toko__judul">
+          <Image
+            className="header-toko__logo-tribiz"
+            src="/logo_tribiz-removebg-preview.png"
+            width={3009}
+            height={2481}
+            alt={judul}
+          />
+        </h1>
 
         <div className="header-toko__aksi">
           {pencarianTerbuka && (
