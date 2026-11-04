@@ -4,7 +4,7 @@ import "./HeaderToko.css";
 import { useEffect, useRef, useState } from "react";
 
 export default function HeaderToko({
-  judul = "Market Day",
+  judul = "Tribiz Fest",
   pencarianTerbuka = false,
   nilaiCari = "",
   onCariKlik,

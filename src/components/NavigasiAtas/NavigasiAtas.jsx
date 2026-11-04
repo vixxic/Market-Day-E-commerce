@@ -28,14 +28,12 @@ export default function NavigasiAtas() {
     <header className="header-toko header-toko--desktop">
       <div className="header-toko__pita" aria-hidden="true" />
       <div className="header-toko__isi">
-        <Link className="header-toko__merek" href="/" aria-label="Market Day">
+        <Link className="header-toko__merek" href="/" aria-label="Tribiz Fest">
           <span className="header-toko__merek-teks">
             <span className="header-toko__baris-judul">
-              <span className="header-toko__judul">Market Day</span>
+              <span className="header-toko__judul">Tribiz Fest</span>
             </span>
-            <span className="header-toko__subjudul">
-              Sekolah Tri Ratna Jakarta
-            </span>
+            <span className="header-toko__subjudul">SMK Tri Ratna Jakarta</span>
           </span>
         </Link>
 

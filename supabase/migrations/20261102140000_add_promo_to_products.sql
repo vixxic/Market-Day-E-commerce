@@ -12,3 +12,4 @@ ALTER TABLE public.products
   ADD COLUMN IF NOT EXISTS promo jsonb;
 
 NOTIFY pgrst, 'reload schema';
+ 

@@ -30,7 +30,7 @@ export async function kirimWaFonnte(target, message) {
 export async function kirimOtpFonnte(target, code) {
   return kirimWaFonnte(
     target,
-    `Kode OTP Market Day: ${code}. Berlaku 5 menit. Jangan bagikan kode ini ke siapapun.`,
+    `Kode OTP Tribiz Fest: ${code}. Berlaku 5 menit. Jangan bagikan kode ini ke siapapun.`,
   );
 }
 

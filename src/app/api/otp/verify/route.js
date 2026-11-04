@@ -144,7 +144,7 @@ export async function POST(request) {
         if (!store?.whatsapp_number) return;
 
         const body =
-          `Pesanan Baru Market Day (OTP Terverifikasi)\n` +
+          `Pesanan Baru Tribiz Fest (OTP Terverifikasi)\n` +
           `ID Pesanan: ${order.id_pesanan}\n` +
           `Total: Rp ${order.total}\n` +
           `Pemesan: ${order.buyer_phone || order.nomor_pemesan || "-"}\n\n` +

@@ -96,22 +96,6 @@ export async function PATCH(request, { params }) {
         );
       }
 
-      const jumlahProduk = Array.isArray(order.items)
-        ? order.items.reduce(
-            (total, item) => total + (Number(item.jumlah) || 0),
-            0,
-          )
-        : 0;
-      if (jumlahProduk <= 3) {
-        return Response.json(
-          {
-            error:
-              "Status pembayaran hanya tersedia untuk pesanan lebih dari 3 produk.",
-          },
-          { status: 400 },
-        );
-      }
-
       const { data: updated, error: updateError } = await supabaseServer
         .from("orders")
         .update({ status_pembayaran: statusPembayaran })

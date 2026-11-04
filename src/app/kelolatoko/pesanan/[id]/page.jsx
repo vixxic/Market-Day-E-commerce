@@ -350,32 +350,22 @@ function IsiDetailPesananToko() {
                 <div>
                   <dt>Pembayaran</dt>
                   <dd>
-                    {totalJumlah > 3 ? (
-                      <button
-                        type="button"
-                        className={`kelola-toko__order-status-bayar kelola-toko__order-status-bayar--${statusPembayaran}`}
-                        disabled={memproses}
-                        onClick={ubahPembayaran}
-                        aria-label={`Ubah status pembayaran, saat ini ${
-                          statusPembayaran === "sudah_dibayar"
-                            ? "sudah dibayar"
-                            : "belum bayar"
-                        }`}
-                      >
-                        {statusPembayaran === "sudah_dibayar"
-                          ? "Sudah dibayar"
-                          : "Belum bayar"}
-                        <FiEdit2 aria-hidden="true" />
-                      </button>
-                    ) : (
-                      <span
-                        className={`kelola-toko__order-status-bayar kelola-toko__order-status-bayar--${statusPembayaran}`}
-                      >
-                        {statusPembayaran === "sudah_dibayar"
-                          ? "Sudah dibayar"
-                          : "Belum bayar"}
-                      </span>
-                    )}
+                    <button
+                      type="button"
+                      className={`kelola-toko__order-status-bayar kelola-toko__order-status-bayar--${statusPembayaran}`}
+                      disabled={memproses}
+                      onClick={ubahPembayaran}
+                      aria-label={`Ubah status pembayaran, saat ini ${
+                        statusPembayaran === "sudah_dibayar"
+                          ? "sudah dibayar"
+                          : "belum bayar"
+                      }`}
+                    >
+                      {statusPembayaran === "sudah_dibayar"
+                        ? "Sudah dibayar"
+                        : "Belum bayar"}
+                      <FiEdit2 aria-hidden="true" />
+                    </button>
                   </dd>
                 </div>
               </dl>

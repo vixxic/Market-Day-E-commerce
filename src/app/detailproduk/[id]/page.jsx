@@ -201,7 +201,7 @@ function IsiDetailProduk() {
       if (navigator.share) {
         await navigator.share({
           title: produk.nama,
-          text: `Lihat ${produk.nama} di Market Day`,
+          text: `Lihat ${produk.nama} di Tribiz Fest`,
           url,
         });
         return;

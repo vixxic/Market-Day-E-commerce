@@ -31,10 +31,10 @@ function urlSitus() {
 
 export const metadata = {
   metadataBase: urlSitus(),
-  title: "Market Day",
+  title: "Tribiz Fest",
   description:
-    "Market Day Sekolah Tri Ratna Jakarta: belanja jajanan dan produk siswa langsung dari toko sekolah.",
-  applicationName: "Market Day",
+    "Tribiz Fest Sekolah Tri Ratna Jakarta: belanja jajanan dan produk siswa langsung dari toko sekolah.",
+  applicationName: "Tribiz Fest",
   icons: {
     icon: [{ url: "/TR.png", type: "image/png", sizes: "512x512" }],
     shortcut: "/TR.png",
@@ -44,8 +44,8 @@ export const metadata = {
     type: "website",
     locale: "id_ID",
     url: "/",
-    siteName: "Market Day",
-    title: "Market Day",
+    siteName: "Tribiz Fest",
+    title: "Tribiz Fest",
     description:
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
     images: [
@@ -54,13 +54,13 @@ export const metadata = {
         type: "image/jpeg",
         width: 1200,
         height: 600,
-        alt: "Banner Market Day Sekolah Tri Ratna Jakarta",
+        alt: "Banner Tribiz Fest Sekolah Tri Ratna Jakarta",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Market Day",
+    title: "Tribiz Fest",
     description:
       "Belanja jajanan dan produk siswa Sekolah Tri Ratna Jakarta langsung dari toko sekolah.",
     images: ["/banner-market-day.jpg"],

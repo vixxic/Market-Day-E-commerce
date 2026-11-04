@@ -154,7 +154,7 @@ function IsiHalamanToko() {
 
   async function bagikan() {
     const url = window.location.href;
-    const judul = toko ? `Toko ${toko.namaToko}` : "Toko Market Day";
+    const judul = toko ? `Toko ${toko.namaToko}` : "Toko Tribiz Fest";
 
     try {
       if (navigator.share) {

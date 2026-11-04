@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
-const BATAS_UKURAN_FOTO = 5 * 1024 * 1024;
+const BATAS_UKURAN_FOTO = 4 * 1024 * 1024;
 const KUOTA_PENYIMPANAN_TOKO = 50 * 1024 * 1024;
 
 function galatDenganStatus(pesan, status) {
@@ -72,7 +72,7 @@ export async function validasiFoto(file, label = "foto") {
   }
 
   if (file.size > BATAS_UKURAN_FOTO) {
-    throw galatDenganStatus(`Ukuran ${label} maksimal 5 MB.`, 400);
+    throw galatDenganStatus(`Ukuran ${label} maksimal 4 MB.`, 400);
   }
 
   const format = await deteksiFormatFoto(file);

@@ -359,7 +359,7 @@ function Beranda() {
 
       <header className="beranda__hero" id="cara-pesan">
         <div className="beranda__hero-isi">
-          <p className="beranda__eyebrow">Market Day · Sekolah</p>
+          <p className="beranda__eyebrow">Tribiz Fest · Sekolah</p>
           <h2 className="beranda__hero-judul">
             Dukung toko teman, temukan jajanan favorit.
           </h2>
@@ -485,7 +485,7 @@ function Beranda() {
           <div className="beranda__bagian-heading">
             <div>
               <p className="beranda__eyebrow beranda__eyebrow--gelap">
-                Jelajahi Toko Market Day
+                Jelajahi Toko Tribiz Fest
               </p>
             </div>
           </div>
@@ -494,7 +494,7 @@ function Beranda() {
             ref={jalurTokoRef}
             className="beranda__toko-list"
             role="region"
-            aria-label="Daftar toko Market Day"
+            aria-label="Daftar toko Tribiz Fest"
             aria-roledescription="carousel"
             onScroll={(event) => {
               const posisiHalaman = posisiHalamanToko(event.currentTarget);

@@ -365,7 +365,6 @@
   margin: 8px 0;
 }
 
-.kelola-toko__order-tag,
 .kelola-toko__order-status-bayar {
   display: inline-flex;
   align-items: center;
@@ -377,11 +376,6 @@
   font-size: 0.72rem;
   font-weight: 600;
   line-height: 1.2;
-}
-
-.kelola-toko__order-tag {
-  background: #fff6f5;
-  color: var(--kelola-gelap);
 }
 
 .kelola-toko__order-status-bayar {

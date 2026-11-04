@@ -16,7 +16,7 @@ import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProfil } from "@/lib/supabaseStorage";
 
 const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-const BATAS_FOTO = 5 * 1024 * 1024;
+const BATAS_FOTO = 4 * 1024 * 1024;
 
 function inisial(nama) {
   return String(nama ?? "Toko")
@@ -89,7 +89,7 @@ export default function ProfilToko() {
 
     if (!FORMAT_FOTO.includes(file.type) || file.size > BATAS_FOTO) {
       setError(
-        "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 5 MB.",
+        "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 4 MB.",
       );
       return;
     }
@@ -318,7 +318,7 @@ export default function ProfilToko() {
               </div>
 
               <p className="profil-toko__bantuan">
-                Foto dan banner maksimal 5 MB. Gunakan gambar JPG, PNG, WebP,
+                Foto dan banner maksimal 4 MB. Gunakan gambar JPG, PNG, WebP,
                 atau AVIF. Perubahan baru tampil di halaman toko setelah
                 disimpan.
               </p>

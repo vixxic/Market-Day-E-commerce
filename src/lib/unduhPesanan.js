@@ -320,7 +320,7 @@ function gambarIsi(ctx, pesanan, isi) {
   ctx.fillStyle = WARNA.maroon;
   ctx.fillRect(0, 0, LEBAR, TINGGI_HEADER);
 
-  tulis(ctx, "Market Day", PAD, 66, {
+  tulis(ctx, "Tribiz Fest", PAD, 66, {
     huruf: font(800, 30),
     warna: "#ffffff",
   });
@@ -508,7 +508,7 @@ function gambarIsi(ctx, pesanan, isi) {
   }
 
   y += 22;
-  tulis(ctx, "Market Day · Sekolah Tri Ratna Jakarta", tengah, y, {
+  tulis(ctx, "Tribiz Fest · Sekolah Tri Ratna Jakarta", tengah, y, {
     huruf: font(700, 12.5),
     warna: WARNA.maroonGelap,
     rata: "center",

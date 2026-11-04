@@ -567,7 +567,7 @@ export default function DashboardToko() {
             </span>
             <span className="dasbor__brand-teks">
               <strong>{namaToko}</strong>
-              <small>Market Day</small>
+              <small>Tribiz Fest</small>
             </span>
           </Link>
 
@@ -667,7 +667,7 @@ export default function DashboardToko() {
               </span>
               <span className="dasbor__brand-teks">
                 <strong>{namaToko}</strong>
-                <small>Market Day</small>
+                <small>Tribiz Fest</small>
               </span>
             </Link>
             <div className="dasbor__mobilebar-aksi">

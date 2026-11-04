@@ -86,7 +86,7 @@ import { permintaanKelolaToko } from "@/lib/kelolaTokoClient";
 import { unggahFotoProfil } from "@/lib/supabaseStorage";
 
 const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-const BATAS_FOTO = 5 * 1024 * 1024;
+const BATAS_FOTO = 4 * 1024 * 1024;
 
 export default function DaftarTokoPage() {
   const { daftar } = useAuthContext();
@@ -126,7 +126,7 @@ export default function DaftarTokoPage() {
       return;
     }
     if (file.size > BATAS_FOTO) {
-      notifikasi.galat("Ukuran foto maksimal 5 MB.", {
+      notifikasi.galat("Ukuran foto maksimal 4 MB.", {
         judul: "Foto terlalu besar",
       });
       return;
@@ -320,7 +320,7 @@ export default function DaftarTokoPage() {
           </div>
           <p className="daftar-toko__petunjuk">
             Foto profil dan banner wajib diunggah. Format JPG, PNG, WebP, atau
-            AVIF, maksimal 5 MB.
+            AVIF, maksimal 4 MB.
           </p>
         </div>
 

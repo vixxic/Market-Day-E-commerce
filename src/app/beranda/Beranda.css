@@ -23,7 +23,7 @@
 
   background:
     linear-gradient(rgba(128, 0, 32, 0.35), rgba(101, 0, 25, 0.35)),
-    url("/banner-market-day.jpg") center 25% / cover no-repeat;
+    url("/foto-sekolah-triratna.jpeg") 70% 25% / cover no-repeat;
 }
 
 /* Gradient merah untuk menyatukan foto dan background */
@@ -110,7 +110,7 @@
   .beranda__hero::before {
     inset: 0;
     opacity: 0.45;
-    background-position: center;
+    background-position: 70% 25%;
   }
 
   .beranda__hero::after {
