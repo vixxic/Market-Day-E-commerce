@@ -201,6 +201,7 @@ function susunIsi(pesanan, ctx) {
           ? subtotalTersimpan
           : penuh;
       const diskon = Math.min(penuh, Math.max(0, angka(baris.diskon)));
+      const gratis = Math.max(0, Math.round(angka(baris.gratis) || 0));
 
       return {
         nama,
@@ -209,6 +210,7 @@ function susunIsi(pesanan, ctx) {
         harga,
         subtotal,
         diskon,
+        gratis,
         tinggi:
           nama.length * 23 + (varian ? 20 : 0) + 20 + (diskon > 0 ? 20 : 0),
       };
@@ -441,7 +443,7 @@ function gambarIsi(ctx, pesanan, isi) {
     });
 
     if (item.diskon > 0) {
-      tulis(ctx, `Hemat ${formatHarga(item.diskon)}`, kanan - 2, y + 58, {
+      tulis(ctx, `Hemat ${formatHarga(item.diskon)}${item.gratis > 0 ? ` (${item.gratis} gratis)` : ""}`, kanan - 2, y + 58, {
         huruf: font(600, 12),
         warna: WARNA.merah,
         rata: "right",

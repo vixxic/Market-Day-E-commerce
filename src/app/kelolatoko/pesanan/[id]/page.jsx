@@ -280,6 +280,9 @@ function IsiDetailPesananToko() {
                         </p>
                         <p className="pesanan-detail__item-jumlah">
                           {jumlah} × {formatHarga(harga)}
+                          {Number(baris.gratis) > 0
+                            ? ` (${baris.gratis} gratis)`
+                            : ""}
                         </p>
                         {baris.promo?.label && (
                           <p className="pesanan-detail__item-promo">

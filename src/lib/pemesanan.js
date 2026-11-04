@@ -97,6 +97,7 @@ export function siapkanPemesanan(baris, { dariKeranjang = false } = {}) {
         ? { jenis: promo.jenis, label: labelPromo(promo) }
         : null,
       diskon: hitungan.diskon,
+      gratis: hitungan.gratis ?? 0,
       subtotal: hitungan.subtotal,
     };
   });
