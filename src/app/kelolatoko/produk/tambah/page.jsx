@@ -22,7 +22,7 @@ import { validasiPromoForm } from "@/lib/promoProduk";
 const FORMAT_FOTO = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const MAKS_FOTO = 5;
 const UKURAN_MAKS = 10;
-const BATAS_UKURAN_FOTO = 4 * 1024 * 1024;
+const BATAS_UKURAN_FOTO = 2 * 1024 * 1024;
 
 export default function TambahProdukPage() {
   const router = useRouter();
@@ -78,7 +78,7 @@ export default function TambahProdukPage() {
     );
     if (fotoTidakValid) {
       notifikasi.galat(
-        "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 4 MB per foto.",
+        "Foto harus berformat JPG, PNG, WebP, atau AVIF dengan ukuran maksimal 2 MB per foto.",
       );
       return;
     }
@@ -354,7 +354,7 @@ export default function TambahProdukPage() {
           <UnggahFoto
             id="foto-produk"
             judul="Foto produk *"
-            bantuan={`Pilih maksimal ${MAKS_FOTO} foto JPG, PNG, WebP, atau AVIF. Ukuran maksimal 4 MB per foto.`}
+            bantuan={`Pilih maksimal ${MAKS_FOTO} foto JPG, PNG, WebP, atau AVIF. Ukuran maksimal 2 MB per foto.`}
             nonaktif={sedangMenyimpan || foto.length >= MAKS_FOTO}
             onPilih={pilihFoto}
           />
