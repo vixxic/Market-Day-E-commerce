@@ -20,6 +20,9 @@ export default function GlobalProvider({ children }) {
                 <SmoothScroll />
                 <NavigasiAtas />
                 <div className="konten-situs">{children}</div>
+                <footer className="footer-situs">
+                  SMK Tri Ratna Jakarta, dibuat oleh Lowen dan Nichole Chiquita.
+                </footer>
               </PesananProvider>
             </KeranjangProvider>
           </ProdukProvider>

@@ -27,6 +27,22 @@ body {
   min-width: 0;
 }
 
+.footer-situs {
+  margin-top: 32px;
+  padding: 18px 12px;
+  border-top: 1px solid rgba(128, 0, 32, 0.14);
+  color: #6b5b5e;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 899px) {
+  .footer-situs {
+    margin-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (min-width: 900px) {
   .konten-situs {
     padding-top: 40px;
