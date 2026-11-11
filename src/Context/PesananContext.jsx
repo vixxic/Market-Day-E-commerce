@@ -264,7 +264,7 @@ export function PesananProvider({ children }) {
         total: tersimpanDiServer.total ?? data.total,
         namaPenerima,
         nomorPemesan,
-        status: "menunggu_otp",
+        status: pesananServer.status,
         createdAt: pesananServer.createdAt,
       };
 

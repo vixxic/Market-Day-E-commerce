@@ -1,6 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { dataJson, responsGagal } from "@/lib/server/tokoApi";
-import { kirimPemberitahuanPesananFonnte } from "@/lib/otp/fonnte";
+import { jadwalkanPemberitahuanPesanan } from "@/lib/otp/pemberitahuanPesanan";
 import { otpCocok } from "@/lib/otp/otpHash";
 
 const OTP_MAX_ATTEMPTS = Number(process.env.OTP_MAX_ATTEMPTS || 3);
@@ -131,33 +131,11 @@ export async function POST(request) {
       );
     }
 
-    // Notifikasi penjual bersifat best effort. Kode klaim tidak dikirim ke
-    // WhatsApp pihak ketiga; penjual membacanya dari dashboard.
-    Promise.resolve().then(async () => {
-      try {
-        const { data: store } = await supabaseServer
-          .from("stores")
-          .select("nama_toko, whatsapp_number")
-          .eq("id", updated.id_toko)
-          .maybeSingle();
-
-        if (!store?.whatsapp_number) return;
-
-        const body =
-          `Pesanan Baru Tribiz Fest (OTP Terverifikasi)\n` +
-          `ID Pesanan: ${order.id_pesanan}\n` +
-          `Total: Rp ${order.total}\n` +
-          `Pemesan: ${order.buyer_phone || order.nomor_pemesan || "-"}\n\n` +
-          `Buka dashboard toko untuk melihat detail dan kode klaim.`;
-
-        await kirimPemberitahuanPesananFonnte(store.whatsapp_number, body);
-        await supabaseServer
-          .from("orders")
-          .update({ seller_notified_at: new Date().toISOString() })
-          .eq("id_pesanan", orderId);
-      } catch (e) {
-        console.error("Gagal kirim notifikasi ke penjual:", e);
-      }
+    // Kode klaim tidak dikirim melalui WhatsApp; penjual membacanya dari dashboard.
+    jadwalkanPemberitahuanPesanan({
+      ...order,
+      id_toko: updated.id_toko,
+      status: updated.status,
     });
 
     return Response.json({

@@ -150,21 +150,23 @@ export default function PagePemesanan() {
           hapusDariKeranjang,
         );
       }
-      // kirim OTP memakai ID pesanan yang dibuat server
-      const kirimData = await ambilJsonAman("/api/otp/kirim", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: pesananTersimpan?.idPesanan ?? pemesanan.idPesanan,
-          phone: nomor,
-        }),
-      });
-      setTahapOtp(true);
-      setCooldown(kirimData?.cooldown ?? 60);
+      if (pesananTersimpan.status === "menunggu_otp") {
+        setTahapOtp(true);
+        try {
+          const kirimData = await ambilJsonAman("/api/otp/kirim", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: pesananTersimpan.idPesanan,
+              phone: nomor,
+            }),
+          });
+          setCooldown(kirimData?.cooldown ?? 60);
+        } catch (galatKirim) {
+          setGalat(pesanGalat(galatKirim));
+        }
+      }
     } catch (galatSimpan) {
-      // Pesanan bisa saja sudah tersimpan; arahkan ke tahap OTP agar bisa
-      // mengirim ulang tanpa membuat pesanan ganda.
-      setTahapOtp(true);
       setGalat(pesanGalat(galatSimpan));
     } finally {
       setSedangMenyimpan(false);

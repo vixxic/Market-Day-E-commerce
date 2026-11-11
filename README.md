@@ -36,7 +36,16 @@ Ambil URL project dan service-role key dari dashboard project Supabase (Project 
 
 Galeri produk menyimpan hingga lima URL foto dalam kolom `products.gambar_list`. Terapkan migrasi `supabase/migrations/20261027090000_add_product_image_gallery.sql` pada project Supabase sebelum memakai versi aplikasi ini; migrasi tersebut juga menyalin foto lama ke galeri.
 
-Pesanan baru dikirim ke `POST /api/pesanan` hanya dengan `id_toko`, `nama_penerima`, `nomor_pemesan`, dan `items` (`id_produk`, `jumlah`, `varian`). Server memvalidasi toko dan produk, menghitung ulang harga serta total dari database, lalu membuat `id_pesanan`, `kode_klaim`, dan `status: "menunggu_otp"` sendiri. Nilai `total`, `harga`, `status`, atau ID yang dikirim klien diabaikan. Status pesanan hanya dapat dibaca dengan menyertakan `kode_klaim` yang cocok.
+Pesanan baru dikirim ke `POST /api/pesanan` hanya dengan `id_toko`, `nama_penerima`, `nomor_pemesan`, dan `items` (`id_produk`, `jumlah`, `varian`). Server memvalidasi toko dan produk, menghitung ulang harga serta total dari database, lalu membuat `id_pesanan` dan `kode_klaim` sendiri. OTP pemesanan nonaktif secara default; jika aktif, status pesanan dimulai sebagai `menunggu_otp`. Jika nonaktif, pesanan langsung berstatus `menunggu_konfirmasi` dan stok dikurangi secara atomik. Nilai `total`, `harga`, `status`, atau ID yang dikirim klien diabaikan.
+
+Atur kebutuhan OTP lewat command berikut (setelahnya mulai ulang server Next.js):
+
+```bash
+npm run otp:on   # wajibkan OTP untuk pesanan baru
+npm run otp:off  # lewati OTP untuk pesanan baru (default)
+```
+
+Command mengubah `ORDER_OTP_ENABLED` di `.env.local`; nilai `true` mengaktifkan OTP. Untuk deployment, atur variabel `ORDER_OTP_ENABLED=true` atau `false` di konfigurasi environment lalu redeploy/restart. Terapkan migration `supabase/migrations/20261103120000_confirm_order_without_otp.sql` di Supabase agar pesanan tanpa OTP mengurangi stok dengan aman.
 
 Pengiriman OTP WhatsApp memerlukan token API Fonnte di `.env.local`:
 

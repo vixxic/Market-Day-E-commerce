@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "otp:on": "node scripts/set-order-otp.js true",
+    "otp:off": "node scripts/set-order-otp.js false"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

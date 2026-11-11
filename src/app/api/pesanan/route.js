@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { dataJson } from "@/lib/server/tokoApi";
 import { normalizeMsisdn } from "@/lib/otp/normalizeMsisdn";
+import { jadwalkanPemberitahuanPesanan } from "@/lib/otp/pemberitahuanPesanan";
 import {
   POLA_UUID,
   galatValidasi,
@@ -22,6 +23,7 @@ import {
 
 const KOLOM_PESANAN_AMAN =
   "id, id_checkout, id_pesanan, kode_klaim, id_toko, total, status, nama_penerima, nomor_pemesan, created_at, items";
+const OTP_PEMESANAN_AKTIF = process.env.ORDER_OTP_ENABLED === "true";
 
 export async function POST(request) {
   try {
@@ -203,6 +205,79 @@ export async function POST(request) {
       .single();
 
     if (error) throw error;
+
+    if (!OTP_PEMESANAN_AKTIF) {
+      const { data: hasil, error: konfirmasiError } = await supabaseServer.rpc(
+        "konfirmasi_pesanan_tanpa_otp",
+        { p_order_id: data.id },
+      );
+
+      if (konfirmasiError) {
+        const { error: hapusError } = await supabaseServer
+          .from("orders")
+          .delete()
+          .eq("id", data.id)
+          .eq("status", "menunggu_otp")
+          .is("otp_hash", null);
+
+        if (hapusError) {
+          console.error("Gagal membersihkan pesanan yang belum dikonfirmasi:", hapusError);
+        }
+
+        if (["PGRST202", "42883"].includes(konfirmasiError.code)) {
+          console.error(
+            "Fungsi konfirmasi pesanan tanpa OTP belum tersedia. Terapkan migration 20261103120000_confirm_order_without_otp.sql.",
+            konfirmasiError,
+          );
+          return Response.json(
+            {
+              error:
+                "Pemesanan tanpa OTP belum aktif di database. Terapkan migration 20261103120000_confirm_order_without_otp.sql di Supabase, lalu coba lagi.",
+            },
+            { status: 503 },
+          );
+        }
+        throw konfirmasiError;
+      }
+
+      if (hasil?.result === "stock_unavailable") {
+        return Response.json(
+          {
+            error:
+              "Stok produk pada pesanan sudah tidak mencukupi. Silakan buat pesanan baru dengan jumlah yang tersedia.",
+          },
+          { status: 409 },
+        );
+      }
+
+      if (hasil?.result !== "success") {
+        const { error: hapusError } = await supabaseServer
+          .from("orders")
+          .delete()
+          .eq("id", data.id)
+          .eq("status", "menunggu_otp")
+          .is("otp_hash", null);
+
+        if (hapusError) {
+          console.error("Gagal membersihkan pesanan yang berubah saat konfirmasi:", hapusError);
+        }
+
+        return Response.json(
+          { error: "Pesanan berubah saat disimpan. Silakan coba lagi." },
+          { status: 409 },
+        );
+      }
+
+      jadwalkanPemberitahuanPesanan({
+        ...data,
+        status: "menunggu_konfirmasi",
+      });
+      return Response.json(
+        { ...data, status: "menunggu_konfirmasi" },
+        { status: 201 },
+      );
+    }
+
     return Response.json(data, { status: 201 });
   } catch (error) {
     if (error?.publik) {
