@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import GlobalProvider from "@/providers/GlobalProvider";
+import PemberitahuanOtpNonaktif from "@/components/PemberitahuanOtpNonaktif/PemberitahuanOtpNonaktif";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -78,7 +79,12 @@ export default function RootLayout({ children }) {
           fontFamily: `${inter.style.fontFamily}, "Segoe UI", system-ui, -apple-system, Arial, sans-serif`,
         }}
       >
-        <GlobalProvider>{children}</GlobalProvider>
+        <GlobalProvider>
+          {process.env.ORDER_OTP_ENABLED !== "true" && (
+            <PemberitahuanOtpNonaktif />
+          )}
+          {children}
+        </GlobalProvider>
       </body>
     </html>
   );

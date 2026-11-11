@@ -1,0 +1,99 @@
+.pemberitahuan-otp {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 1250;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  width: min(520px, calc(100vw - 32px));
+  padding: 16px;
+  transform: translateX(-50%);
+  border: 1px solid #efd9d7;
+  border-radius: 16px;
+  background: #fffaf9;
+  box-shadow: 0 12px 36px rgba(48, 16, 20, 0.18);
+  animation: pemberitahuan-otp-muncul 0.24s ease-out;
+}
+
+.pemberitahuan-otp__ikon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #f7e5e4;
+  color: #832828;
+  font-size: 18px;
+}
+
+.pemberitahuan-otp__isi {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.pemberitahuan-otp__isi strong {
+  color: #521014;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.pemberitahuan-otp__isi p {
+  margin: 0;
+  color: #6d5252;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.pemberitahuan-otp__tutup {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #8d7272;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.pemberitahuan-otp__tutup:hover {
+  background: rgba(131, 40, 40, 0.08);
+  color: #521014;
+}
+
+.pemberitahuan-otp__tutup:focus-visible {
+  outline: 2px solid #832828;
+  outline-offset: 2px;
+}
+
+@keyframes pemberitahuan-otp-muncul {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .pemberitahuan-otp {
+    top: max(10px, env(safe-area-inset-top, 0px));
+    width: calc(100vw - 20px);
+    padding: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pemberitahuan-otp {
+    animation: none;
+  }
+}
